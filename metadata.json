@@ -1,0 +1,5 @@
+{
+  "name": "DIORUM THE FIRST CHAPTER",
+  "description": "A top-down 2D action RPG with Dwarf Fortress-style Z-level depth, Minecraft-style chunk loading, and full Backbone controller support.",
+  "requestFramePermissions": []
+}
