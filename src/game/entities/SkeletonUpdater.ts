@@ -1,3 +1,4 @@
+import { EntitySteeringSystem } from '../systems/EntitySteeringSystem';
 function removeFromArray<T>(array: T[], index: number) {
     if (index === array.length - 1) {
         array.pop();
@@ -31,8 +32,8 @@ export class SkeletonUpdater {
             skel.vz -= 20 * dt;
             
             // Movement
-            Updater.applyBoids(skel, engine, dt);
-                    Updater.applyDodge(skel, engine, dt);
+            EntitySteeringSystem.applyBoids(skel, engine, dt);
+                    EntitySteeringSystem.applyDodge(skel, engine, dt);
             skel.x += skel.vx * dt;
             skel.y += skel.vy * dt;
             skel.z += skel.vz * dt;
@@ -109,7 +110,7 @@ export class SkeletonUpdater {
                         });
                     } else {
                         // SWORDSMAN Melee Hit
-                        if (dist2D < 2.0 && Math.abs(engine.player.z - skel.z) < 2) {
+                        if (dist2D < 2.0 && Math.abs(engine.player.z - skel.z) < 1.0) {
                             engine.player.takeDamage(skel.damage);
                             engine.particles.push({
                                 x: engine.player.x, y: engine.player.y, z: engine.player.z + 1,
@@ -121,6 +122,7 @@ export class SkeletonUpdater {
             }
 
             if (skel.health <= 0) {
+                if (Math.random() < 0.4) engine.dropItem(skel.x, skel.y, skel.z, { ...ITEMS['copper_piece'], quantity: Math.floor(Math.random() * 3) + 1 });
                 removeFromArray(engine.skeletons, i);
                 
                 // Turn into remains

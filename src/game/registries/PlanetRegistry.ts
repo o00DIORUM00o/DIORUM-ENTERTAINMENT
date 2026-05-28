@@ -1,7 +1,7 @@
 import { BlockType } from '../constants/BlockType';
 
 export interface PlanetDef {
-    id: string; // e.g., 'THRAE', 'ARETH', etc.
+    id: string; // e.g., 'HERAT', 'ARETH', etc.
     name: string;
     description: string;
     surfaceBlock: BlockType;

@@ -1,3 +1,4 @@
+import { EntitySteeringSystem } from '../systems/EntitySteeringSystem';
 function removeFromArray<T>(array: T[], index: number) {
     if (index === array.length - 1) {
         array.pop();
@@ -21,7 +22,7 @@ for (let i = engine.goblins.length - 1; i >= 0; i--) {
             if (gob.campKey) {
                 const [cx, cy, cz] = gob.campKey.split(',').map(Number);
                 const campBlock = engine.world.getBlock(cx, cy, cz);
-                if (campBlock !== BlockType.GOBLIN_CAMP && campBlock !== BlockType.GOBLIN_SHAMAN_TENT) {
+                if (campBlock === 0) { // 0 is BlockType.AIR
                     // Camp destroyed, goblin dies
                     removeFromArray(engine.goblins, i);
                     continue;
@@ -85,7 +86,7 @@ for (let i = engine.goblins.length - 1; i >= 0; i--) {
                     }
                     
                     const attackTriggerDist = gob.isShaman ? 8.5 : 0.9;
-                    if (dist2D < attackTriggerDist && gob.attackCooldown <= 0) {
+                    if (dist2D < attackTriggerDist && Math.abs(dz) < 1.0 && gob.attackCooldown <= 0) {
                         gob.state = 'ATTACK';
                         gob.attackTimer = gob.isShaman ? 0.6 : 0.3; // Attack windup
                         gob.attackCooldown = gob.isShaman ? 2.5 : 1.5;
@@ -176,7 +177,7 @@ for (let i = engine.goblins.length - 1; i >= 0; i--) {
                             });
                         } else if (gob.type === 'miner') {
                             // Melee attack but higher damage to player armor
-                            if (dist2D < 1.4 && Math.abs(dz) < 2.0) {
+                            if (dist2D < 1.4 && Math.abs(dz) < 1.0) {
                                 engine.player.takeDamage(gob.damage * 1.5);
                                 engine.particles.push({
                                     x: engine.player.x, y: engine.player.y, z: engine.player.z + 1,
@@ -184,7 +185,7 @@ for (let i = engine.goblins.length - 1; i >= 0; i--) {
                                 });
                             }
                         } else {
-                            if (dist2D < 1.2 && Math.abs(dz) < 2.0) { // Slightly larger than trigger range to allow for player movement
+                            if (dist2D < 1.2 && Math.abs(dz) < 1.0) { // Slightly larger than trigger range to allow for player movement
                                 engine.player.takeDamage(gob.damage);
                                 engine.particles.push({
                                     x: engine.player.x,
@@ -217,8 +218,8 @@ for (let i = engine.goblins.length - 1; i >= 0; i--) {
             // Gravity
             gob.vz -= 20 * dt;
             
-            Updater.applyBoids(gob, engine, dt);
-                    Updater.applyDodge(gob, engine, dt);
+            EntitySteeringSystem.applyBoids(gob, engine, dt);
+                    EntitySteeringSystem.applyDodge(gob, engine, dt);
             // Movement
             const newX = gob.x + gob.vx * dt;
             const newY = gob.y + gob.vy * dt;

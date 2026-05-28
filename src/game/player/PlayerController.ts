@@ -6,7 +6,7 @@ import { audioEngine } from '../AudioEngine';
 
 export class PlayerController {
         static update(player: Player, ctx: UpdateContext) {
-        const { world, dx, dy, aimX, aimY, attacking, casting, interacting, jumping, jumpDown, dashing, quick1, quick2, quick3, dt, onHit, onShoot, onAoE, onCastSpell, onMelee, onDropItem, onOpenPortalMenu, onSaddleUse, onPlantBomb, onTriggerSecondary } = ctx;
+        const { engine, world, dx, dy, aimX, aimY, attacking, casting, interacting, jumping, jumpDown, dashing, quick1, quick2, quick3, dt, onHit, onShoot, onAoE, onCastSpell, onMelee, onDropItem, onOpenPortalMenu, onSaddleUse, onPlantBomb, onTriggerSecondary } = ctx;
 // Dash logic
         if (player.dashCooldown > 0) player.dashCooldown -= dt;
         
@@ -56,6 +56,23 @@ export class PlayerController {
                     onMelee(1.5, Math.PI * 2, weaponDamage);
                     audioEngine.playMelee(); // 1.5 reach, 360 spread
                     (this as any).hasHitThisDash = true;
+
+                    // Dash attack visual flourish
+                    if (engine) {
+                        for (let i = 0; i < 20; i++) {
+                            const angle = Math.random() * Math.PI * 2;
+                            engine.particles.push({
+                                x: player.x + Math.cos(angle) * 1.5,
+                                y: player.y + Math.sin(angle) * 1.5,
+                                z: player.z + 0.5,
+                                text: '✧',
+                                color: weapon?.itemColor || '#dddddd',
+                                life: 0.3, maxLife: 0.3,
+                                vx: Math.cos(angle) * 10, vy: Math.sin(angle) * 10, vz: 0,
+                                speed: 0
+                            });
+                        }
+                    }
                 }
             }
             
@@ -100,7 +117,7 @@ export class PlayerController {
         
         let moveDx = dx;
         let moveDy = dy;
-        const isGliding = player.equipment['BODY']?.id === 'glider_wings' && jumpDown && player.vz < 0;
+        const isGliding = (player.equipment['BODY']?.id === 'glider_wings' || player.equipment['BODY']?.id === 'squirrel_suit') && jumpDown && player.vz < 0;
         
         if (isGliding) {
             speed *= 2.0; // Faster horizontal movement
@@ -150,12 +167,21 @@ export class PlayerController {
         // Gravity and Jump mechanics
         const hasAntigravity = player.equipment['NECKLACE']?.id === 'antigravity_artifact';
         const isSkyship = player.isMounted && player.activeMount && player.activeMount.type === 'SKYSHIP';
-        const isEagle = player.isMounted && player.activeMount && player.activeMount.type === 'GIANT_EAGLE';
+        const isEagle = player.isMounted && player.activeMount && (player.activeMount.type === 'GIANT_EAGLE' || player.activeMount.type === 'PTERODACTYL' || (player.activeMount.type.endsWith('_DRAGON') || player.activeMount.type === 'FIRE_DRAGON'));
         const isBoat = player.isMounted && player.activeMount && player.activeMount.type === 'BOAT';
         
         let gravity = 30.0;
         
-        if (hasAntigravity || isSkyship || isEagle) {
+        if (player.buffs.mistForm > 0 || player.isEyeMode) {
+            gravity = 0;
+            if (jumping) {
+                player.vz = 5.0; // Ascend slowly
+            } else if (jumpDown) {
+                player.vz = -5.0; // Descend slowly
+            } else {
+                player.vz = 0; // Float in place
+            }
+        } else if (hasAntigravity || isSkyship || isEagle) {
             if (jumpDown) {
                 gravity = -15.0; // Ascend
                 if (player.vz > (isEagle ? 15.0 : 10.0)) player.vz = isEagle ? 15.0 : 10.0; // Cap ascent speed
@@ -163,9 +189,9 @@ export class PlayerController {
                 gravity = 0.0; // Float slowly
                 player.vz = isSkyship || isEagle ? -0.5 : -2.0; // Cap fall speed
             }
-        } else if (isGliding) {
+        } else if (isGliding || (player.statuses.slowFall && player.statuses.slowFall > 0)) {
             gravity = 5.0; // Slow falling
-            if (player.vz < -3.0) player.vz = -3.0; // Terminal velocity while gliding
+            if (player.vz < -3.0) player.vz = -3.0; // Terminal velocity while gliding/slow falling
         }
         
         player.vz -= gravity * dt;
@@ -188,7 +214,8 @@ export class PlayerController {
             }
         }
 
-        if (isSolid(blockStandingOn)) {
+        const isStairs = (b: number) => b === BlockType.WOODEN_STAIRCASE || b === BlockType.STONE_STAIRCASE || b === BlockType.DUNGEON_STAIRS;
+        if (isSolid(blockStandingOn) || isStairs(blockStandingOn)) {
             if (player.vz <= 0) { // Only snap if we aren't currently flying up
                 player.z = Math.floor(player.z - 0.01) + 1;
                 player.vz = 0;
@@ -203,8 +230,10 @@ export class PlayerController {
             if (jumping) {
                 if (hasAntigravity || isSkyship || isEagle) {
                     player.vz = isEagle ? 25.0 : 15.0; // Guaranteed liftoff speed
-                } else if (!isBoat && player.stamina >= 10 && (player.talents['jump'] || 0) > 0) {
-                    player.vz = player.isMounted && player.activeMount ? player.activeMount.jumpPower : 12.0;
+                } else if (!isBoat && player.stamina >= 10 && ((player.talents['jump'] || 0) > 0 || (player.getEquipmentStats().jumpPowerBonus || 0) > 0)) {
+                    let baseJump = player.isMounted && player.activeMount ? player.activeMount.jumpPower : (12.0 + (player.talents['jump'] || 0) * 1.5);
+                    baseJump += (player.getEquipmentStats().jumpPowerBonus || 0);
+                    player.vz = baseJump;
                     player.stamina -= 10;
                 }
             }

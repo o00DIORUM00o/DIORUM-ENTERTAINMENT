@@ -1,3 +1,4 @@
+import { EntitySteeringSystem } from '../systems/EntitySteeringSystem';
 import { BlockType } from '../constants/BlockType';
 import { isSolid } from '../World';;
 import { ITEMS } from "../Inventory";
@@ -95,7 +96,7 @@ export class KoboldUpdater {
                         kobold.aimAngle = Math.atan2(dy, dx);
                     }
                     
-                    if (dist2D < attackTriggerDist && Math.abs(dz) < 1.5 && kobold.attackCooldown <= 0) {
+                    if (dist2D < attackTriggerDist && Math.abs(dz) < 1.0 && kobold.attackCooldown <= 0) {
                         kobold.state = 'ATTACK';
                         kobold.attackTimer = 0.4;
                         if (kobold.type === 'shaman') kobold.attackCooldown = 2.5;
@@ -127,7 +128,7 @@ export class KoboldUpdater {
                             });
                         } else {
                             // Melee
-                            if (dist2D < 1.5 && Math.abs(dz) < 2.0) {
+                            if (dist2D < 1.5 && Math.abs(dz) < 1.0) {
                                 engine.player.takeDamage(kobold.damage);
                                 engine.particles.push({
                                     x: engine.player.x, y: engine.player.y, z: engine.player.z + 1,
@@ -154,8 +155,8 @@ export class KoboldUpdater {
             // Gravity
             kobold.vz -= 20 * dt;
             
-            Updater.applyBoids(kobold, engine, dt);
-            Updater.applyDodge(kobold, engine, dt);
+            EntitySteeringSystem.applyBoids(kobold, engine, dt);
+            EntitySteeringSystem.applyDodge(kobold, engine, dt);
             
             // Movement
             const newX = kobold.x + kobold.vx * dt;
@@ -233,6 +234,7 @@ export class KoboldUpdater {
             }
 
             if (kobold.health <= 0) {
+                if (Math.random() < 0.4) engine.dropItem(kobold.x, kobold.y, kobold.z, { ...ITEMS['copper_piece'], quantity: Math.floor(Math.random() * 3) + 1 });
                 removeFromArray(engine.kobolds, i);
                 engine.player.addXp(Math.floor(30 * (kobold.maxHealth / 50)));
                 

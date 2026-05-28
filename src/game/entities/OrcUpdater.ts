@@ -1,3 +1,4 @@
+import { EntitySteeringSystem } from '../systems/EntitySteeringSystem';
 function removeFromArray<T>(array: T[], index: number) {
     if (index === array.length - 1) {
         array.pop();
@@ -20,7 +21,7 @@ export class OrcUpdater {
             // Check if camp still exists
             if (orc.campKey) {
                 const [cx, cy, cz] = orc.campKey.split(',').map(Number);
-                if (engine.world.getBlock(cx, cy, cz) !== BlockType.ORC_TENT) {
+                if (engine.world.getBlock(cx, cy, cz) === 0) { // 0 is BlockType.AIR
                     // Camp destroyed, orc dies
                     removeFromArray(engine.orcs, i);
                     continue;
@@ -149,7 +150,7 @@ export class OrcUpdater {
                             isArrow: true // Renders as an arrow
                         });
                     } else {
-                        if (dist2D < 1.5 && Math.abs(dz) < 2.0) { // Larger hit range
+                        if (dist2D < 1.5 && Math.abs(dz) < 1.0) { // Larger hit range
                             engine.player.takeDamage(orc.damage);
                             let kb = orc.type === 'brute' ? 10.0 : 4.0; // Brute does massive knockback
                             const angle = Math.atan2(dy, dx);
@@ -168,8 +169,8 @@ export class OrcUpdater {
             // Gravity
             orc.vz -= 20 * dt;
             
-            Updater.applyBoids(orc, engine, dt);
-                    Updater.applyDodge(orc, engine, dt);
+            EntitySteeringSystem.applyBoids(orc, engine, dt);
+                    EntitySteeringSystem.applyDodge(orc, engine, dt);
             // Movement
             const newX = orc.x + orc.vx * dt;
             const newY = orc.y + orc.vy * dt;
@@ -214,6 +215,7 @@ export class OrcUpdater {
             if (orc.attackCooldown > 0) orc.attackCooldown -= dt;
 
             if (orc.health <= 0) {
+                if (Math.random() < 0.4) engine.dropItem(orc.x, orc.y, orc.z, { ...ITEMS['copper_piece'], quantity: Math.floor(Math.random() * 3) + 1 });
                 removeFromArray(engine.orcs, i);
                 engine.player.addXp(Math.floor(50 * (orc.maxHealth / 80))); // More XP
                 

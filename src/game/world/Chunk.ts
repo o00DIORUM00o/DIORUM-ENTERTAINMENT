@@ -1,5 +1,6 @@
 import { CHUNK_SIZE, WORLD_HEIGHT } from '../Constants';
 import { TerrainGenerator } from './TerrainGenerator';
+import { BlockType } from '../constants/BlockType';
 
 export class Chunk {
     blocks: Uint16Array;
@@ -9,7 +10,7 @@ export class Chunk {
     spawners: Set<number> = new Set();
     automation: Set<number> = new Set();
 
-    constructor(public cx: number, public cy: number, public activePlanet: string = 'THRAE') {
+    constructor(public cx: number, public cy: number, public activePlanet: string = 'HERAT') {
         this.blocks = new Uint16Array(CHUNK_SIZE * CHUNK_SIZE * WORLD_HEIGHT);
         this.heightMap = new Uint8Array(CHUNK_SIZE * CHUNK_SIZE);
         // Generation is now explicit via TerrainGenerator
@@ -17,12 +18,12 @@ export class Chunk {
 
     getBlock(x: number, y: number, z: number) {
         if (x < 0 || x >= CHUNK_SIZE || y < 0 || y >= CHUNK_SIZE || z < 0 || z >= WORLD_HEIGHT) return 0;
-        return this.blocks[x + y * CHUNK_SIZE + z * CHUNK_SIZE * CHUNK_SIZE];
+        return this.blocks[x | (y << 4) | (z << 8)];
     }
 
     setBlock(x: number, y: number, z: number, type: number) {
         if (x < 0 || x >= CHUNK_SIZE || y < 0 || y >= CHUNK_SIZE || z < 0 || z >= WORLD_HEIGHT) return;
-        const idx = x + y * CHUNK_SIZE + z * CHUNK_SIZE * CHUNK_SIZE;
+        const idx = x | (y << 4) | (z << 8);
         this.blocks[idx] = type;
         
         // Mechanism & Spawner tracking
@@ -41,23 +42,24 @@ export class Chunk {
                 this.automation.add(idx);
             }
             // Add Spawners (from SpawnerUpdater and Updater)
-            const isSpawner = type === 106 || type === 107 || type === 108 || type === 224 || type === 225 || type === 226 || type === 235 || type === 27 || type === 100 || type === 259 || type === 17 || type === 44 || type === 221 || type === 230 || type === 231 || type === 232 || type === 233 || type === 234 || type === 83 || type === 263 || type === 110 || type === 111 || type === 112 || type === 113 || type === 114 || type === 115 || type === 116 || type === 222 || type === 223 || type === 267 || type === 268 || [18, 39, 43, 251, 252, 253, 254, 255, 256, 257, 258, 260, 261, 262, 273, 274, 275, 276].includes(type);
+            const key = BlockType[type] || '';
+            const isSpawner = key.includes('SPAWNER') || key.includes('TENT') || key.includes('CAMP') || key.includes('NEST') || key.includes('CAVE') || key.includes('DEN') || key.includes('SHRINE') || key.includes('PEDESTAL') || key.includes('ALTAR') || key === 'MERCHANT' || key === 'DRACONIC_MERCHANT' || key === 'SLUG_FOLK_MERCHANT' || key === 'BAG_MERCHANT_STALL' || key === 'BERRY_FARMER_SHED' || key === 'BEE_HIVE' || key === 'ANT_HILL' || key === 'VOID_BEACON' || key === 'SLIME_PUDDLE' || key === 'SPIDER_WEB' || key === 'DEMON_PORTAL' || key === 'LAVA_POOL' || key.startsWith('STALL_');
             if (isSpawner) {
                 this.spawners.add(idx);
             }
         }
 
-        if (type !== 0 && z > this.heightMap[x + y * CHUNK_SIZE]) {
-            this.heightMap[x + y * CHUNK_SIZE] = z;
-        } else if (type === 0 && z === this.heightMap[x + y * CHUNK_SIZE]) {
+        if (type !== 0 && z > this.heightMap[x | (y << 4)]) {
+            this.heightMap[x | (y << 4)] = z;
+        } else if (type === 0 && z === this.heightMap[x | (y << 4)]) {
             let newHighest = 0;
             for(let nz = z; nz >= 0; nz--) {
-                if (this.blocks[x + y * CHUNK_SIZE + nz * CHUNK_SIZE * CHUNK_SIZE] !== 0) {
+                if (this.blocks[x | (y << 4) | (nz << 8)] !== 0) {
                     newHighest = nz;
                     break;
                 }
             }
-            this.heightMap[x + y * CHUNK_SIZE] = newHighest;
+            this.heightMap[x | (y << 4)] = newHighest;
         }
     }
 
@@ -82,13 +84,14 @@ export class Chunk {
                         if (type === 244 || type === 250 || type === 88 || type === 89 || type === 90 || type === 84 || type === 85 || type === 86 || type === 87 || type === 91 || type === 303 || type === 304 || type === 305 || type === 306) { 
                             this.automation.add(idx);
                         }
-                        const isSpawner = type === 106 || type === 107 || type === 108 || type === 224 || type === 225 || type === 226 || type === 235 || type === 27 || type === 100 || type === 259 || type === 17 || type === 44 || type === 221 || type === 230 || type === 231 || type === 232 || type === 233 || type === 234 || type === 83 || type === 263 || type === 110 || type === 111 || type === 112 || type === 113 || type === 114 || type === 115 || type === 116 || type === 222 || type === 223 || type === 267 || type === 268 || [18, 39, 43, 251, 252, 253, 254, 255, 256, 257, 258, 260, 261, 262, 273, 274, 275, 276].includes(type);
+                        const key = BlockType[type] || '';
+                        const isSpawner = key.includes('SPAWNER') || key.includes('TENT') || key.includes('CAMP') || key.includes('NEST') || key.includes('CAVE') || key.includes('DEN') || key.includes('SHRINE') || key.includes('PEDESTAL') || key.includes('ALTAR') || key === 'MERCHANT' || key === 'DRACONIC_MERCHANT' || key === 'SLUG_FOLK_MERCHANT' || key === 'BAG_MERCHANT_STALL' || key === 'BERRY_FARMER_SHED' || key === 'BEE_HIVE' || key === 'ANT_HILL' || key === 'VOID_BEACON' || key === 'SLIME_PUDDLE' || key === 'SPIDER_WEB' || key === 'DEMON_PORTAL' || key === 'LAVA_POOL' || key.startsWith('STALL_');
                         if (isSpawner) {
                             this.spawners.add(idx);
                         }
                     }
                 }
-                this.heightMap[x + y * CHUNK_SIZE] = highestZ;
+                this.heightMap[x | (y << 4)] = highestZ;
             }
         }
     }

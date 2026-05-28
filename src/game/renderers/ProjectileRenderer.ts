@@ -75,6 +75,7 @@ export function defineProjectileRenderers() {
         draw: (ctx: RenderContext) => {
             const p = ctx.entity;
             const angle = Math.atan2(p.vy, p.vx);
+            if (p.scale) ctx.ctx.scale(p.scale, p.scale);
             
             if (p.isPot) {
                 ctx.ctx.fillStyle = `rgb(${BLOCK_COLORS[BlockType.POT].r}, ${BLOCK_COLORS[BlockType.POT].g}, ${BLOCK_COLORS[BlockType.POT].b})`;
@@ -321,8 +322,9 @@ export function defineProjectileRenderers() {
     RenderRegistry.register('magic_missile', {
         draw: (ctx: RenderContext) => {
             const p = ctx.entity;
-            ctx.ctx.fillStyle = '#ff00ff';
-            ctx.ctx.shadowColor = '#ff00ff';
+            const color = p.color || '#ff00ff';
+            ctx.ctx.fillStyle = color;
+            ctx.ctx.shadowColor = color;
             ctx.ctx.shadowBlur = 10;
             ctx.ctx.beginPath();
             ctx.ctx.arc(0, 0, ctx.TILE_SIZE * 0.3, 0, Math.PI * 2);

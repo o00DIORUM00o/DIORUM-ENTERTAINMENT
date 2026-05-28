@@ -6,7 +6,50 @@ export class ProjectileUpdater {
     static update(engine: any, dt: number) {
         for (let i = engine.projectiles.length - 1; i >= 0; i--) {
             const p = engine.projectiles[i];
-            p.life -= dt;
+            
+            if (p.isVortex && p.hitCooldowns) {
+                p.hitCooldowns.forEach((val, key) => {
+                    p.hitCooldowns.set(key, val - dt);
+                });
+            }
+p.life -= dt;
+            if (p.isVortex) {
+                let nearestDist = Infinity;
+                let target = null;
+                engine.forEachEntity((ent, type) => {
+                    let healthField = ent.health !== undefined ? 'health' : 'hp';
+                    if (!ent || ent === engine.player || ent[healthField] <= 0) return;
+                    if (type === 'villager' || type === 'npc' || (type === 'animal' && ent.behavior === 'PASSIVE')) return;
+                    const dx = ent.x - p.x;
+                    const dy = ent.y - p.y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    if (dist < nearestDist && Math.abs((ent.z || 0) - p.z) < 5 && dist < 12) {
+                        nearestDist = dist;
+                        target = ent;
+                    }
+                });
+                if (target) {
+                    const dx = target.x - p.x;
+                    const dy = target.y - p.y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    const speed = 3.0;
+                    const desiredVx = (dx / dist) * speed;
+                    const desiredVy = (dy / dist) * speed;
+                    p.vx += (desiredVx - p.vx) * 0.1;
+                    p.vy += (desiredVy - p.vy) * 0.1;
+                }
+                
+                // Vortex effects
+                if (Math.random() < 0.6) {
+                    let color = p.damageType === 'FIRE' ? '#ff4500' : (p.damageType === 'ICE' ? '#00ffff' : '#32cd32');
+                    engine.particles.push({
+                        x: p.x + (Math.random() - 0.5)*1.5, y: p.y + (Math.random() - 0.5)*1.5, z: p.z + Math.random()*2,
+                        text: '', color: color, life: 0.5, maxLife: 0.5,
+                        vx: (Math.random()-0.5)*3, vy: (Math.random()-0.5)*3, vz: Math.random()*2
+                    });
+                }
+            }
+
             
             if (p.isBoomerang) {
                 if (p.returning) {
@@ -44,7 +87,7 @@ export class ProjectileUpdater {
                         engine.projectiles.pop();
                         continue;
                     }
-                } else if (p.isSeekerBoomerang) {
+                } else if (p.isSeekerBoomerang || p.isHoming) {
                     if (!p.hitTargets) p.hitTargets = new Set();
                     
                     let nearestDist = Infinity;
@@ -174,6 +217,7 @@ export class ProjectileUpdater {
                     const dy = ent.y - p.y;
                     const dist = Math.sqrt(dx*dx + dy*dy);
                     
+                    if (p.hitTargets && p.hitTargets.has(ent)) return;
                     if (dist <= 0.15 + radiusBuffer && Math.abs(ent.z - p.z) < 2.5) {
                         if (ent.type === 'SHADOW_WIZARD' && (!p.isReflected || !p.isReflectable)) {
                             // Hit by normal projectile, do nothing but consume projectile maybe? 
@@ -183,6 +227,13 @@ export class ProjectileUpdater {
                             return;
                         }
 
+                        
+                        if (p.isVortex) {
+                            if (!p.hitCooldowns) p.hitCooldowns = new Map();
+                            const cd = p.hitCooldowns.get(ent.id) || 0;
+                            if (cd > 0) return; // Skip damage
+                            p.hitCooldowns.set(ent.id, 0.5); // Damage every 0.5s
+                        }
                         let finalDamage = p.damage;
                         if (type === 'animal' && (p.isPlayer || p.fromPlayer || (p.owner && p.owner.id === engine.player.id))) {
                             const huntingLevel = engine.player.talents['hunting'] || 0;
@@ -231,20 +282,23 @@ export class ProjectileUpdater {
                         });
 
                         if (p.fromPlayer || p.isPlayer) {
-                            const totalLifesteal = engine.player.getEquipmentStats().lifesteal;
+                            let totalLifesteal = engine.player.getEquipmentStats().lifesteal;
+                            if (p.damageType === 'VAMPIRIC') {
+                                totalLifesteal += 0.5; // 50% drain
+                            }
                             if (totalLifesteal > 0) {
                                 const heal = finalDamage * totalLifesteal;
                                 engine.player.health = Math.min(engine.player.effectiveMaxHealth, engine.player.health + heal);
                                 engine.particles.push({
                                     x: engine.player.x, y: engine.player.y, z: engine.player.z + 1.5,
-                                    text: `+${Math.floor(heal)}`, color: '#00ff00', life: 1.0, maxLife: 1.0, vy: -1
+                                    text: `+${Math.floor(heal)}`, color: '#ff0000', life: 1.0, maxLife: 1.0, vy: -1
                                 });
                             }
                         }
 
-                        if (!p.isBoomerang) {
+                        if (!p.isBoomerang && !p.isVortex && !p.pierce) {
                             hitEntity = true;
-                        } else if (p.isSeekerBoomerang) {
+                        } else if (p.isSeekerBoomerang || p.isHoming || p.pierce) {
                             if (!p.hitTargets) p.hitTargets = new Set();
                             p.hitTargets.add(ent);
                         }
@@ -283,7 +337,7 @@ export class ProjectileUpdater {
             }
 
             if (hit || isSolidBlock) {
-                if (!hit && isSolidBlock && !p.isPot && !p.isBoomerang) {
+                if (!hit && isSolidBlock && !p.isPot && !p.isBoomerang && !p.isVortex) {
                     if (!isIndestructible(block)) {
                         const key = `${bx},${by},${bz}`;
                         const blockDef = BlockRegistry.getBlock(block);
@@ -362,7 +416,7 @@ export class ProjectileUpdater {
                 if (p.isBoomerang) {
                     p.returning = true;
                     p.life = 10.0;
-                } else {
+                } else if (!p.isVortex) {
                     engine.projectiles[i] = engine.projectiles[engine.projectiles.length - 1];
                     engine.projectiles.pop();
                 }

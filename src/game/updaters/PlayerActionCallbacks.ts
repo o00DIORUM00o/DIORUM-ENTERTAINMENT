@@ -43,7 +43,7 @@ export class PlayerActionCallbacks {
                 });
                 return true;
             },
-            onShoot: (px: number, py: number, pz: number, pvx: number, pvy: number, pDamage: number, pDamageType?: string, pLife?: number, statusEffect?: any) => {
+            onShoot: (px: number, py: number, pz: number, pvx: number, pvy: number, pDamage: number, pDamageType?: string, pLife?: number, statusEffect?: any, scale?: number, pierce?: boolean) => {
                 if (pDamageType === 'BOOMERANG') {
                     const talentLevel = engine.player.talents['boomerang'] || 1;
                     const range = talentLevel >= 3 ? 10 : 5;
@@ -54,6 +54,20 @@ export class PlayerActionCallbacks {
                     let color = '#d2b48c'; // wood
                     if (weapon?.id === 'green_metal_boomerang') color = '#32cd32';
                     if (weapon?.id === 'red_metal_boomerang') color = '#ff4500';
+                    if (weapon?.id === 'bone_boomerang') color = '#e3dac9';
+                    if (weapon?.id === 'iron_boomerang') color = '#a19d94';
+                    if (weapon?.id === 'copper_boomerang') color = '#b87333';
+                    if (weapon?.id === 'mithril_boomerang') color = '#e0f7fa';
+                    if (weapon?.id === 'ice_boomerang') color = '#add8e6';
+                    if (weapon?.id === 'magma_boomerang') color = '#ff8c00';
+                    if (weapon?.id === 'void_boomerang') color = '#4b0082';
+                    if (weapon?.id === 'cactus_boomerang') color = '#228b22';
+                    if (weapon?.id === 'lightning_boomerang') color = '#ffff00';
+                    if (weapon?.id === 'crystal_boomerang') color = '#e0ffff';
+                    if (weapon?.id === 'obsidian_boomerang') color = '#2c1654';
+                    if (weapon?.id === 'blood_boomerang') color = '#8a0303';
+                    if (weapon?.id === 'splitting_boomerang') color = '#ffdead'; // navajo white
+                    if (weapon?.id === 'dragon_boomerang') color = '#ff4500'; // red-orange
                     
                     audioEngine?.playShoot?.();
                     engine.projectiles.push({
@@ -64,11 +78,19 @@ export class PlayerActionCallbacks {
                     });
                 } else {
                     audioEngine?.playShoot?.();
+                    let isVortice = false;
+                    if (engine.player && engine.player.activeSpell && engine.player.activeSpell.includes('vortice')) {
+                        isVortice = true;
+                    }
                     engine.projectiles.push({
                         x: px, y: py, z: pz, vx: pvx, vy: pvy, damage: pDamage,
-                        life: pLife !== undefined ? pLife : 2.0, damageType: pDamageType, isPlayer: true,
+                        life: pLife !== undefined ? pLife : 5.0, damageType: pDamageType, isPlayer: true,
                         isGrapple: pDamageType === 'GRAPPLE',
-                        statusEffect: statusEffect
+                        scale: scale || 1.0,
+                        pierce: pierce || false,
+                        statusEffect: statusEffect,
+                        isVortex: isVortice,
+                        hitCooldowns: new Map()
                     });
                 }
             },
@@ -83,6 +105,34 @@ export class PlayerActionCallbacks {
                     life: 0.5, maxLife: 0.5, damageType, statusEffect
                 });
                 
+                
+                if (damageType === 'CARROT_BLOOM') {
+                    for (let x = Math.floor(ax - radius); x <= Math.floor(ax + radius); x++) {
+                        for (let y = Math.floor(ay - radius); y <= Math.floor(ay + radius); y++) {
+                            for (let z = Math.floor(az - 2); z <= Math.floor(az + 2); z++) {
+                                const dist = Math.sqrt(Math.pow(x - Math.floor(ax), 2) + Math.pow(y - Math.floor(ay), 2));
+                                if (dist <= radius) {
+                                    const block = engine.world.getBlock(x, y, z);
+                                    if (block === 1 || block === 2 || block === 125 || block === 132 || block === 138 || block === 144 || block === 151 || block === 158 || block === 165 || block === 172 || block === 314 || block === 120 || block === 121) { 
+                                        // Turn into soil and plant carrots if air block above
+                                        engine.world.setBlock(x, y, z, 246); // TILLED_SOIL_WET
+                                        if (engine.world.getBlock(x, y, z + 1) === 0) { // AIR
+                                            engine.world.setBlock(x, y, z + 1, 249); // CROP_STAGE_3
+                                        }
+                                        for (let p = 0; p < 3; p++) {
+                                            engine.particles.push({
+                                                x: x + 0.5, y: y + 0.5, z: z + 1.5,
+                                                text: '', color: '#ef8c22', life: 0.5, maxLife: 0.5,
+                                                vx: (Math.random() - 0.5) * 2, vy: (Math.random() - 0.5) * 2, vz: Math.random() * 2
+                                            });
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
                 engine.forEachEntity((e: any, type: string) => {
                     let healthField = e.health !== undefined ? 'health' : 'hp';
                     if (e[healthField] === undefined) return;
@@ -94,6 +144,7 @@ export class PlayerActionCallbacks {
                     if (type === 'animal' || type === 'orc') reachBuffer = 0.4;
                     if (type === 'lavaGolem') reachBuffer = 0.6;
                     if (type === 'abyssalKnight') reachBuffer = 0.5;
+                    if (type === 'voidLord') reachBuffer = 1.5;
 
                     if (dist <= radius + reachBuffer && Math.abs(e.z - az) < 2) {
                         let finalDamage = damage;
@@ -125,13 +176,16 @@ export class PlayerActionCallbacks {
                             text: `-${finalDamage}`, color: '#ef4444', life: 1.0, maxLife: 1.0, vy: -2
                         });
                         
-                        const totalLifesteal = engine.player.getEquipmentStats().lifesteal;
+                        let totalLifesteal = engine.player.getEquipmentStats().lifesteal;
+                        if (damageType === 'VAMPIRIC') {
+                            totalLifesteal += 0.5; // 50% drain
+                        }
                         if (totalLifesteal > 0) {
                             const heal = finalDamage * totalLifesteal;
                             engine.player.health = Math.min(engine.player.effectiveMaxHealth, engine.player.health + Math.floor(heal));
                             engine.particles.push({
                                 x: engine.player.x, y: engine.player.y, z: engine.player.z + 1.5,
-                                text: `+${Math.floor(heal)}`, color: '#00ff00', life: 1.0, maxLife: 1.0, vy: -1
+                                text: `+${Math.floor(heal)}`, color: '#ff0000', life: 1.0, maxLife: 1.0, vy: -1
                             });
                         }
                         
@@ -379,13 +433,20 @@ export class PlayerActionCallbacks {
                     });
                     
                     const mountId = 'mount_' + Date.now();
+                    let tSpeed = closestAnimal.speed;
+                    let tJump = closestAnimal.jumpPower;
+                    if (closestAnimal.type === 'PTERODACTYL') { tSpeed = 20.0; tJump = 30.0; }
+                    else if (closestAnimal.type === 'T_REX') { tSpeed = 16.0; tJump = 8.0; }
+                    else if (closestAnimal.type === 'WILD_RAPTOR') { tSpeed = 24.0; tJump = 20.0; }
+
                     const mount = {
                         id: mountId,
                         type: closestAnimal.type,
                         name: 'Tamed ' + closestAnimal.type,
-                        speed: closestAnimal.speed,
-                        jumpPower: closestAnimal.jumpPower,
-                        maxStamina: closestAnimal.maxStamina
+                        speed: tSpeed,
+                        jumpPower: tJump,
+                        maxStamina: closestAnimal.maxStamina || 100,
+                        inventorySlots: 0
                     };
                     
                     if (!engine.player.mounts) engine.player.mounts = [];
@@ -399,6 +460,16 @@ export class PlayerActionCallbacks {
                     return true;
                 }
                 return false;
+            },
+            onSaddleBagUse: (x: number, y: number, z: number, aimAngle: number) => {
+                if (engine.player.isMounted && engine.player.activeMount) {
+                    engine.player.inventory.push(...new Array(10).fill(null));
+                    if (engine.player.onMessage) engine.player.onMessage("Mount storage expanded your inventory by 10 slots!");
+                    return true;
+                } else {
+                    if (engine.player.onMessage) engine.player.onMessage("You must be mounted to equip a saddle bag!");
+                    return false;
+                }
             },
             onDropItem: (x: number, y: number, z: number, item: any) => {
                 engine.dropItem(x, y, z, item);

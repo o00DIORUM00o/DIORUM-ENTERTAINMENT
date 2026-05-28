@@ -1,3 +1,4 @@
+import { EntitySteeringSystem } from '../systems/EntitySteeringSystem';
 function removeFromArray<T>(array: T[], index: number) {
     if (index === array.length - 1) {
         array.pop();
@@ -64,8 +65,8 @@ for (let i = engine.ants.length - 1; i >= 0; i--) {
             // Gravity
             ant.vz -= 20 * dt;
 
-            Updater.applyBoids(ant, engine, dt);
-                    Updater.applyDodge(ant, engine, dt);
+            EntitySteeringSystem.applyBoids(ant, engine, dt);
+                    EntitySteeringSystem.applyDodge(ant, engine, dt);
             // Movement
             const newX = ant.x + ant.vx * dt;
             const newY = ant.y + ant.vy * dt;
@@ -108,6 +109,7 @@ for (let i = engine.ants.length - 1; i >= 0; i--) {
             
             // Death
             if (ant.hp <= 0) {
+                if (Math.random() < 0.4) engine.dropItem(ant.x, ant.y, ant.z, { ...ITEMS['copper_piece'], quantity: Math.floor(Math.random() * 3) + 1 });
                 engine.player.addXp(20);
                 removeFromArray(engine.ants, i);
             }

@@ -68,6 +68,15 @@ export class PlayerEnvironment {
                             teleportX: px + dx, teleportY: py + dy
                         });
                         return true;
+                    } else if (block === BlockType.VOID_LORD_ALTAR) {
+                        world.setBlock(px + dx, py + dy, pz + dz, BlockType.AIR);
+                        (ctx as any).engine.voidLords.push({
+                            x: px + dx, y: py + dy, z: pz + dz,
+                            vx: 0, vy: 0, vz: 0,
+                            health: 2000, maxHealth: 2000, damage: 50,
+                            state: 'SPAWN', stateTimer: 2.0, aimAngle: 0
+                        });
+                        return true;
                     }
                 }
             }

@@ -50,6 +50,8 @@ function handleDeath(ctx: EntityBehaviorContext) {
         };
 
         // Drops!
+        if (Math.random() < 0.3) dropItemHelper(ITEMS['copper_piece'], Math.floor(Math.random() * 3) + 1);
+
         if (entity.type === 'SLIME') {
             if (Math.random() < 0.5) dropItemHelper(ITEMS['slime']); 
         } else if (entity.type === 'CAVE_SPIDER') {
@@ -58,7 +60,10 @@ function handleDeath(ctx: EntityBehaviorContext) {
             dropItemHelper(ITEMS['gold_piece'], Math.floor(Math.random() * 20) + 10); 
             if (Math.random() < 0.5) dropItemHelper(ITEMS['ancient_wood'], Math.floor(Math.random() * 5) + 1); 
             if (Math.random() < 0.5) {
-                if (Math.random() > 0.5) engine.dropItem(entity.x, entity.y, entity.z, ItemGenerator.generateWeapon(15));
+                const r = Math.random();
+                if (r > 0.75) engine.dropItem(entity.x, entity.y, entity.z, ItemGenerator.generateWeapon(15));
+                else if (r > 0.5) engine.dropItem(entity.x, entity.y, entity.z, ItemGenerator.generateArmor(15));
+                else if (r > 0.25) engine.dropItem(entity.x, entity.y, entity.z, ItemGenerator.generateBow(15));
                 else engine.dropItem(entity.x, entity.y, entity.z, ItemGenerator.generateAccessory(15));
             }
         } else if (entity.type === 'COLOSSAL_LIZARD_TITAN') {
@@ -67,6 +72,7 @@ function handleDeath(ctx: EntityBehaviorContext) {
             dropItemHelper(ITEMS['emerald'], Math.floor(Math.random() * 5) + 1); 
             
             engine.dropItem(entity.x, entity.y, entity.z, ItemGenerator.generateWeapon(25)); 
+            engine.dropItem(entity.x, entity.y, entity.z, ItemGenerator.generateArmor(25)); 
             engine.dropItem(entity.x, entity.y, entity.z, ItemGenerator.generateAccessory(25)); 
         } else if (entity.type && entity.type.startsWith('OBSERVER_')) {
             if (Math.random() < 0.5) dropItemHelper(ITEMS['seer_eye'], 1);
@@ -85,16 +91,29 @@ function handleDeath(ctx: EntityBehaviorContext) {
             if (Math.random() < 0.5) dropItemHelper(ITEMS['raptor_claw'], 1);
             if (Math.random() < 0.75) dropItemHelper(ITEMS['dino_scale'], Math.floor(Math.random() * 2) + 1);
             if (entity.type === 'RAPTOR_FOLK') dropItemHelper(ITEMS['gold_piece'], Math.floor(Math.random() * 8) + 3); 
+            if (entity.type === 'WILD_RAPTOR' && Math.random() < 0.05) dropItemHelper(ITEMS['raptor_egg'], 1);
         } else if (entity.type === 'FROG_FOLK') {
             if (Math.random() < 0.8) dropItemHelper(ITEMS['frog_spice'], Math.floor(Math.random() * 2) + 1);
             dropItemHelper(ITEMS['gold_piece'], Math.floor(Math.random() * 12) + 4); 
         } else if (entity.type === 'PTERODACTYL') {
             if (Math.random() < 0.6) dropItemHelper(ITEMS['ptero_wing'], 1);
             if (Math.random() < 0.5) dropItemHelper(ITEMS['dino_scale'], Math.floor(Math.random() * 2) + 1);
+            if (Math.random() < 0.05) dropItemHelper(ITEMS['pterodactyl_egg'], 1);
         } else if (entity.type === 'T_REX') {
             dropItemHelper(ITEMS['dino_scale'], Math.floor(Math.random() * 10) + 5);
             dropItemHelper(ITEMS['fossil'], Math.floor(Math.random() * 3) + 1);
+            if (Math.random() < 0.05) dropItemHelper(ITEMS['t_rex_egg'], 1);
             engine.dropItem(entity.x, entity.y, entity.z, ItemGenerator.generateWeapon(25)); 
+            if (Math.random() > 0.5) engine.dropItem(entity.x, entity.y, entity.z, ItemGenerator.generateArmor(25));
+        } else if (entity.type === 'WINTER_ELF' || entity.type === 'FROST_CASTER') {
+            if (Math.random() < 0.3) dropItemHelper(ITEMS['star_metal_ore'], Math.floor(Math.random() * 2) + 1);
+            if (Math.random() < 0.1) dropItemHelper(ITEMS['glacial_crystal'], 1);
+            dropItemHelper(ITEMS['gold_piece'], Math.floor(Math.random() * 15) + 5);
+        } else if (entity.type === 'YETI') {
+            if (Math.random() < 0.8) dropItemHelper(ITEMS['yeti_fur'], Math.floor(Math.random() * 3) + 1);
+            if (Math.random() < 0.2) dropItemHelper(ITEMS['glacial_crystal'], 1);
+        } else if (entity.type === 'FROST_WOLF') {
+            if (Math.random() < 0.5) dropItemHelper(ITEMS['leather'], Math.floor(Math.random() * 2) + 1);
         } else if (entity.type === 'FUNGI_FOLK') {
             if (Math.random() < 0.8) dropItemHelper(ITEMS['fungal_spore'], Math.floor(Math.random() * 3) + 1);
             if (Math.random() < 0.5) dropItemHelper(ITEMS['glowcap'], Math.floor(Math.random() * 2) + 1);
@@ -155,15 +174,18 @@ export function defineCoreBehaviors() {
         update: (ctx) => {
             const { engine, entity, dt, index } = ctx;
             let triggered = false;
-            const enemiesList = [...engine.goblins, ...engine.orcs, ...engine.skeletons, ...engine.lavaGolems, ...engine.bees, ...engine.ants];
-            for (const e of enemiesList) {
-                if (Math.hypot(e.x - entity.x, e.y - entity.y) < 2.0 && Math.abs(e.z - entity.z) < 2.0) {
-                    triggered = true;
-                    if ((e as any).health !== undefined) (e as any).health -= 150;
-                    if ((e as any).hp !== undefined) (e as any).hp -= 150;
+            engine.forEachEntity((e: any, category: string) => {
+                if (e === entity) return;
+                let isEnemy = entity.friendly ? (!e.isFriendly && !e.friendly && category !== 'npc' && category !== 'animal' && e.type !== 'villager') : (e.isFriendly || e.friendly || category === 'npc' || category === 'animal' || e.type === 'villager');
+                if (isEnemy) {
+                    if (Math.hypot(e.x - entity.x, e.y - entity.y) < 2.0 && Math.abs((e.z||0) - (entity.z||0)) < 1.0) {
+                        triggered = true;
+                        if (e.health !== undefined) e.health -= 150;
+                        if (e.hp !== undefined) e.hp -= 150;
+                    }
                 }
-            }
-            if (!triggered && Math.hypot(engine.player.x - entity.x, engine.player.y - entity.y) < 2.0 && Math.abs(engine.player.z - entity.z) < 2.0 && !entity.friendly) {
+            });
+            if (!triggered && Math.hypot(engine.player.x - entity.x, engine.player.y - entity.y) < 2.0 && Math.abs(engine.player.z - (entity.z||0)) < 1.0 && !entity.friendly) {
                 triggered = true;
                 engine.player.takeDamage(50);
             }
@@ -177,17 +199,21 @@ export function defineCoreBehaviors() {
     EntityBehaviorRegistry.register('black_hole', {
         update: (ctx) => {
             const { engine, entity, dt } = ctx;
-            const enemiesList = [...engine.goblins, ...engine.orcs, ...engine.skeletons, ...engine.lavaGolems, ...engine.bees, ...engine.ants, ...engine.rats];
-            for (const e of enemiesList) {
-                const dist = Math.hypot((e.x||0) - (entity.x||0), (e.y||0) - (entity.y||0));
-                if (dist < 10 && Math.abs((e.z||0) - (entity.z||0)) < 5) {
-                    const pullFactor = (10 - dist) / 10;
-                    e.vx = (e.vx||0) + (entity.x - e.x) * pullFactor * 10 * dt;
-                    e.vy = (e.vy||0) + (entity.y - e.y) * pullFactor * 10 * dt;
-                    if ((e as any).health !== undefined) (e as any).health -= 25 * dt;
-                    if ((e as any).hp !== undefined) (e as any).hp -= 25 * dt;
+            engine.forEachEntity((e: any, category: string) => {
+                if (e === entity) return;
+                // Black hole pulls enemies
+                let isEnemy = entity.friendly ? (!e.isFriendly && !e.friendly && category !== 'npc' && category !== 'animal' && e.type !== 'villager') : (e.isFriendly || e.friendly || category === 'npc' || category === 'animal' || e.type === 'villager');
+                if (isEnemy) {
+                    const dist = Math.hypot((e.x||0) - (entity.x||0), (e.y||0) - (entity.y||0));
+                    if (dist < 10 && Math.abs((e.z||0) - (entity.z||0)) < 5) {
+                        const pullFactor = (10 - dist) / 10;
+                        e.vx = (e.vx||0) + (entity.x - e.x) * pullFactor * 10 * dt;
+                        e.vy = (e.vy||0) + (entity.y - e.y) * pullFactor * 10 * dt;
+                        if (e.health !== undefined) e.health -= 25 * dt;
+                        if (e.hp !== undefined) e.hp -= 25 * dt;
+                    }
                 }
-            }
+            });
             if (Math.random() < 0.5) {
                 const angle = Math.random() * Math.PI * 2;
                 const r = 5;
@@ -210,15 +236,28 @@ export function defineCoreBehaviors() {
         } else if (!target || target.health <= 0 || target.hp <= 0) {
             let closest = null;
             let closestDist = 15;
-            const enemiesList = [...engine.goblins, ...engine.orcs, ...engine.skeletons, ...engine.lavaGolems, ...engine.bees, ...engine.ants];
-            for (const e of enemiesList) {
+            engine.forEachEntity((e: any, category: string) => {
+                if (e === entity) return;
+                
+                if (entity.friendly) {
+                    if (e.isFriendly || e.friendly || category === 'npc' || category === 'animal' || e.type === 'villager') return;
+                } else {
+                    if (!e.isFriendly && !e.friendly && e !== engine.player && category !== 'npc' && category !== 'animal' && e.type !== 'villager') return;
+                }
+
                 const d = Math.hypot(e.x - entity.x, e.y - entity.y);
-                if (d < closestDist && Math.abs(e.z - entity.z) < 4) {
+                if (d < closestDist && Math.abs((e.z||0) - (entity.z||0)) < 1.0) {
                     closestDist = d;
                     closest = e;
                 }
-            }
+            });
             target = closest;
+            if (!entity.friendly) {
+                const d = Math.hypot(engine.player.x - entity.x, engine.player.y - entity.y);
+                if (d < closestDist && Math.abs((engine.player.z||0) - (entity.z||0)) < 1.0) {
+                    target = engine.player;
+                }
+            }
         }
         
         entity.target = target;
@@ -345,7 +384,7 @@ export function defineCoreBehaviors() {
         handleDeath(ctx);
     };
 
-    ['SLIME', 'CAVE_SPIDER', 'FIRE_IMP', 'OBSERVER_VOID', 'OBSERVER_FIRE', 'SAND_WORM', 'stone_golem', 'bear', 'zombie', 'GIANT', 'COLOSSAL_LIZARD_TITAN', 'TRICERA_FOLK', 'RAPTOR_FOLK', 'FROG_FOLK', 'PTERODACTYL', 'T_REX', 'WILD_RAPTOR', 'FUNGI_FOLK', 'OGRE', 'TROLL', 'CLAY_GOLEM', 'DARK_ELF_ASSASSIN', 'ARCHER', 'DARK_KNIGHT', 'HUMAN_KNIGHT', 'HUMAN_PALADIN', 'HUMAN_RANGER'].forEach(type => {
+    ['SLIME', 'CAVE_SPIDER', 'FIRE_IMP', 'OBSERVER_VOID', 'OBSERVER_FIRE', 'SAND_WORM', 'stone_golem', 'bear', 'zombie', 'GIANT', 'COLOSSAL_LIZARD_TITAN', 'TRICERA_FOLK', 'RAPTOR_FOLK', 'FROG_FOLK', 'PTERODACTYL', 'T_REX', 'WILD_RAPTOR', 'FUNGI_FOLK', 'OGRE', 'TROLL', 'CLAY_GOLEM', 'DARK_ELF_ASSASSIN', 'ARCHER', 'DARK_KNIGHT', 'HUMAN_KNIGHT', 'HUMAN_PALADIN', 'HUMAN_RANGER', 'WINTER_ELF', 'YETI', 'FROST_WOLF'].forEach(type => {
         EntityBehaviorRegistry.register(type, { update: standardHostileAI });
     });
 }

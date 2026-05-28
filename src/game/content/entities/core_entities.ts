@@ -24,6 +24,8 @@ export const CORE_ENTITIES: EntityDef[] = [
 
     // NPCs
     { id: 'villager', name: 'Villager', maxHealth: 500, damage: 0, speed: 2.0 },
+    { id: 'wandering_bard', name: 'Wandering Bard', maxHealth: 800, damage: 5, speed: 1.5 },
+    { id: 'npc_king', name: 'King', maxHealth: 1500, damage: 100, speed: 1.5 },
     { id: 'slug_folk_merchant', name: 'Slug Folk Merchant', maxHealth: 500, damage: 0, speed: 1.0 },
     { id: 'npc_merchant', name: 'Merchant', maxHealth: 500, damage: 0, speed: 2.0 },
     { id: 'npc_wizard', name: 'Old Wizard', maxHealth: 500, damage: 0, speed: 2.0 },
@@ -33,11 +35,16 @@ export const CORE_ENTITIES: EntityDef[] = [
     { id: 'pomeranian_folk', name: 'Pomeranian Nomads', maxHealth: 500, damage: 0, speed: 2.0 },
     { id: 'terrier_folk', name: 'Terrier Folk', maxHealth: 500, damage: 0, speed: 2.0 },
     { id: 'wolf_folk', name: 'Wolf Folk', maxHealth: 500, damage: 0, speed: 2.0 },
+    { id: 'squirrel_folk', name: 'Squirrel Folk', maxHealth: 400, damage: 10, speed: 5.0 },
+    { id: 'beast_tamer', name: 'Beast Tamer', maxHealth: 800, damage: 0, speed: 3.0 },
     { id: 'human_knight', name: 'Human Knight', maxHealth: 200, damage: 25, speed: 3.5 },
     { id: 'human_paladin', name: 'Human Paladin', maxHealth: 250, damage: 30, speed: 3.0 },
     { id: 'human_ranger', name: 'Human Ranger', maxHealth: 150, damage: 20, speed: 4.5 },
     
     // Animals
+    { id: 'dire_wolf', name: 'Dire Wolf', maxHealth: 80, damage: 25, speed: 5.5 },
+    { id: 'giant_boar', name: 'Giant Boar', maxHealth: 120, damage: 15, speed: 4.8 },
+    { id: 'moose', name: 'Moose', maxHealth: 150, damage: 20, speed: 4.0 },
     { id: 'deer', name: 'Deer', maxHealth: 30, damage: 0, speed: 4.5 },
     { id: 'sheep', name: 'Sheep', maxHealth: 20, damage: 0, speed: 3.0 },
     { id: 'horse', name: 'Horse', maxHealth: 50, damage: 0, speed: 6.0 },
@@ -62,5 +69,10 @@ export const CORE_ENTITIES: EntityDef[] = [
     { id: 'fungi_folk', name: 'Fungi Folk', maxHealth: 90, damage: 25, speed: 3.5 },
     { id: 'ogre', name: 'Ogre Bruiser', maxHealth: 400, damage: 40, speed: 3.0, attackCooldown: 2.0 },
     { id: 'troll', name: 'Cave Troll', maxHealth: 250, damage: 35, speed: 4.2 },
-    { id: 'clay_golem', name: 'Clay Golem', maxHealth: 600, damage: 50, speed: 2.0, attackCooldown: 2.5 }
+    { id: 'clay_golem', name: 'Clay Golem', maxHealth: 600, damage: 50, speed: 2.0, attackCooldown: 2.5 },
+    
+    // NORTH HEART Entities
+    { id: 'winter_elf', name: 'Winter Elf', maxHealth: 200, damage: 30, speed: 4.8 },
+    { id: 'yeti', name: 'Yeti', maxHealth: 350, damage: 45, speed: 3.8 },
+    { id: 'frost_wolf', name: 'Frost Wolf', maxHealth: 150, damage: 25, speed: 5.5 }
 ];

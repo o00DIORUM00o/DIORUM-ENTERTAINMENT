@@ -18,7 +18,7 @@ export class ArcherUpdater {
             // Check if spawner tent still exists
             if (archer.spawnerKey) {
                 const [cx, cy, cz] = archer.spawnerKey.split(',').map(Number);
-                if (engine.world.getBlock(cx, cy, cz) !== BlockType.ARCHER_TENT) {
+                if (engine.world.getBlock(cx, cy, cz) === 0) { // 0 is BlockType.AIR
                     removeFromArray(engine.archers, i);
                     continue;
                 }

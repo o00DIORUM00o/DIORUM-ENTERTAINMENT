@@ -7,6 +7,7 @@ export class PhantomWizardUpdater {
             const wiz = engine.phantomWizards[i];
             
             if (wiz.health <= 0) {
+                if (Math.random() < 0.4) engine.dropItem(wiz.x, wiz.y, wiz.z, { ...ITEMS['copper_piece'], quantity: Math.floor(Math.random() * 3) + 1 });
                 engine.player.addXp(12000);
                 // Loot drop
                 for (let j = 0; j < 30; j++) {
@@ -131,7 +132,7 @@ export class PhantomWizardUpdater {
             }
             
             // Damage player if touched (though it floats, maybe z matters)
-            if (wiz.state !== 'HIDDEN' && dist < 1.5 && Math.abs(engine.player.z - wiz.z) < 2) {
+            if (wiz.state !== 'HIDDEN' && dist < 1.5 && Math.abs(engine.player.z - wiz.z) < 1.0) {
                 engine.player.takeDamage(15);
                 engine.events.emit('PLAY_SOUND', 'hurt');
             }

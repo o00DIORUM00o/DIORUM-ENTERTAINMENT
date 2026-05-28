@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { NPC } from '../game/Engine';
 import { GoogleGenAI } from '@google/genai';
 import { ITEMS } from '../game/Inventory';
+import { QuestSystem } from '../game/systems/QuestSystem';
 
 interface NPCChatProps {
     npc: NPC;
@@ -83,8 +84,17 @@ const getVillagerBark = (npc: NPC): string => {
     } else if (npc.type === 'DRACONIC_MERCHANT') {
         const barks = ["Gold warms the scales.", "What brings a soft-skin to my hoard?", "I trade in power and riches.", "Rune Keys, potions... for the right price."];
         return barks[Math.floor(Math.random() * barks.length)];
+    } else if (npc.type === 'BEAST_TAMER') {
+        const barks = ["The wilds listen to me.", "Care for a rugged companion?", "Only the strong survive Thaer.", "A mount can save your life out here."];
+        return barks[Math.floor(Math.random() * barks.length)];
+    } else if (npc.type === 'SQUIRREL_FOLK') {
+        const barks = ["Quick, jump!", "Got any nuts?", "We built this treehouse high up to avoid the giant boars.", "*Chitters happily*"];
+        return barks[Math.floor(Math.random() * barks.length)];
     } else if (npc.type === 'SLUG_FOLK_MERCHANT') {
         const barks = ["*Slurp* ... Need wares?", "The void sands provide...", "Carry much, walk slow...", "Trade for slime?"];
+        return barks[Math.floor(Math.random() * barks.length)];
+    } else if (npc.type === 'WANDERING_BARD') {
+        const barks = ["A tune for a weary soul?", "The road is long, but the melody is sweet.", "I sing of dragons and ancient kings.", "Pull up a stool and listen awhile."];
         return barks[Math.floor(Math.random() * barks.length)];
     } else {
         const barks = ["Greetings, traveler.", "Ah, a visitor.", "Step closer, do not be afraid.", "I have been expecting you."];
@@ -120,10 +130,30 @@ export const NPCChat: React.FC<NPCChatProps> = ({ npc, engine, onClose, playerIn
             initialOptions.push("Trade");
         } else if (onTrade && npc.type === 'SLUG_FOLK_MERCHANT') {
             initialOptions.push("Trade");
+        } else if (onTrade && (npc.type.startsWith('STALL_') || npc.type === 'BAG_MERCHANT' || npc.type === 'BERRY_FARMER' || npc.type === 'VILLAGER_MERCHANT')) {
+            initialOptions.push("Trade");
+        } else if (npc.type === 'BEAST_TAMER') {
+            initialOptions.push("Adopt Companion (10 silver)");
+        } else if (npc.type === 'WANDERING_BARD') {
+            initialOptions.push("Listen to a song");
         }
         
         if (npc.type === 'QUEST_GIVER' && !(npc as any).hasGivenKey) {
             initialOptions.push("Accept Key");
+        }
+        
+        const activeQuests = QuestSystem.getActiveQuestsForGiver(engine.player, npc.type);
+        for (const q of activeQuests) {
+            if (q.state === 'COMPLETED') {
+                initialOptions.push(`Turn in: ${q.title}`);
+            } else {
+                initialOptions.push(`(Quest Active) ${q.title}`);
+            }
+        }
+        
+        const availableQuests = QuestSystem.getAvailableQuests(engine.player, npc.type);
+        for (const q of availableQuests) {
+            initialOptions.push(`Accept: ${q.title}`);
         }
         
         initialOptions.push("Chat");
@@ -189,12 +219,108 @@ export const NPCChat: React.FC<NPCChatProps> = ({ npc, engine, onClose, playerIn
         if (mode === 'MENU') {
             if (option === 'Trade') {
                 if (onTrade) onTrade();
+            } else if (option === 'Adopt Companion (10 silver)') {
+                if (engine.player.removeItem('silver_piece', 10)) {
+                    const companionNameBase = ['Fang', 'Scout', 'Rex', 'Shadow', 'Ghost', 'Brutus', 'Ash'][Math.floor(Math.random()*7)];
+                    const newCompanion = { 
+                        id: `comp_${Date.now()}`,
+                        type: 'WOLF', 
+                        name: `Dire Wolf ${companionNameBase}`,
+                        damage: 15,
+                        health: 300,
+                        maxHealth: 300,
+                        speed: 15.0
+                    };
+                    if (!engine.player.companions) engine.player.companions = [];
+                    engine.player.companions.push(newCompanion);
+                    setGreeting(`Treat ${newCompanion.name} well. They'll fight to the death for you.`);
+                    // Update main options (strip Adopt option)
+                    const newOptions = options.filter(o => o !== 'Adopt Companion (10 silver)');
+                    setOptions(newOptions.length > 0 ? newOptions : ['Leave']);
+                    setSelectedIndex(0);
+                } else {
+                    setGreeting("You don't have 10 silver pieces, traveler.");
+                    setOptions(["Leave"]);
+                    setSelectedIndex(0);
+                }
+            } else if (option === 'Listen to a song') {
+                engine.player.health = engine.player.effectiveMaxHealth;
+                engine.player.stamina = engine.player.maxStamina;
+                engine.player.mana = engine.player.effectiveMaxMana;
+                setGreeting("Ah, a weary traveler! Let this melody restore your spirit.");
+                engine.particles.push({
+                    x: engine.player.x, y: engine.player.y, z: engine.player.z + 1.5,
+                    text: '♫ FULLY RESTORED ♫', color: '#ff69b4', life: 2.5, maxLife: 2.5, speed: 0, vy: 0.5, vx: 0, vz: 0
+                });
+                
+                // Play a little arpeggio
+                const AudioCtx = (window as any).AudioContext || (window as any).webkitAudioContext;
+                if (AudioCtx) {
+                    const ctx = new AudioCtx();
+                    const freqs = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+                    freqs.forEach((f, i) => {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.type = 'triangle';
+                        osc.frequency.value = f;
+                        gain.gain.setValueAtTime(0, ctx.currentTime + i * 0.15);
+                        gain.gain.linearRampToValueAtTime(0.1, ctx.currentTime + i * 0.15 + 0.05);
+                        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + i * 0.15 + 0.5);
+                        osc.start(ctx.currentTime + i * 0.15);
+                        osc.stop(ctx.currentTime + i * 0.15 + 0.5);
+                    });
+                }
+
+                for (let i = 0; i < 15; i++) {
+                    engine.particles.push({
+                        x: engine.player.x + (Math.random() - 0.5) * 2,
+                        y: engine.player.y + (Math.random() - 0.5) * 2,
+                        z: engine.player.z + Math.random() * 2,
+                        text: ['♪', '♫', '♩', '♬'][Math.floor(Math.random() * 4)],
+                        color: `hsl(${Math.random() * 360}, 100%, 70%)`,
+                        life: 1.5 + Math.random(), maxLife: 2.5, speed: 0, vy: 1 + Math.random(), vx: (Math.random() - 0.5) * 2, vz: (Math.random() - 0.5) * 2, size: 2 + Math.random() * 2
+                    });
+                }
+                const newOptions = options.filter(o => o !== 'Listen to a song');
+                setOptions(newOptions.length > 0 ? newOptions : ['Leave']);
+                setSelectedIndex(0);
             } else if (option === 'Accept Key') {
                 engine.player.inventory.push({ ...ITEMS['dungeon_key'], quantity: 1 });
                 (npc as any).hasGivenKey = true;
                 setGreeting("Good luck... You'll need it.");
                 setOptions(["Leave"]);
                 setSelectedIndex(0);
+            } else if (option.startsWith('Accept: ')) {
+                const questTitle = option.replace('Accept: ', '');
+                const available = QuestSystem.getAvailableQuests(engine.player, npc.type);
+                const quest = available.find(q => q.title === questTitle);
+                if (quest) {
+                    QuestSystem.acceptQuest(engine, quest.id);
+                    setGreeting(`Excellent! ${quest.description}`);
+                    setOptions(["Leave"]);
+                    setSelectedIndex(0);
+                }
+            } else if (option.startsWith('Turn in: ')) {
+                const questTitle = option.replace('Turn in: ', '');
+                const active = QuestSystem.getActiveQuestsForGiver(engine.player, npc.type);
+                const quest = active.find(q => q.title === questTitle);
+                if (quest) {
+                    QuestSystem.turnInQuest(engine, quest.id);
+                    setGreeting(`Thank you so much! I've given you a reward.`);
+                    setOptions(["Leave"]);
+                    setSelectedIndex(0);
+                }
+            } else if (option.startsWith('(Quest Active)')) {
+                const questTitle = option.replace('(Quest Active) ', '');
+                const active = QuestSystem.getActiveQuestsForGiver(engine.player, npc.type);
+                const quest = active.find(q => q.title === questTitle);
+                if (quest) {
+                    setGreeting(`${quest.description} (You have ${quest.currentCount}/${quest.requiredCount})`);
+                    setOptions(["Leave"]);
+                    setSelectedIndex(0);
+                }
             } else if (option === 'Leave') {
                 onClose();
             } else if (option === 'Chat') {
@@ -281,7 +407,23 @@ Example Output:
   "options": ["I seek knowledge.", "Do you have anything to trade?", "Just passing through. (Leave)"]
 }`;
 
-            if (npc.type === 'VILLAGER') {
+            if (npc.type === 'NPC_KING') {
+                systemInstruction = `You are the King of Pantheona in a top-down 2D RPG game. 
+Your name is King Alaric. You rule from the capital city. You are noble, commanding, and deeply concerned about the safety of your people.
+You are currently located in: ${locationName || 'Pantheona Castle'}.
+You speak with authority but fairness.
+Keep your responses relatively concise (1-3 sentences).
+You MUST respond with a JSON object containing these fields:
+1. "response": Your spoken response to the player.
+2. "options": An array of 2 to 4 possible strings the player can say back to you. Keep these short (under 10 words). Include options like "Goodbye".
+3. "action": (Optional) If the player insults you or threatens you, set this to "turn_hostile". Otherwise, omit this field.
+
+Example Output:
+{
+  "response": "Welcome to my court, traveler. The realm faces dark times.",
+  "options": ["What plagues the realm, Your Majesty?", "I must be going. (Leave)"]
+}`;
+            } else if (npc.type === 'VILLAGER') {
                 systemInstruction = `You are a Villager in a top-down 2D RPG game. 
 Your profession is ${(npc as any).profession ? (npc as any).profession.replace('VILLAGER_', '') : 'Peasant'}. You live in a small settlement. You are friendly, practical, and talk like a medieval commoner.
 You are currently located near: ${locationName || 'Unknown Region'}. Use this location occasionally for flavor, but don't force it.
@@ -358,7 +500,8 @@ Example Output:
                 {/* Header */}
                 <div className="bg-gradient-to-b from-[#3e2718] to-[#1a0f0a] border-b-2 border-[#5c3a21] p-2 flex items-center gap-3 shrink-0">
                     <div className="w-8 h-8 bg-[#0f0805] border border-[#5c3a21] flex items-center justify-center text-lg rounded-sm shrink-0">
-                        {npc.type === 'VILLAGER' ? (
+                        {npc.type === 'NPC_KING' ? '👑' :
+                         npc.type === 'VILLAGER' ? (
                             (npc as any).profession === 'VILLAGER_GUARD' ? '🛡️' :
                             (npc as any).profession === 'VILLAGER_FARMER' ? '🌾' :
                             '💰'
@@ -366,10 +509,10 @@ Example Output:
                     </div>
                     <div className="flex-1 leading-tight">
                         <h2 className="text-lg font-bold text-orange-400">
-                            {npc.type === 'VILLAGER' ? 'Villager' : 'Arcanis'}
+                            {npc.type === 'NPC_KING' ? 'The King' : npc.type === 'VILLAGER' ? 'Villager' : 'Arcanis'}
                         </h2>
                         <div className="text-[#d4b499] text-[10px] uppercase tracking-wider">
-                            {npc.type === 'VILLAGER' ? ((npc as any).profession || 'Commoner').replace('VILLAGER_', '') : 'Old Wizard'}
+                            {npc.type === 'NPC_KING' ? 'Ruler of Pantheona' : npc.type === 'VILLAGER' ? ((npc as any).profession || 'Commoner').replace('VILLAGER_', '') : 'Old Wizard'}
                         </div>
                     </div>
                     <button 
@@ -398,7 +541,7 @@ Example Output:
                         messages.map((msg, i) => (
                             <div key={i} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
                                 <span className="text-[10px] text-[#d4b499] mb-0.5 opacity-70 px-1">
-                                    {msg.role === 'user' ? 'You' : (npc.type === 'VILLAGER' ? 'Villager' : 'Arcanis')}
+                                    {msg.role === 'user' ? 'You' : (npc.type === 'NPC_KING' ? 'The King' : npc.type === 'VILLAGER' ? 'Villager' : 'Arcanis')}
                                 </span>
                                 <div className={`max-w-[90%] px-3 py-1.5 text-sm rounded-sm ${
                                     msg.role === 'user' 

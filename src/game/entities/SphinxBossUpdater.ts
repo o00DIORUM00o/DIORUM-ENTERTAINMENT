@@ -16,6 +16,7 @@ export class SphinxBossUpdater {
             const s = engine.sphinxs[i];
             
             if (s.health <= 0) {
+                if (Math.random() < 0.4) engine.dropItem(s.x, s.y, s.z, { ...ITEMS['copper_piece'], quantity: Math.floor(Math.random() * 3) + 1 });
                 engine.player.addXp(5000);
                 // Drop loot
                 for (let j = 0; j < 50; j++) {

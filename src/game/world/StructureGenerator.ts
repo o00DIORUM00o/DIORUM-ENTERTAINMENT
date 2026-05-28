@@ -2,7 +2,6 @@ import { BlockType } from '../constants/BlockType';
 import { ITEMS } from '../Inventory';
 import { CHUNK_SIZE, WORLD_HEIGHT } from '../Constants';
 import { StructureRegistry } from '../registries/StructureRegistry';
-import { generateProceduralDungeon } from '../DungeonGenerator';
 
 export class StructureGenerator {
     static buildSpawn(world: any) {
@@ -15,32 +14,25 @@ export class StructureGenerator {
             return;
         }
 
-        const spawnZ = 15;
+        // Base elevation for most generic start lots
+        const spawnZ = 16; 
 
-        for(let x = -8; x <= 8; x++) {
-            for(let y = -8; y <= 8; y++) {
-                world.setBlock(x, y, spawnZ, BlockType.HEAVY_STONE);
-                for (let zOffset = 1; zOffset <= 16; zOffset++) {
-                    world.setBlock(x, y, spawnZ + zOffset, BlockType.AIR);
-                }
-            }
-        }
+        // 1. The Arcane Gate (Center-ish)
+        world.setBlock(2, 5, spawnZ, BlockType.OBSIDIAN);
+        world.setBlock(2, 5, spawnZ + 1, BlockType.ARCANE_GATE);
+
+        // 2. A friendly Tent
+        world.setBlock(-4, -4, spawnZ, BlockType.TENT);
+
+        // 3. Campfire
+        world.setBlock(-2, -3, spawnZ - 1, BlockType.CASTLE_STONE);
+        world.setBlock(-2, -3, spawnZ, BlockType.CAMPFIRE);
+
+        // 4. Merchant
+        world.setBlock(4, -2, spawnZ, BlockType.MERCHANT);
         
-        world.setBlock(0, 0, spawnZ + 1, BlockType.ARCANE_GATE);
-        world.setBlock(0, 0, spawnZ + 2, BlockType.ARCANE_GATE);
-
-        const pillars = [
-            [-5, -5], [5, -5], [-5, 5], [5, 5]
-        ];
-        for (const [px, py] of pillars) {
-            world.setBlock(px, py, spawnZ + 1, BlockType.HEAVY_STONE);
-            world.setBlock(px, py, spawnZ + 2, BlockType.HEAVY_STONE);
-            world.setBlock(px, py, spawnZ + 3, BlockType.TORCH);
-        }
-
-        world.setBlock(2, -2, spawnZ + 1, BlockType.MERCHANT);
-        
-        world.setBlock(-2, -2, spawnZ + 1, BlockType.CHEST);
+        // 5. Storage Chest
+        world.setBlock(-5, -2, spawnZ, BlockType.CHEST);
         const chestInventory = new Array(80).fill(null);
         chestInventory[0] = { ...ITEMS['sword_1'] };
         chestInventory[1] = { ...ITEMS['pickaxe_1'] };
@@ -61,7 +53,16 @@ export class StructureGenerator {
             chestInventory[14] = { ...ITEMS[startingKey] };
         }
         
-        world.setChest(-2, -2, spawnZ + 1, chestInventory);
+        world.setChest(-5, -2, spawnZ, chestInventory);
+
+        // 6. Lantern Pillars
+        const pillars = [
+            [-6, -6], [6, -6], [-6, 6], [6, 6]
+        ];
+        for (const [px, py] of pillars) {
+            world.setBlock(px, py, spawnZ, BlockType.CASTLE_STONE);
+            world.setBlock(px, py, spawnZ + 1, BlockType.LANTERN_BLOCK);
+        }
     }
 
     static buildRana(world: any) {
@@ -307,17 +308,6 @@ export class StructureGenerator {
         }
     }
 
-    static buildDungeon(world: any, startX: number, startY: number) {
-        let surfaceZ = 15;
-        const surfaceInfo = world.getSurface(startX, startY, WORLD_HEIGHT - 1);
-        if (surfaceInfo.z > 0) {
-            surfaceZ = surfaceInfo.z;
-        }
-
-        this.buildStructure(world, 'DUNGEON_ENTRANCE', startX, startY, surfaceZ);
-
-        generateProceduralDungeon(world, startX, startY, surfaceZ - 5, surfaceZ, 1, 3);
-    }
 
     static buildWizardTower(world: any, startX: number, startY: number) {
         world.hasBuiltWizardTower = true;

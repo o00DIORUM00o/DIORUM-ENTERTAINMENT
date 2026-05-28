@@ -79,11 +79,9 @@ export const TALENTS: Record<string, TalentDef> = {
     'reading': {
         id: 'reading',
         name: 'Reading',
-        maxLevel: 3,
+        maxLevel: 1,
         descriptions: [
-            'Learn to read basic signs and books.',
-            'Learn to read magical scrolls.',
-            'Learn to comprehend complex spell books.'
+            'Learn to read any magical scrolls, signs, and spell books.'
         ]
     },
     'jump': {
@@ -257,6 +255,16 @@ export const TALENTS: Record<string, TalentDef> = {
             'Undead summons are 20% stronger.',
             'Undead summons cost 25% less mana.',
             'NECROMANCY MASTERY: Summoning an undead grants you 25% lifesteal for a short time.'
+        ]
+    },
+    'rune_caster': {
+        id: 'rune_caster',
+        name: 'Rune Caster',
+        maxLevel: 3,
+        descriptions: [
+            'Increases the duration and effectiveness of rune spells.',
+            'Reduces the cast time and cooldown of rune spells by 15%.',
+            'RUNE CASTER MASTERY: Greatly increases duration, reduces cast time and cooldown by 30%, and increases rune damage.'
         ]
     },
     'bolt_caster': {

@@ -16,7 +16,15 @@ import { CORE_PLANETS } from './content/planets/core_planets';
 import { defineStructures } from './registries/StructureRegistry';
 import { CORE_STRUCTURES } from './content/structures/core_structures';
 
-import { defineCoreAbilities } from './content/abilities/core_abilities';
+import { defineCoreAbilities } from './content/abilities/index';
+
+import { defineRaces } from './registries/RaceRegistry';
+import { CORE_RACES } from './content/races/core_races';
+import { defineDeities } from './registries/DeityRegistry';
+import { CORE_DEITIES } from './content/deities/core_deities';
+import { defineStarSigns } from './registries/StarSignRegistry';
+import { CORE_STAR_SIGNS } from './content/starsigns/core_starsigns';
+
 
 defineBlocks(CORE_BLOCKS);
 defineEntities(CORE_ENTITIES);
@@ -24,6 +32,11 @@ defineRecipes(CORE_RECIPES);
 definePlanets(CORE_PLANETS);
 defineStructures(CORE_STRUCTURES);
 defineCoreAbilities();
+
+defineRaces(CORE_RACES);
+defineDeities(CORE_DEITIES);
+defineStarSigns(CORE_STAR_SIGNS);
+
 
 import { Player } from './Player';
 import { InputManager } from './Input';
@@ -38,13 +51,14 @@ function removeFromArray<T>(array: T[], index: number) {
     }
 }
 
-import { Particle, Projectile, Bomb, AoEEffect, ConeEffect, Bee, AbyssalKnight, LavaGolem, GiantAnt, Goblin, Rat, NPC, Orc, Archer, DarkKnight, Drake, RockGolem, Kobold, Skeleton, SkeletonRemains, Deer, Wolf, AnimalType, Mount, Animal, DroppedItem, FireDragonBoss, Gargoyle, Djinn, Gremlin, Sphinx, SandTerror, PhantomWizard } from './types/EntityTypes';
+import { Particle, Projectile, Bomb, AoEEffect, ConeEffect, Bee, AbyssalKnight, LavaGolem, GiantAnt, Goblin, FrostCaster, Rat, NPC, Orc, Archer, DarkKnight, Drake, RockGolem, Kobold, Skeleton, SkeletonRemains, Deer, Wolf, AnimalType, Mount, Animal, DroppedItem, FireDragonBoss, Gargoyle, Djinn, Gremlin, Sphinx, SandTerror, PhantomWizard, VoidLord } from './types/EntityTypes';
 
 export * from './types/EntityTypes';
 
 import { EventEmitter } from './EventEmitter';
 import { ArenaManager } from './ArenaManager';
 
+import { AutomationSystem } from './systems/AutomationSystem';
 export class Engine {
     events = new EventEmitter();
     world = new World();
@@ -63,6 +77,7 @@ export class Engine {
     bees: Bee[] = [];
     ants: GiantAnt[] = [];
     goblins: Goblin[] = [];
+    frostCasters: FrostCaster[] = [];
     orcs: Orc[] = [];
     archers: Archer[] = [];
     darkKnights: DarkKnight[] = [];
@@ -90,6 +105,7 @@ export class Engine {
     sphinxs: Sphinx[] = [];
     sandTerrors: SandTerror[] = [];
     phantomWizards: PhantomWizard[] = [];
+    voidLords: VoidLord[] = [];
     shadowWizards: any[] = [];
     entities: any[] = [];
     bombs: Bomb[] = [];
@@ -122,6 +138,7 @@ export class Engine {
         for (let i = 0; i < this.rats.length; i++) callback(this.rats[i], 'rat');
         for (let i = 0; i < this.animals.length; i++) callback(this.animals[i], 'animal');
         for (let i = 0; i < this.abyssalKnights.length; i++) callback(this.abyssalKnights[i], 'abyssalKnight');
+        for (let i = 0; i < this.frostCasters.length; i++) callback(this.frostCasters[i], 'frostCaster');
         for (let i = 0; i < this.npcs.length; i++) callback(this.npcs[i], 'npc');
         for (let i = 0; i < this.drakes.length; i++) callback(this.drakes[i], 'drake');
         for (let i = 0; i < this.kobolds.length; i++) callback(this.kobolds[i], 'kobold');
@@ -131,12 +148,17 @@ export class Engine {
         for (let i = 0; i < this.sphinxs.length; i++) callback(this.sphinxs[i], 'sphinx');
         for (let i = 0; i < this.fireDragonBosses.length; i++) callback(this.fireDragonBosses[i], 'fireDragonBoss');
         for (let i = 0; i < this.shadowWizards.length; i++) callback(this.shadowWizards[i], 'shadowWizard');
+        for (let i = 0; i < this.archers.length; i++) callback(this.archers[i], 'archer');
+        for (let i = 0; i < this.darkKnights.length; i++) callback(this.darkKnights[i], 'darkKnight');
+        for (let i = 0; i < this.sandTerrors.length; i++) callback(this.sandTerrors[i], 'sandTerror');
+        for (let i = 0; i < this.phantomWizards.length; i++) callback(this.phantomWizards[i], 'phantomWizard');
+        for (let i = 0; i < this.voidLords.length; i++) callback(this.voidLords[i], 'voidLord');
         for (let i = 0; i < this.entities.length; i++) callback(this.entities[i], 'entity');
     }
 
     worlds: Map<string, World> = new Map();
 
-    resetWorld(homeworld: string = 'THRAE') {
+    resetWorld(homeworld: string = 'HERAT') {
         if (!this.worlds.has(homeworld)) {
             const newWorld = new World();
             newWorld.activePlanet = homeworld;
@@ -179,6 +201,7 @@ export class Engine {
         this.sphinxs = [];
         this.sandTerrors = [];
         this.phantomWizards = [];
+        this.voidLords = [];
         this.shadowWizards = [];
         this.entities = [];
         this.bombs = [];
@@ -444,287 +467,7 @@ export class Engine {
     }
 
     updateAutomation(dt: number) {
-        // Conveyor Belts
-        for (const item of this.droppedItems) {
-            const bx = Math.floor(item.x);
-            const by = Math.floor(item.y);
-            const bz = Math.floor(item.z - 0.1);
-            const block = this.world.getBlock(bx, by, bz);
-            
-            const speed = 3.0;
-            if (block === BlockType.CONVEYOR_BELT_N) {
-                item.vy = -speed;
-                item.vx = 0;
-            } else if (block === BlockType.CONVEYOR_BELT_S) {
-                item.vy = speed;
-                item.vx = 0;
-            } else if (block === BlockType.CONVEYOR_BELT_E) {
-                item.vx = speed;
-                item.vy = 0;
-            } else if (block === BlockType.CONVEYOR_BELT_W) {
-                item.vx = -speed;
-                item.vy = 0;
-            }
-        }
-
-        // Auto Miner and Auto Dropper (1 tick per second)
-        this.automationTimer += dt;
-        if (this.automationTimer >= 1.0) {
-            this.automationTimer = 0;
-            
-            for (const [key, chunk] of this.world.chunkManager.chunks.entries()) {
-                if (!chunk.automation || chunk.automation.size === 0) continue;
-                const wx = chunk.cx * 16;
-                const wy = chunk.cy * 16;
-                const activeAuto = Array.from(chunk.automation as Set<number>);
-                for (const idx of activeAuto) {
-                    const block = chunk.blocks[idx as number];
-                    const x = wx + ((idx as number) % 16);
-                    const y = wy + (Math.floor((idx as number) / 16) % 16);
-                    const z = Math.floor((idx as number) / 256);
-                    
-                    if (block === BlockType.AUTO_MINER) {
-                            const targetZ = z - 1;
-                            const targetBlock = this.world.getBlock(x, y, targetZ);
-                            if (targetBlock !== BlockType.AIR && 
-                                !isIndestructible(targetBlock) && 
-                                targetBlock !== BlockType.CONVEYOR_BELT_N && 
-                                targetBlock !== BlockType.CONVEYOR_BELT_S && 
-                                targetBlock !== BlockType.CONVEYOR_BELT_E && 
-                                targetBlock !== BlockType.CONVEYOR_BELT_W && 
-                                targetBlock !== BlockType.AUTO_MINER && 
-                                targetBlock !== BlockType.AUTO_DROPPER && 
-                                targetBlock !== BlockType.CHEST) {
-                                const key = `${x},${y},${targetZ}`;
-                                let hp = this.world.blockHealth.get(key) ?? 50;
-                                hp -= 25; // 25 damage per second
-                                
-                                if (hp <= 0) {
-                                    this.breakBlock(x, y, targetZ, targetBlock, true);
-                                } else {
-                                    this.world.blockHealth.set(key, hp);
-                                }
-                            }
-                        } else if (block === BlockType.AUTO_DROPPER) {
-                            // Check adjacent blocks for chest
-                            const adjacents = [
-                                {dx: 1, dy: 0, dz: 0}, {dx: -1, dy: 0, dz: 0},
-                                {dx: 0, dy: 1, dz: 0}, {dx: 0, dy: -1, dz: 0},
-                                {dx: 0, dy: 0, dz: -1}, {dx: 0, dy: 0, dz: 1}
-                            ];
-                            
-                            for (const adj of adjacents) {
-                                const cx = x + adj.dx;
-                                const cy = y + adj.dy;
-                                const cz = z + adj.dz;
-                                if (this.world.getBlock(cx, cy, cz) === BlockType.CHEST) {
-                                    const chestInv = this.world.getChest(cx, cy, cz);
-                                    if (chestInv) {
-                                        // Find first item
-                                        let foundItem = false;
-                                        for (let i = 0; i < chestInv.length; i++) {
-                                            if (chestInv[i]) {
-                                                const item = chestInv[i];
-                                                // Drop 1 of this item
-                                                const dropItem = { ...item };
-                                                if (dropItem.quantity) dropItem.quantity = 1;
-                                                
-                                                // Drop it above the dropper
-                                                this.dropItem(x + 0.5, y + 0.5, z + 1.5, dropItem);
-                                                
-                                                if (item.quantity && item.quantity > 1) {
-                                                    item.quantity--;
-                                                } else {
-                                                    chestInv[i] = null;
-                                                }
-                                                
-                                                this.world.setChest(cx, cy, cz, chestInv);
-                                                foundItem = true;
-                                                break; // Only drop 1 item per second
-                                            }
-                                        }
-                                        if (foundItem) break; // Only process one chest per second
-                                    }
-                                }
-                            }
-                        } else if (block === BlockType.AUTO_CRAFTER) {
-                            // Check adjacent blocks for chest
-                            const adjacents = [
-                                {dx: 1, dy: 0, dz: 0}, {dx: -1, dy: 0, dz: 0},
-                                {dx: 0, dy: 1, dz: 0}, {dx: 0, dy: -1, dz: 0},
-                                {dx: 0, dy: 0, dz: -1}, {dx: 0, dy: 0, dz: 1}
-                            ];
-                            
-                            for (const adj of adjacents) {
-                                const cx = x + adj.dx;
-                                const cy = y + adj.dy;
-                                const cz = z + adj.dz;
-                                if (this.world.getBlock(cx, cy, cz) === BlockType.CHEST) {
-                                    const chestInv = this.world.getChest(cx, cy, cz);
-                                    if (chestInv) {
-                                        let crafted = false;
-                                        
-                                        // Try all recipes
-                                        for (const recipe of RecipeRegistry.getAll()) {
-                                            // const recipe solved via loop
-                                            
-                                            // Check if we have ingredients
-                                            let hasIngredients = true;
-                                            const ingredientsToConsume: {index: number, quantity: number}[] = [];
-                                            
-                                            // Create a temporary copy of chest inventory to check quantities
-                                            const tempInv = chestInv.map(item => item ? { ...item } : null);
-                                            
-                                            for (const ing of recipe.ingredients) {
-                                                let remainingNeeded = ing.quantity;
-                                                
-                                                for (let i = 0; i < tempInv.length; i++) {
-                                                    const item = tempInv[i];
-                                                    if (item && item.id === ing.id) {
-                                                        const available = item.quantity || 1;
-                                                        const toTake = Math.min(remainingNeeded, available);
-                                                        
-                                                        ingredientsToConsume.push({ index: i, quantity: toTake });
-                                                        remainingNeeded -= toTake;
-                                                        
-                                                        if (item.quantity) {
-                                                            item.quantity -= toTake;
-                                                            if (item.quantity <= 0) tempInv[i] = null;
-                                                        } else {
-                                                            tempInv[i] = null;
-                                                        }
-                                                        
-                                                        if (remainingNeeded <= 0) break;
-                                                    }
-                                                }
-                                                
-                                                if (remainingNeeded > 0) {
-                                                    hasIngredients = false;
-                                                    break;
-                                                }
-                                            }
-                                            
-                                            if (hasIngredients) {
-                                                // Consume ingredients
-                                                for (const consume of ingredientsToConsume) {
-                                                    const item = chestInv[consume.index];
-                                                    if (item) {
-                                                        if (item.quantity) {
-                                                            item.quantity -= consume.quantity;
-                                                            if (item.quantity <= 0) chestInv[consume.index] = null;
-                                                        } else {
-                                                            chestInv[consume.index] = null;
-                                                        }
-                                                    }
-                                                }
-                                                
-                                                this.world.setChest(cx, cy, cz, chestInv);
-                                                
-                                                // Drop result
-                                                const resultItem = { ...ITEMS[recipe.result.id] };
-                                                if (recipe.result.quantity > 1) {
-                                                    resultItem.quantity = recipe.result.quantity;
-                                                }
-                                                this.dropItem(x + 0.5, y + 0.5, z + 1.5, resultItem);
-                                                
-                                                crafted = true;
-                                                break; // Only craft one item per second
-                                            }
-                                        }
-                                        
-                                        if (crafted) break; // Only process one chest per second
-                                    }
-                                }
-                            }
-                        } else if (block === BlockType.VACUUM_HOPPER) {
-                            // Check adjacent blocks for chest
-                            const adjacents = [
-                                {dx: 1, dy: 0, dz: 0}, {dx: -1, dy: 0, dz: 0},
-                                {dx: 0, dy: 1, dz: 0}, {dx: 0, dy: -1, dz: 0},
-                                {dx: 0, dy: 0, dz: -1}, {dx: 0, dy: 0, dz: 1}
-                            ];
-                            
-                            for (const adj of adjacents) {
-                                const cx = x + adj.dx;
-                                const cy = y + adj.dy;
-                                const cz = z + adj.dz;
-                                if (this.world.getBlock(cx, cy, cz) === BlockType.CHEST) {
-                                    const chestInv = this.world.getChest(cx, cy, cz);
-                                    if (chestInv) {
-                                        // Find dropped items within 3x3 radius
-                                        for (let i = this.droppedItems.length - 1; i >= 0; i--) {
-                                            const item = this.droppedItems[i];
-                                            const dist = Math.sqrt(Math.pow(item.x - (x + 0.5), 2) + Math.pow(item.y - (y + 0.5), 2) + Math.pow(item.z - (z + 0.5), 2));
-                                            
-                                            if (dist < 3) {
-                                                // Try to add to chest
-                                                let added = false;
-                                                
-                                                // Try to stack first
-                                                for (let j = 0; j < chestInv.length; j++) {
-                                                    if (chestInv[j] && chestInv[j].id === item.item.id) {
-                                                        chestInv[j].quantity = (chestInv[j].quantity || 1) + (item.item.quantity || 1);
-                                                        added = true;
-                                                        break;
-                                                    }
-                                                }
-                                                
-                                                // If not stacked, find empty slot
-                                                if (!added) {
-                                                    for (let j = 0; j < chestInv.length; j++) {
-                                                        if (!chestInv[j]) {
-                                                            chestInv[j] = { ...item.item };
-                                                            added = true;
-                                                            break;
-                                                        }
-                                                    }
-                                                }
-                                                
-                                                if (added) {
-                                                    this.droppedItems.splice(i, 1);
-                                                    this.world.setChest(cx, cy, cz, chestInv);
-                                                    break; // Only suck one item per second per hopper to prevent lag
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        } else if (block === BlockType.ARCANE_TURRET) {
-                            let target: any = null;
-                            let minD = 12 * 12;
-                            const px = x + 0.5;
-                            const py = y + 0.5;
-                            const pz = z + 1.2;
-                            
-                            this.forEachEntity((ent, t) => {
-                                if (['goblin', 'orc', 'skeleton', 'lavaGolem', 'rat', 'ant', 'abyssalKnight', 'drake', 'kobold', 'gargoyle', 'djinn', 'gremlin', 'sphinx', 'fireDragonBoss', 'observer_void', 'observer_fire', 'sand_worm', 'tricera_folk', 'raptor_folk', 'frog_folk', 'pterodactyl', 't_rex', 'raptor', 'fungi_folk', 'ogre', 'troll', 'clay_golem'].includes(t)) {
-                                    if (ent.hp <= 0 && ent.health <= 0) return;
-                                    const d = (ent.x - px)**2 + (ent.y - py)**2 + (ent.z - pz)**2;
-                                    if (d < minD) {
-                                        minD = d;
-                                        target = ent;
-                                    }
-                                }
-                            });
-                            
-                            if (target) {
-                                const dx = target.x - px;
-                                const dy = target.y - py;
-                                const dz = target.z + 0.5 - pz;
-                                const mag = Math.sqrt(dx*dx + dy*dy + dz*dz) || 1;
-                                
-                                this.projectiles.push({
-                                    x: px, y: py, z: pz,
-                                    vx: (dx/mag)*20, vy: (dy/mag)*20, vz: (dz/mag)*20,
-                                    damage: 25, life: 2.0, isPlayer: true, color: '#f0f',
-                                    damageType: 'MAGIC'
-                                });
-                            }
-                        }
-                } // activeAuto
-            } // chunk entries
-        } // automationTimer
+        AutomationSystem.update(this, dt);
     }
 
     update(dt: number) {

@@ -9,133 +9,12 @@ import { ShopUI } from './components/ShopUI';
 import { audioEngine } from './game/AudioEngine';
 import { ThemeManager, THEMES } from './game/ThemeManager';
 import { formatZodiacStats } from './game/StarSigns';
+import { STARTING_PACKS } from './game/content/packs/core_packs';
 
 const TABS = ['CHARACTER', 'INVENTORY', 'EQUIPMENT', 'SPELLS', 'TALENTS', 'CRAFTING', 'DEITY', 'MOUNTS', 'COMPANIONS', 'JOURNAL', 'MAP', 'SETTINGS'];
 const CREATION_TABS = ['RACE', 'COLOR', 'HOMEWORLD', 'ZODIAC', 'STARTING PACK', 'PANTHEON'];
 
-const HOMEWORLDS: Record<string, { description: string, zodiacs: string[] }> = {
-    'ARETH': {
-        description: 'HOMEWORLD OF THE DRAGONS, KOBOLDS, DRAGON FOLK, & DRAKKEN',
-        zodiacs: ['THE DRAGON', 'THE EGG', 'THE DIAMOND', 'THE CAVE', 'THE COIN', 'THE TROVE', 'THE FLAME', 'THE CLOUD', 'THE DISK']
-    },
-    'TARHE': {
-        description: 'THE MOUNTAIN HOMES. HOMEWORLD OF THE DWARVES & GNOMES',
-        zodiacs: ['THE MOUNTAIN', 'THE HILL', 'THE GATE', 'THE AXE', 'THE PICK AXE', 'THE ANVIL', 'THE STONE', 'THE COG', 'THE GEM', 'THE FORGE', 'THE MUG']
-    },
-    'TERHA': {
-        description: 'HOMEWORLD OF THE ORCS, GOBLINS, & GODZILLA TITANS. The godzilla patrol & protect their sacred land. The orcs & goblins live in the shadows of these massive creatures & revere them as living gods.',
-        zodiacs: ['THE TITAN', 'THE TENT', 'THE MARCHING', 'THE BATTLE', 'THE BEAST', 'THE RAIN', 'THE HAMMER', 'THE LINK', 'THE BONE']
-    },
-    'HEART': {
-        description: 'HOMEWORLD OF THE ELVES, FAIRIES, GRYPHONS, GRYPHON FOLK, TURTLE FOLK, & FEY FOLK. MARBLE MOUNTAINS & CRYSTAL SPIRES. THE ELVEN RACES INCLUDES, THE HIGH BORN ELVES, THE WOOD ELVES, THE DARK ELVES, & THE WINTER ELVES',
-        zodiacs: ['THE SPIRE', 'THE ROSE', 'THE CARRIAGE', 'THE WATERFALL', 'THE GRYPHON', 'THE EAGLE', 'THE QUILL', 'THE SCROLL', 'THE LION', 'THE WAND', 'THE BOW']
-    },
-    'RATHE': {
-        description: 'HOMEWORLD OF THE SPHINX, GARGOYLES, GREMLINS, & DJINN',
-        zodiacs: ['THE PUZZLE', 'THE CUBE', 'THE LOCK', 'THE KEY', 'THE LAMP', 'THE BOTTLE', 'THE RIDDLE', 'THE HOURGLASS', 'THE TRIANGLE']
-    },
-    'THAER': {
-        description: 'HOMEWORLD OF THE TREE FOLK, THE IMPS, & BEAST RACES. RABBIT FOLK, SQUARREL FOLK, ELEPHANT FOLK, DEER FOLK, & BEAR KIN',
-        zodiacs: ['THE OAK', 'THE DEER', 'THE PINE', 'THE MOUSE', 'THE LEAF', 'THE ORNAMENT', 'THE SHOVEL', 'THE ACORN', 'THE BRANCH', 'THE SEED', 'THE APPLE']
-    },
-    'THERA': {
-        description: 'HOMEWORLD OF THE FROG FOLK, DINO FOLK, & GLOW FOLK. LAND OF SWAMPS & TROPICAL CANYONS',
-        zodiacs: ['THE FROG', 'THE LEDGE', 'THE FIRN', 'THE LOG', 'THE MORTAR', 'THE PESTLE', 'THE SUNDIAL', 'THE POND', 'THE SPEAR', 'THE WEED']
-    },
-    'ATHER': {
-        description: 'HOMEWORLD OF THE FUNGI FOLK, THE GIANTS, OGRES, & TROLLS',
-        zodiacs: ['THE SHROOM', 'THE CAP', 'THE BOULDER', 'THE HORN', 'THE FIELD', 'THE SLUG', 'THE MOTH', 'THE CLUB', 'THE HOOK', 'THE CLEAVER']
-    },
-    'THREA': {
-        description: 'BIODIVERSE MELTING POT',
-        zodiacs: ['THE SHIP', 'THE WAGON', 'THE BAG', 'THE THRONE', 'THE CROWN', 'THE RING', 'THE BOOK', 'THE CASTLE', 'THE BLADE']
-    },
-    'THRAE': {
-        description: 'HOMEWORLD OF THE HUMANS, THE DOG FOLK, & HALFLINGS (HOBBITS, LITTLE FOLK)',
-        zodiacs: ['THE ARMOR', 'THE WHEEL', 'THE STAFF', 'THE RAM', 'THE BAT', 'THE TURTLE', 'THE SCEPTER', 'THE ORACLE', 'THE BEAR']
-    },
-    'RAETH': {
-        description: 'THE BLACK DUNES. HOMEWORLD OF THE SLUG FOLK, BEHOLDERS, RUNE WALKERS, & SCORPION FOLK',
-        zodiacs: ['THE EYE', 'THE CHISEL', 'THE DRUM', 'THE GHOST', 'THE CHEST', 'THE PEARL', 'THE DUNE', 'THE RIVER', 'THE ROAD', 'THE TRAVELER']
-    }
-};
-
-const RACES = [
-    'HUMAN', 'HILL DWARF', 'MOUNTAIN DWARF', 'HIGH ELF', 'WOOD ELF', 'DARK ELF', 'RED ELF', 'TIGER ELF', 'WINTER ELF', 'SEA ELF', 'HALF ELF', 'TINKER GNOME', 'GLOW GNOME', 'WOOD GOBLIN', 'SWAMP GOBLIN', 'ORC', 'DARK ORC', 'HALFLING', 'COPPER DRAGON FOLK', 'COPPER KOBOLD', 'COPPER DRAKKEN', 'RAT FOLK', 'SHROOM FOLK', 'SQUARREL FOLK', 'RABBIT FOLK', 'GREEN ALIEN', 'RED ALIEN', 'LIZARD ALIEN', 'BEAR FOLK', 'DEER FOLK', 'PIT BULL FOLK', 'PALMERAGIAN', 'WOLF FOLK', 'OGRE', 'RUNE FOLK', 'TURTLE FOLK', 'NAGA', 'IMP', 'GREMLIN', 'TROLL', 'LEPRACHAN', 'TRICERA FOLK', 'HIGH MIND', 'YETTI', 'CYCLOPSE DWARF'
-];
-
-const RACE_COLORS: Record<string, string[]> = {
-    'HUMAN': ['#ffdfc4', '#f0d5be', '#eebb94', '#d2a17c', '#b5815c', '#8d5524', '#c68642', '#3d2c23'],
-    'HILL DWARF': ['#d2a17c', '#b5815c', '#8d5524', '#c68642', '#9e6b42', '#7a4b31'],
-    'MOUNTAIN DWARF': ['#b5815c', '#8d5524', '#7a4b31', '#5c3a21', '#4a2e1b'],
-    'HIGH ELF': ['#fff5e6', '#ffe4c4', '#ffdead', '#f5deb3', '#e6e6fa'],
-    'WOOD ELF': ['#d2b48c', '#c19a6b', '#a67b5b', '#8b5a2b', '#6b8e23', '#556b2f'],
-    'DARK ELF': ['#4b0082', '#483d8b', '#2f4f4f', '#191970', '#000000', '#36454f'],
-    'RED ELF': ['#cd5c5c', '#f08080', '#fa8072', '#e9967a', '#8b0000'],
-    'TIGER ELF': ['#ff8c00', '#ffa500', '#ff7f50', '#d2691e', '#8b4513'],
-    'WINTER ELF': ['#e0ffff', '#afeeee', '#add8e6', '#87ceeb', '#b0e0e6', '#f0f8ff'],
-    'SEA ELF': ['#20b2aa', '#48d1cc', '#40e0d0', '#00ced1', '#5f9ea0', '#4682b4'],
-    'HALF ELF': ['#ffdfc4', '#f0d5be', '#eebb94', '#d2a17c', '#b5815c'],
-    'TINKER GNOME': ['#f5deb3', '#deb887', '#d2b48c', '#bc8f8f'],
-    'GLOW GNOME': ['#ffff00', '#adff2f', '#7fff00', '#00ff00', '#32cd32', '#ff00ff', '#00ffff', '#39ff14', '#ff3131', '#ff0099', '#9d00ff', '#7df9ff', '#ff5e00'],
-    'WOOD GOBLIN': ['#228b22', '#008000', '#006400', '#556b2f', '#808000'],
-    'SWAMP GOBLIN': ['#556b2f', '#6b8e23', '#808000', '#2f4f4f', '#4a5d23'],
-    'ORC': ['#32cd32', '#228b22', '#008000', '#006400', '#8b4513', '#a0522d'],
-    'DARK ORC': ['#006400', '#004d00', '#2f4f4f', '#1a331a', '#3e2723', '#212121'],
-    'HALFLING': ['#ffdfc4', '#f0d5be', '#eebb94', '#d2a17c', '#b5815c'],
-    'COPPER DRAGON FOLK': ['#b87333', '#d2691e', '#cd853f', '#a0522d', '#8b4513'],
-    'COPPER KOBOLD': ['#b87333', '#cd853f', '#d2691e', '#8b4513'],
-    'COPPER DRAKKEN': ['#b87333', '#a0522d', '#8b4513', '#5c4033'],
-    'RAT FOLK': ['#a9a9a9', '#808080', '#696969', '#778899', '#708090', '#d3d3d3'],
-    'SHROOM FOLK': ['#f5f5dc', '#fff8dc', '#ffebcd', '#ffe4c4', '#ffb6c1', '#db7093'],
-    'SQUARREL FOLK': ['#8b4513', '#a0522d', '#cd853f', '#d2691e', '#b8860b'],
-    'RABBIT FOLK': ['#ffffff', '#f5f5f5', '#dcdcdc', '#d3d3d3', '#a9a9a9', '#8b4513'],
-    'GREEN ALIEN': ['#00ff00', '#32cd32', '#00fa9a', '#00ff7f', '#7fff00'],
-    'RED ALIEN': ['#ff0000', '#dc143c', '#b22222', '#8b0000', '#ff4500'],
-    'LIZARD ALIEN': ['#3cb371', '#2e8b57', '#228b22', '#008000', '#556b2f'],
-    'BEAR FOLK': ['#8b4513', '#a0522d', '#5c4033', '#3e2723', '#000000', '#ffffff'],
-    'DEER FOLK': ['#d2b48c', '#deb887', '#cd853f', '#8b4513', '#a0522d'],
-    'PIT BULL FOLK': ['#808080', '#a9a9a9', '#696969', '#8b4513', '#d2b48c', '#ffffff'],
-    'PALMERAGIAN': ['#ffb6c1', '#ff69b4', '#ff1493', '#db7093', '#c71585'],
-    'WOLF FOLK': ['#808080', '#a9a9a9', '#696969', '#ffffff', '#000000', '#2f4f4f'],
-    'OGRE': ['#556b2f', '#8b4513', '#a0522d', '#696969', '#808000'],
-    'RUNE FOLK': ['#4682b4', '#5f9ea0', '#708090', '#778899', '#b0c4de'],
-    'TURTLE FOLK': ['#228b22', '#008000', '#556b2f', '#6b8e23', '#2e8b57'],
-    'NAGA': ['#3cb371', '#20b2aa', '#48d1cc', '#00ced1', '#5f9ea0'],
-    'IMP': ['#ff0000', '#dc143c', '#b22222', '#8b0000', '#800000'],
-    'GREMLIN': ['#556b2f', '#6b8e23', '#808000', '#bdb76b', '#a9a9a9'],
-    'TROLL': ['#006400', '#228b22', '#556b2f', '#2f4f4f', '#696969'],
-    'LEPRACHAN': ['#32cd32', '#228b22', '#008000', '#ff8c00', '#ffa500'],
-    'TRICERA FOLK': ['#8fbc8f', '#66cdaa', '#3cb371', '#20b2aa', '#778899'],
-    'HIGH MIND': ['#e6e6fa', '#d8bfd8', '#dda0dd', '#ee82ee', '#da70d6'],
-    'YETTI': ['#ffffff', '#f0f8ff', '#f5f5f5', '#e0ffff', '#afeeee'],
-    'CYCLOPSE DWARF': ['#b5815c', '#8d5524', '#7a4b31', '#5c3a21', '#4a2e1b']
-};
-
-const DEITIES = [
-    { name: 'PRIMORDIAL', description: 'FIRST BORN OF THE DRAGON GODS. GOD OF AMBITION & GREAT THINGS. CAUSE OF THE COSMOS.' },
-    { name: 'ARCANIS', description: 'SECOND BORN OF THE DRAGON GODS. GOD OF ARCANE SECRETS.' },
-    { name: 'FUNGAL WARPED', description: 'MUSHROOM DRAGON GOD. SURVIVOR OF THE OLD CREATION. NEUTRAL.' },
-    { name: 'UMBRIX', description: 'DRAGON GOD OF SHADOWS & SECRETS.' },
-    { name: 'RAGI', description: 'DRAGON GOD OF STORMS.' },
-    { name: 'TELUM', description: 'DRAGON GOD OF COMBAT, WEAPON OF THE GODS.' },
-    { name: 'DORIM', description: 'DRAGON GOD OF DREAMS.' },
-    { name: 'RANA', description: 'DRAGON GOD OF WEALTH.' },
-    { name: 'RIULIRI', description: 'DRAGON GOD OF TACTICS & WAR.' },
-    { name: 'VERI', description: 'UNICORN GOD OF TRUTH.' },
-    { name: 'UMBI', description: 'UNICORN GOD OF TIME & PROPHECY.' },
-    { name: 'HALO', description: 'UNICORN GOD OF THE HIGHER HEAVENS.' },
-    { name: 'FIDIRI', description: 'UNICORN GOD OF LUCK & GOOD FORTUNE.' },
-    { name: 'DI', description: 'THE RABBIT GODDESS.' },
-    { name: 'SYLVARI', description: 'GODDESS OF THE WOODS.' },
-    { name: 'ERUDI', description: 'GOD OF EDUCATION.' },
-    { name: 'RUINA', description: 'DEMIGODDESS OF CHAOS.' },
-    { name: 'ANIMA', description: 'GODDESS OF LIFE.' },
-    { name: 'OBITU', description: 'GOD OF DEATH.' },
-    { name: 'INANIS', description: 'GODDESS OF DARKNESS.' },
-    { name: 'INMORI', description: 'GOD OF THE UNDEAD.' },
-    { name: 'DERGU', description: 'OLDEST AND WISEST OF THE TREE FOLK.' }
-];
+import { HOMEWORLDS, RACES, RACE_COLORS, DEITIES } from './game/constants/CharacterCreation';
 
 export default function App() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -416,13 +295,17 @@ export default function App() {
             engine.start();
 
         const handleFullscreenChange = () => {
-            setIsFullscreen(!!document.fullscreenElement);
+            setIsFullscreen(!!(document.fullscreenElement || (document as any).webkitFullscreenElement || (document as any).mozFullScreenElement));
         };
         document.addEventListener('fullscreenchange', handleFullscreenChange);
+        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+        document.addEventListener('mozfullscreenchange', handleFullscreenChange);
 
         return () => {
             engine.stop();
             document.removeEventListener('fullscreenchange', handleFullscreenChange);
+            document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+            document.removeEventListener('mozfullscreenchange', handleFullscreenChange);
         };
     }, []);
 
@@ -637,13 +520,38 @@ export default function App() {
     }, [isPaused, gameState]);
 
     const toggleFullscreen = () => {
-        if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen().catch((err) => {
-                console.error(`Error attempting to enable fullscreen: ${err.message}`);
-            });
+        const docElCap = document.documentElement as any;
+        if (!document.fullscreenElement && !(document as any).webkitFullscreenElement && !(document as any).mozFullScreenElement) {
+            const requestFS = docElCap.requestFullscreen || docElCap.webkitRequestFullscreen || docElCap.mozRequestFullScreen || docElCap.msRequestFullscreen;
+            if (requestFS) {
+                const promise = requestFS.call(docElCap);
+                if (promise) {
+                    promise.catch((err: Error) => {
+                        console.error(`Error attempting to enable fullscreen: ${err.message}`);
+                        if (engineRef.current && engineRef.current.player && engineRef.current.player.onMessage) {
+                            engineRef.current.player.onMessage("Fullscreen blocked. Try opening in a New Tab.");
+                        }
+                    });
+                } else {
+                    // For browsers that don't return a promise from webkitRequestFullscreen
+                    setTimeout(() => {
+                        if (!document.fullscreenElement && !(document as any).webkitFullscreenElement) {
+                            if (engineRef.current && engineRef.current.player && engineRef.current.player.onMessage) {
+                                engineRef.current.player.onMessage("Fullscreen blocked. Try opening in a New Tab.");
+                            }
+                        }
+                    }, 500);
+                }
+            } else {
+                if (engineRef.current && engineRef.current.player && engineRef.current.player.onMessage) {
+                    engineRef.current.player.onMessage("Fullscreen not supported by this browser.");
+                }
+            }
         } else {
-            if (document.exitFullscreen) {
-                document.exitFullscreen();
+            const docCap = document as any;
+            const exitFS = docCap.exitFullscreen || docCap.webkitExitFullscreen || docCap.mozCancelFullScreen || docCap.msExitFullscreen;
+            if (exitFS) {
+                exitFS.call(docCap);
             }
         }
     };
@@ -958,7 +866,7 @@ export default function App() {
                             <div className="flex-1 border-2 border-[#8b5a33] p-1 md:p-2 bg-[#2a1b14] flex flex-col min-h-0">
                                 <h3 className="text-orange-300 text-center text-xs md:text-sm mb-2 border-b border-[#5c3a21] pb-1">YOUR INVENTORY</h3>
                                 <div className="grid grid-cols-5 gap-1 md:gap-2 bg-[#1a0f0a] p-1 md:p-2 border border-[#3a2214] shadow-inner overflow-y-auto no-scrollbar flex-1">
-                                    {engineRef.current?.player.inventory.map((item, i) => {
+                                    {engineRef.current?.player.inventory.slice(0, engineRef.current.player.inventoryCapacity).map((item, i) => {
                                         const isSelected = selectedSlot?.type === 'inventory' && selectedSlot.index === i;
                                         return (
                                             <div 
@@ -1128,7 +1036,7 @@ export default function App() {
                             <div className="flex-1 border-2 border-[#8b5a33] p-1 md:p-2 bg-[#2a1b14] flex flex-col min-h-0">
                                 <h3 className="text-orange-300 text-center text-xs md:text-sm mb-2 border-b border-[#5c3a21] pb-1">YOUR INVENTORY</h3>
                                 <div className="grid grid-cols-5 gap-1 md:gap-2 bg-[#1a0f0a] p-1 md:p-2 border border-[#3a2214] shadow-inner overflow-y-auto no-scrollbar flex-1">
-                                    {engineRef.current?.player.inventory.map((item, i) => {
+                                    {engineRef.current?.player.inventory.slice(0, engineRef.current.player.inventoryCapacity).map((item, i) => {
                                         const isSelected = selectedSlot?.type === 'inventory' && selectedSlot.index === i;
                                         return (
                                             <div 
@@ -1203,8 +1111,13 @@ export default function App() {
                                 <div className="flex gap-4">
                                     <button 
                                         onClick={() => {
-                                            if (!document.fullscreenElement) {
-                                                document.documentElement.requestFullscreen().catch(e => console.error(e));
+                                            const docElCap = document.documentElement as any;
+                                            if (!document.fullscreenElement && !(document as any).webkitFullscreenElement && !(document as any).mozFullScreenElement) {
+                                                const requestFS = docElCap.requestFullscreen || docElCap.webkitRequestFullscreen || docElCap.mozRequestFullScreen || docElCap.msRequestFullscreen;
+                                                if (requestFS) {
+                                                    const promise = requestFS.call(docElCap);
+                                                    if (promise) promise.catch(e => console.error(e));
+                                                }
                                             }
                                             setGameState('TITLE_2');
                                         }}
@@ -1386,44 +1299,19 @@ export default function App() {
                                     <div className="flex flex-col gap-2">
                                         <div className="text-orange-300 font-bold mb-2">Select your Starting Pack</div>
                                         <div className="grid grid-cols-1 md:grid-cols-3 gap-1 md:gap-2">
-                                            {[
-                                                "Traveler's Starter Pack", "Warrior's Kit", "Mage's Satchel", 
-                                                "Ranger's Pack", "Builder's Crate", "Miner's Pack", "Logger's Pack", 
-                                                "The Grab Bag Pack", "The Caster Pack", "The Masons Pack", 
-                                                "The Berry Pack", "The Wanderers Pack", "The Beastmaster's Pack",
-                                                "The Automation Tycoon Pack", "The Lord's Retinue", "The Daredevil's Kit",
-                                                "The Potions Master", "Boomeranger Pack", "Gnome Buggy Starter Pack"
-                                            ].map(pack => (
+                                            {STARTING_PACKS.map(pack => (
                                                 <div 
-                                                    key={pack}
-                                                    onClick={() => setSelectedStartingPack(pack)}
+                                                    key={pack.name}
+                                                    onClick={() => setSelectedStartingPack(pack.name)}
                                                     className={`p-1 border cursor-pointer transition-colors ${
-                                                        selectedStartingPack === pack 
+                                                        selectedStartingPack === pack.name 
                                                         ? 'bg-orange-900/50 border-orange-500 text-orange-200 shadow-[0_0_10px_rgba(234,88,12,0.3)]' 
                                                         : 'bg-[#0f0805] border-[#4a2e1b] text-gray-400 hover:border-orange-700 hover:text-gray-200'
                                                     }`}
                                                 >
-                                                    <div className="font-bold text-orange-400 text-sm">{pack}</div>
+                                                    <div className="font-bold text-orange-400 text-sm">{pack.name}</div>
                                                     <div className="text-[10px] md:text-xs mt-0.5 text-gray-500 leading-tight">
-                                                        {pack === "Traveler's Starter Pack" && "Includes a Sword, Pickaxe, Tent, THREA Rune Key, and ARETH Rune Key."}
-                                                        {pack === "Warrior's Kit" && "Includes a Sword, Greatsword, Dagger, and a Tent."}
-                                                        {pack === "Mage's Satchel" && "Includes a Fire Staff, Arcane Staff, 15 Spellbooks, and a Tent."}
-                                                        {pack === "Ranger's Pack" && "Includes a Shortbow, 99 Arrows, Dagger, and a Tent."}
-                                                        {pack === "Builder's Crate" && "Includes a Shovel, 50 Wood, 50 Stone, a Village Bell, and a Tent."}
-                                                        {pack === "Miner's Pack" && "Includes a Pickaxe, Shovel, 10 Torches, and a Tent."}
-                                                        {pack === "Logger's Pack" && "Includes an Axe, 10 Torches, and a Tent."}
-                                                        {pack === "The Grab Bag Pack" && "Includes 10 random items from the multiverse."}
-                                                        {pack === "The Caster Pack" && "Includes 2 random staves, 2 random spell books, max reading level, and a Tent."}
-                                                        {pack === "The Masons Pack" && "Includes 4 stacks of stone, 2 random weapons, and a Tent."}
-                                                        {pack === "The Berry Pack" && "Includes 2 stacks of berry seeds, a hoe, a gardener contract, a random weapon, a stack of dirt, and a Tent."}
-                                                        {pack === "The Wanderers Pack" && "Includes a boomerang, a random armor piece, a random tool, a random weapon, a random rune key, and a Tent."}
-                                                        {pack === "Gnome Buggy Starter Pack" && "Includes 1 random weapon and the glorious Gnome Buggy."}
-                                                        {pack === "The Beastmaster's Pack" && "Start with a random Mount, massive food supplies, and a hunting bow."}
-                                                        {pack === "The Automation Tycoon Pack" && "Immediate factory setup: 99 conveyors, 15 auto-miners, droppers, vacuum hoppers, and 5 worker gnomes."}
-                                                        {pack === "The Lord's Retinue" && "Rule immediately with 2 Guards, 2 Archers, a Gardener, a Miner, a Worker, Iron Armor, a Sword, and lots of gold."}
-                                                        {pack === "The Daredevil's Kit" && "Includes a Glider, Grappling Hook, Ring of Dashing, max Jump/Dash talent, and ARETH Rune Key."}
-                                                        {pack === "The Potions Master" && "Massive alchemy boost: Alchemy Table, Cooking Pot, 40 Potions, and hundreds of raw magical ingredients."}
-                                                        {pack === "Boomeranger Pack" && "Includes 1 random boomerang, 2 random items, and starts with a point in the Boomerang talent."}
+                                                        {pack.description}
                                                     </div>
                                                 </div>
                                             ))}
@@ -1489,7 +1377,7 @@ export default function App() {
                                 onClick={() => {
                                     if (engineRef.current) {
                                         // Set homeworld
-                                        const homeworldId = selectedHomeworld || 'THRAE';
+                                        const homeworldId = selectedHomeworld || 'HERAT';
                                         engineRef.current.resetWorld(homeworldId);
                                         
                                         // Re-apply player settings after reset
@@ -1500,7 +1388,7 @@ export default function App() {
                                         if (selectedRace) {
                                             engineRef.current.player.applyRacialBenefits(selectedRace);
                                         }
-                                        engineRef.current.player.applyStartingPack(selectedStartingPack || "Warrior's Kit");
+                                        engineRef.current.player.applyStartingPack(selectedStartingPack || STARTING_PACKS[0].name);
                                         
                                         if (selectedDeity) {
                                             engineRef.current.player.initDeity(selectedDeity);
@@ -1510,7 +1398,7 @@ export default function App() {
                                         engineRef.current.player.quests = [{
                                             id: `start_${homeworldId}`,
                                             title: `Welcome to ${homeworldId}`,
-                                            description: `You have arrived on the world of ${homeworldId}. Explore the capital city and discover its secrets.`,
+                                            description: `Head South-East to find the capital city and speak to the King. The city begins around X: 16, Y: 16 blocks away.`,
                                             completed: false
                                         }];
                                     }
@@ -1814,7 +1702,7 @@ export default function App() {
                                 {activeTab === 'INVENTORY' && (
                                     <div className="flex flex-col gap-4">
                                         <div className="grid grid-cols-5 md:grid-cols-10 gap-1 md:gap-2 bg-[#1a0f0a] p-1 md:p-2 border border-[#3a2214] shadow-inner">
-                                            {engineRef.current?.player.inventory.map((item, i) => {
+                                            {engineRef.current?.player.inventory.slice(0, engineRef.current.player.inventoryCapacity).map((item, i) => {
                                                 const isSelected = selectedSlot?.type === 'inventory' && selectedSlot.index === i;
                                                 return (
                                                     <div 
@@ -2180,16 +2068,134 @@ export default function App() {
                                     </div>
                                 )}
 
+                                {activeTab === 'COMPANIONS' && (
+                                    <div className="flex flex-col gap-4 bg-[#1a0f0a] p-2 md:p-4 border border-[#3a2214] shadow-inner h-full overflow-y-auto no-scrollbar">
+                                        <div className="text-orange-400 text-lg font-bold border-b border-[#5c3a21] pb-2">Your Companions ({engineRef.current?.player.companions?.length || 0})</div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                            {engineRef.current?.player.companions?.map((companion: any, i: number) => (
+                                                <div key={i} className="bg-[#0f0805] border-2 border-[#4a2e1b] p-4 flex flex-col gap-2 shadow-[inset_0_2px_8px_rgba(0,0,0,0.8)] relative">
+                                                    {engineRef.current?.player.activeCompanion?.id === companion.id && (
+                                                        <div className="absolute top-2 right-2 flex gap-1">
+                                                            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                                                        </div>
+                                                    )}
+                                                    <div className="text-orange-300 font-bold text-xl">{companion.name || companion.type} (Lv. {companion.level || 1})</div>
+                                                    <div className="text-gray-400 text-sm">Type: {companion.type}</div>
+                                                    <div className="mt-2 bg-[#3a2214] border border-[#5c3a21] p-2">
+                                                        <div className="text-xs text-gray-400 mb-1">Health: {Math.floor(companion.health || companion.maxHealth)}/{companion.maxHealth}</div>
+                                                        <div className="w-full h-1 bg-black overflow-hidden m-0 p-0 mb-2">
+                                                            <div className="h-full bg-red-600" style={{ width: `${((companion.health || companion.maxHealth) / companion.maxHealth) * 100}%` }}></div>
+                                                        </div>
+                                                        <div className="text-xs text-blue-300 mb-1">XP: {Math.floor(companion.xp || 0)}/{(companion.level || 1) * 100}</div>
+                                                        <div className="w-full h-1 bg-black overflow-hidden m-0 p-0">
+                                                            <div className="h-full bg-blue-500" style={{ width: `${((companion.xp || 0) / ((companion.level || 1) * 100)) * 100}%` }}></div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="text-red-400 text-sm mt-1">Damage: {companion.damage}</div>
+                                                    
+                                                    {engineRef.current?.player.activeCompanion?.id === companion.id && (
+                                                        <div className="flex flex-col gap-1 mt-2">
+                                                            <div className="text-xs text-gray-400">Stance:</div>
+                                                            <div className="flex gap-1">
+                                                                {['AGGRESSIVE', 'DEFENSIVE', 'PASSIVE'].map((stance) => (
+                                                                    <button
+                                                                        key={stance}
+                                                                        className={`flex-1 text-[10px] py-1 border ${companion.stance === stance || (!companion.stance && stance === 'AGGRESSIVE') ? 'bg-orange-600 border-orange-400 text-white font-bold' : 'bg-[#2a1204] border-[#4a2e1b] text-gray-400 hover:bg-[#3a2214]'}`}
+                                                                        onClick={() => {
+                                                                            if (engineRef.current) {
+                                                                                companion.stance = stance;
+                                                                                setUpdateTrigger(prev => prev + 1);
+                                                                            }
+                                                                        }}
+                                                                    >
+                                                                        {stance.substring(0, 3)}
+                                                                    </button>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                    <div className="flex gap-2 w-full mt-auto pt-2">
+                                                        <button 
+                                                            className="flex-1 bg-[#3a2214] hover:bg-[#5c3a21] text-orange-200 py-1 px-2 border border-[#8b5a33] rounded-sm text-xs font-bold transition-colors"
+                                                            onClick={() => {
+                                                                if (engineRef.current) {
+                                                                    if (engineRef.current.player.inventory.some(i => i?.id === 'meat')) {
+                                                                        engineRef.current.player.removeItem('meat', 1);
+                                                                        companion.health = companion.maxHealth;
+                                                                        engineRef.current.particles.push({
+                                                                            x: engineRef.current.player.x, y: engineRef.current.player.y, z: engineRef.current.player.z + 1,
+                                                                            text: 'Healed Companion!', color: '#00ff00',
+                                                                            life: 2.0, maxLife: 2.0, vx: 0, vy: 0, vz: 1
+                                                                        });
+                                                                        setUpdateTrigger(prev => prev + 1);
+                                                                    } else {
+                                                                        engineRef.current.events.emit('HUD_UPDATE');
+                                                                        // Could show toast but this is fine
+                                                                    }
+                                                                }
+                                                            }}
+                                                        >
+                                                            FEED (1 Meat)
+                                                        </button>
+                                                        <button 
+                                                            className="flex-1 bg-[#3a2214] hover:bg-[#5c3a21] text-orange-200 py-1 px-2 border border-[#8b5a33] rounded-sm text-xs font-bold transition-colors"
+                                                            onClick={() => {
+                                                                if (engineRef.current) {
+                                                                    if (engineRef.current.player.activeCompanion?.id === companion.id) {
+                                                                    // Unsummon logic
+                                                                    const idx = engineRef.current.entities.findIndex((e: any) => e.id === companion.id);
+                                                                    if (idx !== -1) {
+                                                                        engineRef.current.entities.splice(idx, 1);
+                                                                    }
+                                                                    engineRef.current.player.activeCompanion = null;
+                                                                } else {
+                                                                    // Summon logic
+                                                                    if (engineRef.current.player.activeCompanion) {
+                                                                        // Remove old active companion from entities
+                                                                        const oldId = engineRef.current.player.activeCompanion.id;
+                                                                        const idx = engineRef.current.entities.findIndex((e: any) => e.id === oldId);
+                                                                        if (idx !== -1) {
+                                                                            engineRef.current.entities.splice(idx, 1);
+                                                                        }
+                                                                    }
+                                                                    engineRef.current.player.activeCompanion = companion;
+                                                                    // We will need to inject it into world entities if needed.
+                                                                    companion.x = engineRef.current.player.x;
+                                                                    companion.y = engineRef.current.player.y;
+                                                                    companion.z = engineRef.current.player.z;
+                                                                    companion.isCompanion = true;
+                                                                    engineRef.current.entities.push(companion);
+                                                                }
+                                                                setUpdateTrigger(prev => prev + 1);
+                                                            }
+                                                        }}
+                                                    >
+                                                        {engineRef.current?.player.activeCompanion?.id === companion.id ? 'UNSUMMON' : 'SUMMON'}
+                                                    </button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                            {(!engineRef.current?.player.companions || engineRef.current.player.companions.length === 0) && (
+                                                <div className="text-gray-500 italic col-span-full text-center py-8">You have no companions yet. Speak to Beast Tamers or defeat bosses to acquire them!</div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+
                                 {activeTab === 'JOURNAL' && (
                                     <div className="flex flex-col gap-4 bg-[#1a0f0a] p-2 md:p-4 border border-[#3a2214] shadow-inner h-full overflow-y-auto no-scrollbar">
                                         <div className="text-orange-400 text-lg font-bold border-b border-[#5c3a21] pb-2">Your Quests</div>
                                         <div className="flex flex-col gap-4">
                                             {engineRef.current?.player.quests?.map((quest: any, i: number) => (
-                                                <div key={i} className={`bg-[#0f0805] border-2 ${quest.completed ? 'border-green-800' : 'border-[#4a2e1b]'} p-4 flex flex-col gap-2 shadow-[inset_0_2px_8px_rgba(0,0,0,0.8)] relative`}>
-                                                    <div className={`font-bold text-xl ${quest.completed ? 'text-green-500' : 'text-orange-300'}`}>{quest.title}</div>
+                                                <div key={i} className={`bg-[#0f0805] border-2 ${quest.state === 'COMPLETED' ? 'border-green-800' : quest.state === 'TURNED_IN' ? 'border-gray-800 opacity-50' : 'border-[#4a2e1b]'} p-4 flex flex-col gap-2 shadow-[inset_0_2px_8px_rgba(0,0,0,0.8)] relative`}>
+                                                    <div className={`font-bold text-xl ${quest.state === 'COMPLETED' ? 'text-green-500' : quest.state === 'TURNED_IN' ? 'text-gray-500' : 'text-orange-300'}`}>{quest.title}</div>
                                                     <div className="text-gray-400 text-sm">{quest.description}</div>
-                                                    <div className={`text-xs font-bold mt-2 ${quest.completed ? 'text-green-600' : 'text-orange-600'}`}>
-                                                        {quest.completed ? 'COMPLETED' : 'IN PROGRESS'}
+                                                    {(quest.type === 'FETCH' || quest.type === 'DESTROY_SPAWNER') && quest.state !== 'TURNED_IN' && (
+                                                        <div className="text-gray-300 text-xs mt-1">Progress: {quest.currentCount} / {quest.requiredCount}</div>
+                                                    )}
+                                                    <div className={`text-xs font-bold mt-2 ${quest.state === 'COMPLETED' ? 'text-green-600' : quest.state === 'TURNED_IN' ? 'text-gray-500' : 'text-orange-600'}`}>
+                                                        {quest.state === 'COMPLETED' ? 'READY TO TURN IN' : quest.state === 'TURNED_IN' ? 'COMPLETED' : 'IN PROGRESS'}
                                                     </div>
                                                 </div>
                                             ))}

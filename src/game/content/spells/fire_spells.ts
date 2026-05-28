@@ -1,0 +1,78 @@
+import type { Spell } from '../../registries/ItemRegistry';
+
+export const FIRE_SPELLS: Record<string, Spell> = {
+  'volcanic_eruption': {
+        id: 'volcanic_eruption',
+        name: 'Volcanic Eruption',
+        description: 'Causes a massive explosion of fire around you.',
+        manaCost: 40,
+        cooldown: 10.0,
+        castTime: 1.5,
+        damage: 80,
+        reach: 6,
+        spread: 0,
+        damageType: 'FIRE',
+        statusEffect: { type: 'burn', chance: 1.0, duration: 6.0 },
+        type: 'AOE'
+    },
+  'fire_vortice': {
+        id: 'fire_vortice',
+        name: 'Fire Vortice',
+        description: 'Summons a slow moving fire twister.',
+        manaCost: 15,
+        cooldown: 6.0,
+        castTime: 0.5,
+        damage: 15,
+        reach: 1,
+        spread: 0,
+        damageType: 'FIRE',
+        type: 'PROJECTILE'
+    },
+  'fire_bolt': {
+        id: "fire_bolt",
+        name: "Fire Bolt",
+        description: "Hurl a bolt of fire at your enemies.",
+        manaCost: 10,
+        cooldown: 0.8,
+        damage: 15,
+        reach: 5,
+        spread: 0,
+        damageType: "FIRE",
+        type: "PROJECTILE",
+        projectileSpeed: 15,
+        statusEffect: { type: "burn", duration: 5.0, chance: 0.5 },
+        stackable: true,
+        maxStack: 99
+    },
+  'fire_ball': {
+        id: "fire_ball",
+        name: "Fire Ball",
+        description: "Unleash a burst of fire around you.",
+        manaCost: 25,
+        cooldown: 2,
+        damage: 20,
+        reach: 4,
+        spread: 0,
+        damageType: "FIRE",
+        type: "AOE",
+        statusEffect: { type: "burn", duration: 5.0, chance: 1.0 },
+        stackable: true,
+        maxStack: 99
+    },
+  'rune_of_fire': {
+        id: "rune_of_fire",
+        name: "Rune of Fire",
+        description: "A blistering rune that erupts in a massive fire explosion.",
+        manaCost: 35,
+        cooldown: 10.0,
+        damage: 150,
+        reach: 5,
+        spread: 0,
+        damageType: "FIRE",
+        statusEffect: { type: "burn", duration: 8.0, chance: 1.0 },
+        type: "AOE",
+        castTime: 1.2,
+        stackable: true,
+        maxStack: 99
+    },
+};

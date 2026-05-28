@@ -132,17 +132,24 @@ export class SpawnerUpdater {
                             engine.kobolds.push({ type: 'worker', x: x + 0.5, y: y + 0.5, z: z + 1.0, vx: 0, vy: 0, vz: 0, health: EntityRegistry.get('kobold').maxHealth, maxHealth: EntityRegistry.get('kobold').maxHealth, damage: EntityRegistry.get('kobold').damage, state: 'CHASE', attackCooldown: Math.random(), attackTimer: 0, aimAngle: 0 });
                         }
                     } else if (block === BlockType.FAIRY_SPAWNER) {
-                        if (Math.random() < 0.2 && engine.animals.length < 50) {
-                            engine.animals.push({
-                                id: `fairy_${Math.random()}`,
-                                type: 'FAIRY',
-                                behavior: 'PASSIVE',
-                                x: x + 0.5, y: y + 0.5, z: z + 2,
-                                vx: (Math.random()-0.5)*2, vy: (Math.random()-0.5)*2, vz: 0,
-                                health: 15, maxHealth: 15,
-                                state: 'WANDER', fleeTimer: 0, attackCooldown: 0, aimAngle: 0,
-                                tameProgress: 0, isTamed: false, speed: 2, jumpPower: 0, stamina: 10, maxStamina: 10
-                            });
+                        const sid = `${x}_${y}_${z}`;
+                        const lastSpawn = this.lastSpawnTimes[sid] || 0;
+                        if (now - lastSpawn >= 10) {
+                            let alive = engine.animals.filter(a => a.type === 'FAIRY' && (a as any).spawnerId === sid).length;
+                            if (alive < 2 && engine.animals.length < 50) {
+                                this.lastSpawnTimes[sid] = now;
+                                engine.animals.push({
+                                    id: `fairy_${Math.random()}`,
+                                    type: 'FAIRY',
+                                    behavior: 'PASSIVE',
+                                    spawnerId: sid,
+                                    x: x + 0.5, y: y + 0.5, z: z + 2,
+                                    vx: (Math.random()-0.5)*2, vy: (Math.random()-0.5)*2, vz: 0,
+                                    health: 15, maxHealth: 15,
+                                    state: 'WANDER', fleeTimer: 0, attackCooldown: 0, aimAngle: 0,
+                                    tameProgress: 0, isTamed: false, speed: 2, jumpPower: 0, stamina: 10, maxStamina: 10
+                                } as any);
+                            }
                         }
                     } else if (block === BlockType.DARK_ELF_SPAWNER) {
                         if (Math.random() < 0.1 && engine.npcs.length < 50) {
@@ -226,7 +233,9 @@ export class SpawnerUpdater {
                         block === BlockType.STALL_FABRIC ||
                         block === BlockType.STALL_RUNE_KEYS ||
                         block === BlockType.STALL_BLOCKS ||
-                        block === BlockType.STALL_LEATHER
+                        block === BlockType.STALL_LEATHER ||
+                        block === BlockType.BAG_MERCHANT_STALL ||
+                        block === BlockType.BERRY_FARMER_SHED
                     ) {
                         const sid = `${x}_${y}_${z}`;
                         const lastSpawn = this.lastSpawnTimes[sid] || 0;
@@ -247,6 +256,8 @@ export class SpawnerUpdater {
                                 else if (block === BlockType.STALL_RUNE_KEYS) merchantType = 'STALL_RUNE_KEYS';
                                 else if (block === BlockType.STALL_BLOCKS) merchantType = 'STALL_BLOCKS';
                                 else if (block === BlockType.STALL_LEATHER) merchantType = 'STALL_LEATHER';
+                                else if (block === BlockType.BAG_MERCHANT_STALL) merchantType = 'BAG_MERCHANT';
+                                else if (block === BlockType.BERRY_FARMER_SHED) merchantType = 'BERRY_FARMER';
                                 
                                 engine.npcs.push({
                                     id: `merchant_${Math.random()}`,
@@ -302,7 +313,7 @@ export class SpawnerUpdater {
                                 });
                             }
                         }
-                    } else if (block === BlockType.GARGOYLE_PEDESTAL) {
+                    } else if (block === BlockType.GARGOYLE_PEDESTAL || block === BlockType.GARGOYLE_SPAWNER) {
                         const sid = `${x}_${y}_${z}`;
                         const lastSpawn = this.lastSpawnTimes[sid] || 0;
                         if (now - lastSpawn >= 30) {
@@ -325,7 +336,7 @@ export class SpawnerUpdater {
                         const lastSpawn = this.lastSpawnTimes[sid] || 0;
                         if (now - lastSpawn >= 20) {
                             let alive = engine.djinns.filter(d => d.spawnerId === sid).length;
-                            if (alive < 2) {
+                            if (alive < 3) {
                                 this.lastSpawnTimes[sid] = now;
                                 engine.djinns.push({
                                     spawnerId: sid,
@@ -343,7 +354,7 @@ export class SpawnerUpdater {
                         const lastSpawn = this.lastSpawnTimes[sid] || 0;
                         if (now - lastSpawn >= 10) {
                             let alive = engine.gremlins.filter(g => g.spawnerId === sid).length;
-                            if (alive < 5) { // Gremlins spawn in packs
+                            if (alive < 3) { // Gremlins spawn in packs
                                 this.lastSpawnTimes[sid] = now;
                                 engine.gremlins.push({
                                     spawnerId: sid,
@@ -364,6 +375,7 @@ export class SpawnerUpdater {
                             if (alive < 1) { 
                                 this.lastSpawnTimes[sid] = now;
                                 engine.sphinxs.push({
+                                    type: 'SPHINX',
                                     spawnerId: sid,
                                     x: x + 0.5, y: y + 0.5, z: z + 2,
                                     vx: 0, vy: 0, vz: 0,
@@ -415,7 +427,7 @@ export class SpawnerUpdater {
                         const lastSpawn = this.lastSpawnTimes[sid] || 0;
                         if (now - lastSpawn >= 15) {
                             let alive = engine.rats.filter(r => r.spawnerId === sid).length;
-                            if (alive < 5 && engine.rats.length < 30) {
+                            if (alive < 3 && engine.rats.length < 30) {
                                 this.lastSpawnTimes[sid] = now;
                                 engine.rats.push({
                                     id: sid + '_' + now,
@@ -431,17 +443,31 @@ export class SpawnerUpdater {
                         block === BlockType.TRICERA_TENT || block === BlockType.RAPTOR_TENT || block === BlockType.FROG_TENT || 
                         block === BlockType.FUNGI_FOLK_TENT || block === BlockType.OGRE_DEN || block === BlockType.TROLL_CAVE ||
                         block === BlockType.ARCHER_TENT || block === BlockType.DARK_KNIGHT_TENT || block === BlockType.DARK_ELF_TENT ||
-                        block === BlockType.OBSERVER_SPAWNER || block === BlockType.TENT ||
-                        block === BlockType.HUMAN_CASTLE_SPAWNER || block === BlockType.HUMAN_OUTPOST_SPAWNER
+                        block === BlockType.OBSERVER_SPAWNER ||
+                        block === BlockType.WINTER_ELF_TENT || block === BlockType.YETI_CAVE ||
+                        block === BlockType.FROST_CASTER_TENT || block === BlockType.LOYAL_FROST_CASTER_TENT ||
+                        block === BlockType.HUMAN_CASTLE_SPAWNER || block === BlockType.HUMAN_OUTPOST_SPAWNER ||
+                        block === BlockType.LOYAL_KNIGHT_TENT || block === BlockType.LOYAL_ARCHER_TENT || block === BlockType.ESCALATION_SPAWNER
                     ) {
                         const sid = `${x}_${y}_${z}`;
                         const lastSpawn = this.lastSpawnTimes[sid] || 0;
-                        if (now - lastSpawn >= 25) {
+                        
+                        let spawnInterval = 25;
+                        let maxAlive = 3;
+                        let maxTotal = 100;
+                        if (block === BlockType.ESCALATION_SPAWNER) {
+                            spawnInterval = 8;
+                            maxAlive = 10;
+                        }
+                        
+                        if (now - lastSpawn >= spawnInterval) {
                             let alive = engine.entities.filter(e => e.spawnerId === sid).length;
-                            if (alive < 3 && engine.entities.length < 100) {
+                            if (alive < maxAlive && engine.entities.length < maxTotal) {
                                 this.lastSpawnTimes[sid] = now;
                                 
                                 let type = 'TRICERA_FOLK';
+                                let friendly = false;
+                                
                                 if (block === BlockType.RAPTOR_TENT) type = 'RAPTOR_FOLK';
                                 else if (block === BlockType.FROG_TENT) type = 'FROG_FOLK';
                                 else if (block === BlockType.FUNGI_FOLK_TENT) type = 'FUNGI_FOLK';
@@ -450,9 +476,16 @@ export class SpawnerUpdater {
                                 else if (block === BlockType.ARCHER_TENT) type = 'ARCHER';
                                 else if (block === BlockType.DARK_KNIGHT_TENT) type = 'DARK_KNIGHT';
                                 else if (block === BlockType.DARK_ELF_TENT) type = 'DARK_ELF_ASSASSIN';
+                                else if (block === BlockType.WINTER_ELF_TENT) type = 'WINTER_ELF';
+                                else if (block === BlockType.YETI_CAVE) type = 'YETI';
+                                else if (block === BlockType.FROST_CASTER_TENT) type = 'FROST_CASTER';
+                                else if (block === BlockType.LOYAL_FROST_CASTER_TENT) { type = 'FROST_CASTER'; friendly = true; }
                                 else if (block === BlockType.OBSERVER_SPAWNER) type = Math.random() > 0.5 ? 'OBSERVER_VOID' : 'OBSERVER_FIRE';
                                 else if (block === BlockType.HUMAN_CASTLE_SPAWNER) type = Math.random() > 0.5 ? 'HUMAN_KNIGHT' : 'HUMAN_PALADIN';
-                                else if (block === BlockType.HUMAN_OUTPOST_SPAWNER || block === BlockType.TENT) type = 'HUMAN_RANGER';
+                                else if (block === BlockType.HUMAN_OUTPOST_SPAWNER) type = 'HUMAN_RANGER';
+                                else if (block === BlockType.LOYAL_KNIGHT_TENT) { type = 'HUMAN_KNIGHT'; friendly = true; }
+                                else if (block === BlockType.LOYAL_ARCHER_TENT) { type = 'HUMAN_RANGER'; friendly = true; }
+                                else if (block === BlockType.ESCALATION_SPAWNER) { type = Math.random() > 0.5 ? 'RAPTOR_FOLK' : 'DARK_KNIGHT'; }
                                 
                                 const def = EntityRegistry.get(type.toLowerCase());
                                 
@@ -469,7 +502,7 @@ export class SpawnerUpdater {
                                     timer: 0,
                                     state: 'WANDER',
                                     attackCooldown: def.attackCooldown || 1.5,
-                                    friendly: false
+                                    friendly: friendly
                                 });
                             }
                         }

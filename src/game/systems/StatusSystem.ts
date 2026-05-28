@@ -16,8 +16,7 @@ export class StatusSystem {
         if (isTick) this.tickTimer = 0;
 
         const collections = [
-            engine.goblins, engine.orcs, engine.rats, engine.abyssalKnights,
-            engine.lavaGolems, engine.rockGolems, engine.skeletons, engine.skeletonRemains, engine.ants, engine.kobolds,
+            engine.goblins, engine.orcs, engine.rats, engine.abyssalKnights, engine.frostCasters, engine.lavaGolems, engine.rockGolems, engine.skeletons, engine.skeletonRemains, engine.ants, engine.kobolds,
             engine.gargoyles, engine.djinns, engine.gremlins, engine.bees,
             engine.sphinxs, engine.sandTerrors, engine.phantomWizards, engine.shadowWizards,
             engine.fireDragonBosses, engine.animals, engine.drakes, engine.npcs
@@ -101,6 +100,14 @@ export class StatusSystem {
             }
         }
         
+        if (p.statuses.burn > 0) p.statuses.burn -= dt;
+        if (p.statuses.poison > 0) p.statuses.poison -= dt;
+        if (p.statuses.chill > 0) p.statuses.chill -= dt;
+        if (p.statuses.bleed > 0) p.statuses.bleed -= dt;
+        if (p.statuses.slowFall > 0) p.statuses.slowFall -= dt;
+
+        for(let k in p.statuses) { if ((p.statuses as any)[k] < 0) (p.statuses as any)[k] = 0; }
+
         if (p.statuses.burn > 0 && Math.random() < 10 * dt) engine.particles.push({x: p.x, y: p.y, z: p.z+1, color: '#ff4500', life: 0.5, maxLife: 0.5, vx:(Math.random()-0.5)*2, vy:(Math.random()-0.5)*2, vz: Math.random()*2, text: ''});
         if (p.statuses.poison > 0 && Math.random() < 5 * dt) engine.particles.push({x: p.x, y: p.y, z: p.z+1, color: '#32cd32', life: 1, maxLife: 1, vx:0, vy:0, vz: Math.random(), text: '°'});
         if (p.statuses.chill > 0 && Math.random() < 4 * dt) engine.particles.push({x: p.x, y: p.y, z: p.z+1, color: '#add8e6', life: 0.5, maxLife: 0.5, vx:0, vy:0, vz: 0, text: '❄'});

@@ -7,6 +7,7 @@ export class SandTerrorUpdater {
             const terror = engine.sandTerrors[i];
             
             if (terror.health <= 0) {
+                if (Math.random() < 0.4) engine.dropItem(terror.x, terror.y, terror.z, { ...ITEMS['copper_piece'], quantity: Math.floor(Math.random() * 3) + 1 });
                 engine.player.addXp(12000);
                 // Loot drop
                 for (let j = 0; j < 30; j++) {

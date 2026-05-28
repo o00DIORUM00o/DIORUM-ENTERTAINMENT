@@ -63,6 +63,7 @@ for (let i = engine.skeletonRemains.length - 1; i >= 0; i--) {
                     });
                 }
             } else if (rem.health <= 0) {
+                if (Math.random() < 0.4) engine.dropItem(rem.x, rem.y, rem.z, { ...ITEMS['copper_piece'], quantity: Math.floor(Math.random() * 3) + 1 });
                 // Destroyed completely
                 removeFromArray(engine.skeletonRemains, i);
                 engine.player.addXp(Math.floor(40 * (rem.maxHealth / 20))); // XP for destroying remains

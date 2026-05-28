@@ -22,6 +22,7 @@ export class ShadowWizardUpdater {
 
             // Health handling
             if (w.health <= 0) {
+                if (Math.random() < 0.4) engine.dropItem(w.x, w.y, w.z, { ...ITEMS['copper_piece'], quantity: Math.floor(Math.random() * 3) + 1 });
                 engine.player.addXp(1000);
                 engine.dropItem(w.x, w.y, w.z, { id: 'dark_matter', name: 'Dark Matter', description: 'Essence of a shadow wizard.', category: 'MATERIAL', maxStack: 64, quantity: 5 });
                 engine.particles.push({

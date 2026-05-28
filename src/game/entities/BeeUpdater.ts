@@ -1,3 +1,4 @@
+import { EntitySteeringSystem } from '../systems/EntitySteeringSystem';
 function removeFromArray<T>(array: T[], index: number) {
     if (index === array.length - 1) {
         array.pop();
@@ -85,8 +86,8 @@ for (let i = engine.bees.length - 1; i >= 0; i--) {
                     bee.vz = (bee.vz / speed) * 3;
                 }
             }
-            Updater.applyBoids(bee, engine, dt);
-                    Updater.applyDodge(bee, engine, dt);
+            EntitySteeringSystem.applyBoids(bee, engine, dt);
+                    EntitySteeringSystem.applyDodge(bee, engine, dt);
 
             bee.x += bee.vx * dt;
             bee.y += bee.vy * dt;

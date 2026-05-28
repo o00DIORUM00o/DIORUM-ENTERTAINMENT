@@ -55,7 +55,7 @@ class Registry {
             type === BlockType.LAVA) {
             return true;
         }
-        return false;
+        return this._isIndestructible[type] === 1;
     }
 
     public getHardness(type: BlockType): number {

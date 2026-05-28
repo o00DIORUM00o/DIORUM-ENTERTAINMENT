@@ -13,7 +13,7 @@ export type {
     MerchantLootTable, Item, Spell
 };
 
-import { ALL_SPELLS } from './content/spells/spells';
+import { ALL_SPELLS } from './content/spells/index';
 import { WEAPON_ITEMS } from './content/items/weapon';
 import { ARMOR_ITEMS } from './content/items/armor';
 import { CONSUMABLE_ITEMS } from './content/items/consumable';
@@ -35,6 +35,19 @@ export const SPELLS = ItemRegistry.getAllSpells();
 export const ITEMS = ItemRegistry.getAllItems();
 
 export const MERCHANT_TABLES: Record<string, MerchantLootTable> = {
+    'BAG_MERCHANT': {
+        guaranteed: [
+            { itemToGive: { id: 'bag_expansion', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 40 }] }
+        ],
+        random: { rolls: 0, pool: [] }
+    },
+    'BERRY_FARMER': {
+        guaranteed: [
+            { itemToGive: { id: 'red_berry', quantity: 5, stackable: true, maxStack: 99 }, cost: [{ id: 'copper_piece', quantity: 5 }] },
+            { itemToGive: { id: 'red_berry_seed', quantity: 5, stackable: true, maxStack: 99 }, cost: [{ id: 'copper_piece', quantity: 2 }] }
+        ],
+        random: { rolls: 0, pool: [] }
+    },
     'VILLAGER_MERCHANT': {
         guaranteed: [
             { itemToGive: { id: 'bread', quantity: 5 , stackable: true, maxStack: 99}, cost: [{ id: 'copper_piece', quantity: 10 }] },
@@ -125,6 +138,39 @@ export const MERCHANT_TABLES: Record<string, MerchantLootTable> = {
         ],
         random: { pool: [], rolls: 0 }
     },
+    'BEAST_TAMER_MERCHANT': {
+        guaranteed: [
+            { itemToGive: { id: 'dire_wolf_mount', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 50 }, { id: 'meat', quantity: 20 }] },
+            { itemToGive: { id: 'giant_boar_mount', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 40 }, { id: 'meat', quantity: 15 }] },
+            { itemToGive: { id: 'moose_mount', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 75 }, { id: 'leather', quantity: 10 }] },
+            { itemToGive: { id: 'companion_dragon_egg', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 200 }] },
+            { itemToGive: { id: 'companion_frog_egg', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'silver_piece', quantity: 50 }] },
+            { itemToGive: { id: 'companion_fairy', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 100 }] },
+            { itemToGive: { id: 'companion_shadow_wisp', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 150 }] },
+            { itemToGive: { id: 'companion_battle_pig', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 120 }] },
+            { itemToGive: { id: 'meat', quantity: 5, stackable: true, maxStack: 99 }, cost: [{ id: 'silver_piece', quantity: 10 }] },
+        ],
+        random: { pool: [], rolls: 0 }
+    },
+    'WANDERING_BARD': {
+        guaranteed: [
+            { itemToGive: { id: 'health_potion', quantity: 2, stackable: true, maxStack: 99 }, cost: [{ id: 'silver_piece', quantity: 5 }] },
+            { itemToGive: { id: 'mana_potion', quantity: 2, stackable: true, maxStack: 99 }, cost: [{ id: 'silver_piece', quantity: 5 }] },
+            { itemToGive: { id: 'torch', quantity: 5, stackable: true, maxStack: 99 }, cost: [{ id: 'copper_piece', quantity: 5 }] },
+            { itemToGive: { id: 'lute', quantity: 1, stackable: true, maxStack: 1 }, cost: [{ id: 'gold_piece', quantity: 5 }] },
+            { itemToGive: { id: 'ocarina', quantity: 1, stackable: true, maxStack: 1 }, cost: [{ id: 'gold_piece', quantity: 2 }] },
+        ],
+        random: { pool: [], rolls: 0 }
+    },
+    'SQUIRREL_FOLK_MERCHANT': {
+        guaranteed: [
+            { itemToGive: { id: 'acorn', quantity: 10, stackable: true, maxStack: 99 }, cost: [{ id: 'silver_piece', quantity: 5 }] },
+            { itemToGive: { id: 'companion_frog_egg', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'acorn', quantity: 50 }] },
+            { itemToGive: { id: 'companion_baby_treant', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'acorn', quantity: 100 }] },
+            { itemToGive: { id: 'health_potion', quantity: 5, stackable: true, maxStack: 99 }, cost: [{ id: 'acorn', quantity: 20 }] },
+        ],
+        random: { pool: [], rolls: 0 }
+    },
     'DRACONIC_MERCHANT': {
         guaranteed: [
             { itemToGive: { id: 'health_potion', quantity: 5, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 2 }] }, // Dragons love gold
@@ -132,6 +178,8 @@ export const MERCHANT_TABLES: Record<string, MerchantLootTable> = {
             { itemToGive: { id: 'book_fire_bolt', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 50 }] },
             { itemToGive: { id: 'rune_key_areth', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 100 }] },
             { itemToGive: { id: 'dragon_egg_mount', quantity: 1 }, cost: [{ id: 'gold_piece', quantity: 5000 }] },
+            { itemToGive: { id: 'companion_dragon_egg', quantity: 1 }, cost: [{ id: 'gold_piece', quantity: 500 }] },
+            { itemToGive: { id: 'companion_arcane_crystal', quantity: 1 }, cost: [{ id: 'gold_piece', quantity: 600 }] },
             { itemToGive: { id: 'obsidian_sword', quantity: 1 }, cost: [{ id: 'gold_piece', quantity: 800 }] },
             { itemToGive: { id: 'dragon_scale_armor', quantity: 1 }, cost: [{ id: 'gold_piece', quantity: 1200 }] },
             { itemToGive: { id: 'elven_longbow', quantity: 1 }, cost: [{ id: 'gold_piece', quantity: 600 }] },
@@ -159,6 +207,23 @@ export const MERCHANT_TABLES: Record<string, MerchantLootTable> = {
             { itemToGive: { id: 'book_magic_missile', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 20 }] },
             { itemToGive: { id: 'book_acid_bolt', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 25 }] },
             { itemToGive: { id: 'book_mark_return', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 5 }] },
+
+            { itemToGive: { id: 'book_volcanic_eruption', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 50 }] },
+            { itemToGive: { id: 'book_blizzard', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 50 }] },
+            { itemToGive: { id: 'book_venom_cloud', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 50 }] },
+            { itemToGive: { id: 'book_divine_smite', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 60 }] },
+            { itemToGive: { id: 'book_shadow_flare', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 45 }] },
+            { itemToGive: { id: 'book_rune_of_fire', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 75 }] },
+            { itemToGive: { id: 'book_rune_of_ice', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 75 }] },
+            { itemToGive: { id: 'book_rune_of_lightning', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 75 }] },
+            { itemToGive: { id: 'book_rune_of_acid', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 75 }] },
+            { itemToGive: { id: 'book_rune_of_life', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 75 }] },
+            { itemToGive: { id: 'book_rune_of_gravity', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 100 }] },
+            { itemToGive: { id: 'book_rune_of_destruction', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 100 }] },
+            { itemToGive: { id: 'book_rune_of_arcane', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 100 }] },
+            { itemToGive: { id: 'book_rune_of_holy', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 100 }] },
+            { itemToGive: { id: 'book_rune_of_void', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 100 }] },
+
         ],
         random: { pool: [], rolls: 0 }
     },
@@ -176,7 +241,14 @@ export const MERCHANT_TABLES: Record<string, MerchantLootTable> = {
             { itemToGive: { id: 'sword_1', quantity: 1 }, cost: [{ id: 'silver_piece', quantity: 20 }] },
             { itemToGive: { id: 'greatsword_1', quantity: 1 }, cost: [{ id: 'silver_piece', quantity: 40 }] },
             { itemToGive: { id: 'iron_sword', quantity: 1 }, cost: [{ id: 'gold_piece', quantity: 5 }] },
-            { itemToGive: { id: 'obsidian_sword', quantity: 1 }, cost: [{ id: 'gold_piece', quantity: 50 }] }
+            { itemToGive: { id: 'obsidian_sword', quantity: 1 }, cost: [{ id: 'gold_piece', quantity: 50 }] },
+
+            { itemToGive: { id: 'infernal_sword', quantity: 1 }, cost: [{ id: 'gold_piece', quantity: 100 }] },
+            { itemToGive: { id: 'frostmourne_sword', quantity: 1 }, cost: [{ id: 'gold_piece', quantity: 100 }] },
+            { itemToGive: { id: 'stormcaller_sword', quantity: 1 }, cost: [{ id: 'gold_piece', quantity: 100 }] },
+            { itemToGive: { id: 'void_sword', quantity: 1 }, cost: [{ id: 'gold_piece', quantity: 150 }] },
+            { itemToGive: { id: 'excalibur_sword', quantity: 1 }, cost: [{ id: 'gold_piece', quantity: 150 }] },
+
         ],
         random: { pool: [], rolls: 0 }
     },
@@ -222,7 +294,8 @@ export const MERCHANT_TABLES: Record<string, MerchantLootTable> = {
             { itemToGive: { id: 'rune_key_raeth', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 20 }] },
             { itemToGive: { id: 'rune_key_thera', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 20 }] },
             { itemToGive: { id: 'rune_key_threa', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 20 }] },
-            { itemToGive: { id: 'rune_key_ather', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 20 }] }
+            { itemToGive: { id: 'rune_key_ather', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 20 }] },
+            { itemToGive: { id: 'rune_key_north_heart', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 100 }] }
         ],
         random: { pool: [], rolls: 0 }
     },
@@ -276,6 +349,13 @@ export const MERCHANT_TABLES: Record<string, MerchantLootTable> = {
                 { listing: { itemToGive: { id: 'book_ice_shard', quantity: 1 }, cost: [{ id: 'gold_piece', quantity: 50 }] }, weight: 10 },
                 { listing: { itemToGive: { id: 'book_healing_light', quantity: 1 }, cost: [{ id: 'gold_piece', quantity: 75 }] }, weight: 5 },
                 { listing: { itemToGive: { id: 'book_lightning_strike', quantity: 1 }, cost: [{ id: 'gold_piece', quantity: 100 }] }, weight: 2 },
+                { listing: { itemToGive: { id: 'book_rune_of_fire', quantity: 1 }, cost: [{ id: 'gold_piece', quantity: 120 }] }, weight: 4 },
+                { listing: { itemToGive: { id: 'book_rune_of_ice', quantity: 1 }, cost: [{ id: 'gold_piece', quantity: 120 }] }, weight: 4 },
+                { listing: { itemToGive: { id: 'book_rune_of_lightning', quantity: 1 }, cost: [{ id: 'gold_piece', quantity: 120 }] }, weight: 4 },
+                { listing: { itemToGive: { id: 'book_rune_of_acid', quantity: 1 }, cost: [{ id: 'gold_piece', quantity: 120 }] }, weight: 4 },
+                { listing: { itemToGive: { id: 'book_rune_of_arcane', quantity: 1 }, cost: [{ id: 'gold_piece', quantity: 150 }] }, weight: 3 },
+                { listing: { itemToGive: { id: 'book_rune_of_holy', quantity: 1 }, cost: [{ id: 'gold_piece', quantity: 150 }] }, weight: 3 },
+                { listing: { itemToGive: { id: 'book_rune_of_void', quantity: 1 }, cost: [{ id: 'gold_piece', quantity: 150 }] }, weight: 3 },
                 { listing: { itemToGive: { id: 'magic_dust', quantity: 1 }, cost: [{ id: 'gold_piece', quantity: 10 }] }, weight: 20 },
                 { listing: { itemToGive: { id: 'crystal_shard', quantity: 1 }, cost: [{ id: 'copper_piece', quantity: 50 }] }, weight: 20 }
             ]

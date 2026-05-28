@@ -1,4 +1,5 @@
 import { PlanetRegistry } from './registries/PlanetRegistry';
+import { ThemeManager } from './ThemeManager';
 
 import { Engine } from "./Engine";
 import { TILE_SIZE, BLOCK_COLORS } from "./Constants";
@@ -11,6 +12,10 @@ import { defineEnemyRenderers } from './renderers/EnemyRenderer';
 import { defineNPCRenderers } from './renderers/NPCRenderer';
 import { defineProjectileRenderers } from './renderers/ProjectileRenderer';
 import { PlayerRenderer } from './renderers/PlayerRenderer';
+import { DroppedItemRenderer } from './renderers/DroppedItemRenderer';
+import { ParticleRenderer } from './renderers/ParticleRenderer';
+import { LightingRenderer } from './renderers/LightingRenderer';
+import { OverlayRenderer } from './renderers/OverlayRenderer';
 
 import { BlockRenderRegistry } from './registries/BlockRenderRegistry';
 import { defineBlockRenderers } from './renderers/BlockRenderer';
@@ -34,15 +39,23 @@ export class Renderer {
     }
 
     private static drawEntityList(ctx: CanvasRenderingContext2D, list: any[], player: any, playerZ: number, world: any, halfW: number, halfH: number, defaultTypeStr?: string) {
+        // Pre-compute canvas bounds for Frustum Culling
+        const canvasW = halfW * 2;
+        const canvasH = halfH * 2;
+        const pad = TILE_SIZE * 4;
+
         for (const ent of list) {
-            const surface = world.getSurface(Math.floor(ent.x), Math.floor(ent.y), playerZ);
-            if (ent.z < surface.z) continue;
+            const screenX = halfW + (ent.x - player.x) * TILE_SIZE;
+            const screenY = halfH + (ent.y - player.y) * TILE_SIZE;
+
+            // Frustum Culling: If deeply off-screen, skip entirely
+            if (screenX < -pad || screenX > canvasW + pad || screenY < -pad || screenY > canvasH + pad) continue;
 
             const depth = player.z - ent.z;
             if (depth > 5 || depth < -1) continue;
 
-            const screenX = halfW + (ent.x - player.x) * TILE_SIZE;
-            const screenY = halfH + (ent.y - player.y) * TILE_SIZE;
+            const surface = world.getSurface(Math.floor(ent.x), Math.floor(ent.y), playerZ);
+            if (ent.z < surface.z) continue;
 
             ctx.save();
             ctx.translate(screenX, screenY);
@@ -134,18 +147,9 @@ export class Renderer {
         const playerZ = Math.floor(player.z);
         
         let airColor = 'rgb(10, 35, 25)';
-        switch (world.activePlanet) {
-            case 'ARETH': airColor = 'rgb(30, 0, 0)'; break; // Dragons, Lava
-            case 'TARHE': airColor = 'rgb(40, 50, 60)'; break; // Dwarves, Snow
-            case 'TERHA': airColor = 'rgb(10, 25, 15)'; break; // Orcs, Swamps
-            case 'HEART': airColor = 'rgb(30, 20, 50)'; break; // Elves, Magic
-            case 'RATHE': airColor = 'rgb(50, 40, 20)'; break; // Sphinx, Desert
-            case 'THAER': airColor = 'rgb(0, 40, 10)'; break;  // Beasts, Forests
-            case 'THERA': airColor = 'rgb(0, 20, 30)'; break;  // Frogs, Coralline
-            case 'ATHER': airColor = 'rgb(20, 10, 30)'; break; // Giants, Fungi
-            case 'THREA': airColor = 'rgb(10, 35, 25)'; break; // Biodiverse
-            case 'THRAE': airColor = 'rgb(10, 35, 25)'; break; // Humans, Earth
-            case 'RAETH': airColor = 'rgb(5, 5, 5)'; break;    // Black Dunes
+        const activePlanetDef = PlanetRegistry.get(world.activePlanet);
+        if (activePlanetDef) {
+            airColor = activePlanetDef.airColor;
         }
 
         // Z-Slicing: Strict Dwarf Fortress style.
@@ -204,14 +208,23 @@ export class Renderer {
                     continue;
                 }
 
-                const color = BLOCK_COLORS[block];
+                let displayBlock = block;
+                // For top-down retro themes, we want cliff cross-sections to match their top surface appearance instead of revealing plain subterranean dirt.
+                if (ThemeManager && ThemeManager.currentThemeId !== 'classic' && isExposed && drawZ < highestZ) {
+                    const topBlock = world.getBlock(x, y, highestZ);
+                    if ([BlockType.GRASS, BlockType.SAND, BlockType.SNOW, BlockType.SWAMP_DIRT, BlockType.BLUE_DIRT, BlockType.RED_DIRT, BlockType.GREEN_DIRT].includes(topBlock)) {
+                        displayBlock = topBlock;
+                    }
+                }
+
+                const color = BLOCK_COLORS[displayBlock] || BLOCK_COLORS[block];
                 const shade = Math.max(0.05, 1 - (depth * 0.1));
                 
                 if (color) {
                     let { r, g, b } = color;
                     r *= shade; g *= shade; b *= shade;
 
-                    if (block === BlockType.ICE) {
+                    if (displayBlock === BlockType.ICE) {
                         ctx.fillStyle = `rgba(${r},${g},${b}, 0.8)`;
                     } else {
                         ctx.fillStyle = `rgb(${r},${g},${b})`;
@@ -219,14 +232,14 @@ export class Renderer {
                     ctx.fillRect(screenX, screenY, TILE_SIZE + 1, TILE_SIZE + 1);
                 }
 
-                const renderer = BlockRenderRegistry.get(block);
+                const renderer = BlockRenderRegistry.get(displayBlock);
                 if (renderer) {
-                    renderer.draw({ ctx, TILE_SIZE, entity: null, screenX, screenY, halfW, halfH, time: performance.now(), block, shade });
+                    renderer.draw({ ctx, TILE_SIZE, entity: null, screenX, screenY, halfW, halfH, time: performance.now(), block: displayBlock, shade });
                 }
-                // Draw grid lines for definition
-                ctx.strokeStyle = `rgba(0,0,0,${0.2 + Math.max(0, depth) * 0.1})`;
-                ctx.lineWidth = 1;
-                ctx.strokeRect(screenX, screenY, TILE_SIZE, TILE_SIZE);
+                // Draw grid lines for definition (Optimized: fillRect is much faster than strokeRect)
+                ctx.fillStyle = `rgba(0,0,0,${0.2 + Math.max(0, depth) * 0.1})`;
+                ctx.fillRect(screenX + TILE_SIZE - 1, screenY, 1, TILE_SIZE); // Right edge
+                ctx.fillRect(screenX, screenY + TILE_SIZE - 1, TILE_SIZE, 1); // Bottom edge
             }
         }
 
@@ -235,6 +248,7 @@ export class Renderer {
         Renderer.drawEntityList(ctx, engine.entities, player, playerZ, world, halfW, halfH);
         Renderer.drawEntityList(ctx, engine.animals, player, playerZ, world, halfW, halfH);
         Renderer.drawEntityList(ctx, engine.goblins, player, playerZ, world, halfW, halfH, 'GOBLIN');
+        Renderer.drawEntityList(ctx, engine.frostCasters, player, playerZ, world, halfW, halfH, 'FROST_CASTER');
         Renderer.drawEntityList(ctx, engine.rats, player, playerZ, world, halfW, halfH, 'RAT');
         Renderer.drawEntityList(ctx, engine.npcs, player, playerZ, world, halfW, halfH);
         Renderer.drawEntityList(ctx, engine.archers, player, playerZ, world, halfW, halfH, 'ARCHER');
@@ -256,6 +270,7 @@ export class Renderer {
         Renderer.drawEntityList(ctx, engine.sphinxs, player, playerZ, world, halfW, halfH, 'SPHINX');
         Renderer.drawEntityList(ctx, engine.sandTerrors, player, playerZ, world, halfW, halfH, 'SAND_TERROR');
         Renderer.drawEntityList(ctx, engine.phantomWizards, player, playerZ, world, halfW, halfH, 'PHANTOM_WIZARD');
+        Renderer.drawEntityList(ctx, engine.voidLords, player, playerZ, world, halfW, halfH, 'VOID_LORD');
         Renderer.drawEntityList(ctx, engine.drakes, player, playerZ, world, halfW, halfH, 'DRAKE');
         Renderer.drawEntityList(ctx, (engine as any).shadowWizards || [], player, playerZ, world, halfW, halfH, 'SHADOW_WIZARD');
         Renderer.drawEntityList(ctx, engine.fireDragonBosses, player, playerZ, world, halfW, halfH, 'FIRE_DRAGON_BOSS');
@@ -314,261 +329,19 @@ export class Renderer {
             }
         }
 
-        PlayerRenderer.draw(ctx, player, engine, halfW, halfH);
-        // Draw Dropped Items
-        for (const item of engine.droppedItems) {
-            const surface = world.getSurface(Math.floor(item.x), Math.floor(item.y), playerZ);
-            if (item.z < surface.z) continue;
-
-            const screenX = halfW + (item.x - player.x) * TILE_SIZE;
-            const screenY = halfH + (item.y - player.y) * TILE_SIZE;
-            const depth = Math.max(0, player.z - item.z);
-            const scale = Math.max(0.2, 1 - (depth * 0.1));
-            
-            if (scale > 0.2) {
-                ctx.save();
-                ctx.translate(screenX + TILE_SIZE / 2, screenY + TILE_SIZE / 2);
-                ctx.scale(scale * 0.5, scale * 0.5); // make them smaller than full tiles
-                
-                // Simple representation: a colored circle with a border
-                ctx.beginPath();
-                ctx.arc(0, 0, TILE_SIZE / 2, 0, Math.PI * 2);
-                
-                if (item.item.id === 'gold_piece') {
-                    ctx.fillStyle = '#fbbf24';
-                } else if (item.item.id === 'copper_piece') {
-                    ctx.fillStyle = '#b45309';
-                } else if (item.item.id === 'wood') {
-                    ctx.fillStyle = '#8B4513';
-                } else if (item.item.id === 'stone') {
-                    ctx.fillStyle = '#808080';
-                } else if (item.item.id === 'tent') {
-                    ctx.fillStyle = '#654321';
-                } else if (item.item.id === 'meat') {
-                    ctx.fillStyle = '#ef4444';
-                } else if (item.item.id === 'leather') {
-                    ctx.fillStyle = '#d97706';
-                } else {
-                    ctx.fillStyle = '#e5e7eb'; // default item color
-                }
-                
-                ctx.fill();
-                ctx.strokeStyle = '#000';
-                ctx.lineWidth = 2;
-                ctx.stroke();
-                ctx.restore();
-            }
-        }
-
-        // Draw Particles
-        for (const p of engine.particles) {
-            // Only draw particles near the player's Z level
-            if (Math.abs(p.z - player.z) > 4) continue;
-
-            const screenX = halfW + (p.x - player.x) * TILE_SIZE + TILE_SIZE / 2;
-            const screenY = halfH + (p.y - player.y) * TILE_SIZE;
-            
-            ctx.fillStyle = p.color;
-            ctx.globalAlpha = Math.max(0, p.life / p.maxLife);
-            
-            if (p.text === '') {
-                // Draw ambient glowing dot
-                ctx.beginPath();
-                ctx.arc(screenX, screenY, 2, 0, Math.PI * 2);
-                ctx.fill();
-            } else {
-                ctx.font = 'bold 16px monospace';
-                ctx.textAlign = 'center';
-                ctx.fillText(p.text, screenX, screenY);
-            }
+        if (player.isEyeMode && player.eyeReturnPos && Math.floor(player.eyeReturnPos.z) === playerZ) {
+            const returnScreenX = halfW + (player.eyeReturnPos.x - player.x) * TILE_SIZE;
+            const returnScreenY = halfH + (player.eyeReturnPos.y - player.y) * TILE_SIZE;
+            ctx.globalAlpha = 0.5;
+            PlayerRenderer.draw(ctx, { ...player, isEyeMode: false, x: player.eyeReturnPos.x, y: player.eyeReturnPos.y }, engine, returnScreenX, returnScreenY);
             ctx.globalAlpha = 1.0;
         }
 
-        // Lighting Pass
-        const depthDarkness = Math.max(0, (8 - player.z) * 0.15);
+        PlayerRenderer.draw(ctx, player, engine, halfW, halfH);
         
-        let timeDarkness = 0;
-        const t = world.timeOfDay;
-        if (t >= 20 || t < 4) {
-            timeDarkness = 0.85;
-        } else if (t >= 18 && t < 20) {
-            timeDarkness = 0.85 * ((t - 18) / 2);
-        } else if (t >= 4 && t < 6) {
-            timeDarkness = 0.85 * (1 - ((t - 4) / 2));
-        }
-
-        const darkness = Math.min(0.95, Math.max(timeDarkness, depthDarkness));
-        
-        if (darkness > 0) {
-            const lctx = engine.lightCtx;
-            lctx.globalCompositeOperation = 'source-over';
-            
-            let r = 0, g = 0, b = 0;
-            if (timeDarkness > depthDarkness) {
-                r = 5; g = 15; b = 35; // Dark blue tint for night
-            }
-            
-            lctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${darkness})`;
-            lctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            lctx.globalCompositeOperation = 'destination-out';
-
-            // Helper to draw light
-            const drawLight = (x: number, y: number, radius: number, intensity: number = 1, r: number = 255, g: number = 255, b: number = 255) => {
-                const screenX = halfW + (x - player.x) * TILE_SIZE;
-                const screenY = halfH + (y - player.y) * TILE_SIZE;
-                const grad = lctx.createRadialGradient(screenX, screenY, 0, screenX, screenY, radius * TILE_SIZE);
-                grad.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${intensity})`);
-                grad.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
-                lctx.fillStyle = grad;
-                lctx.beginPath();
-                lctx.arc(screenX, screenY, radius * TILE_SIZE, 0, Math.PI * 2);
-                lctx.fill();
-            };
-
-            // Player light (small radius)
-            drawLight(player.x, player.y, 4, 0.8);
-
-            // Draw lights for visible blocks
-            for (const t of visibleLights) {
-                if (t.block === BlockType.TORCH || t.block === BlockType.CAMPFIRE) {
-                    const flicker = 0.9 + Math.random() * 0.1;
-                    drawLight(t.x + 0.5, t.y + 0.5, t.block === BlockType.CAMPFIRE ? 12 : 8, flicker, 255, 200, 150);
-                } else if (t.block === BlockType.MUSHROOM_CAP) {
-                    drawLight(t.x + 0.5, t.y + 0.5, 5, 0.6, 0, 255, 255); // Cyan glow for mushrooms
-                } else if (t.block === BlockType.LAVA) {
-                    const flicker = 0.8 + Math.random() * 0.2;
-                    drawLight(t.x + 0.5, t.y + 0.5, 6, flicker, 255, 69, 0); // Orange/Red glow for lava
-                } else if (t.block === BlockType.CRYSTAL) {
-                    drawLight(t.x + 0.5, t.y + 0.5, 4, 0.5, 186, 85, 211); // Purple glow for crystals
-                } else if (t.block === BlockType.LANTERN_BLOCK) {
-                    drawLight(t.x + 0.5, t.y + 0.5, 9, 0.9 + Math.random() * 0.05, 255, 240, 150); // Warm bright glow
-                }
-            }
-
-            // Draw lights for Lava Golems
-            for (const golem of engine.lavaGolems) {
-                if (Math.abs(golem.z - player.z) < 2) {
-                    const flicker = 0.8 + Math.random() * 0.2;
-                    drawLight(golem.x, golem.y, 8, flicker, 255, 69, 0); // Large orange glow
-                }
-            }
-
-            // Draw lights for bombs
-            for (const b of engine.bombs) {
-                if (Math.abs(b.z - player.z) < 2) {
-                    drawLight(b.x, b.y, Math.random() * 2 + 1, 0.4, 255, 69, 0);
-                }
-            }
-
-            // Draw lights for projectiles
-            for (const p of engine.projectiles) {
-                if (Math.abs(p.z - player.z) < 2) {
-                    drawLight(p.x, p.y, 3, 0.6);
-                }
-            }
-
-            // Draw lights for Persistent AoEs
-            for (const paoe of engine.persistentAoEs) {
-                if (Math.abs(paoe.z - player.z) < 2) {
-                    if (paoe.type === 'FIRE') {
-                        drawLight(paoe.x, paoe.y, paoe.radius * 1.5, 0.6 + Math.random() * 0.2, 255, 69, 0);
-                    } else if (paoe.type === 'ARCANE_PROTECTION') {
-                        drawLight(paoe.x, paoe.y, paoe.radius * 1.2, 0.5, 153, 50, 204);
-                    }
-                }
-            }
-
-            // Draw lights for AoE
-            for (const aoe of engine.aoeEffects) {
-                if (Math.abs(aoe.z - player.z) < 2) {
-                    drawLight(aoe.x, aoe.y, aoe.radius, (aoe.life / aoe.maxLife));
-                }
-            }
-
-            // Draw lights for Cone
-            for (const cone of engine.coneEffects) {
-                if (Math.abs(cone.z - player.z) < 2) {
-                    drawLight(cone.x, cone.y, cone.radius, (cone.life / cone.maxLife));
-                }
-            }
-
-            // Draw light for Mark
-            if (player.markPosition && Math.floor(player.markPosition.z) === Math.floor(player.z)) {
-                drawLight(player.markPosition.x, player.markPosition.y, 3, 0.5, 168, 85, 247); // purple-500
-            }
-
-            // Draw lights for Portals
-            const portalLightColors: Record<string, [number, number, number]> = {
-                'red': [239, 68, 68],
-                'blue': [59, 130, 246],
-                'yellow': [234, 179, 8],
-                'green': [34, 197, 94],
-                'purple': [168, 85, 247],
-                'orange': [249, 115, 22]
-            };
-            for (const [color, p] of Object.entries(player.portals)) {
-                const pos = p as any;
-                if (Math.floor(pos.z) === Math.floor(player.z)) {
-                    const [r, g, b] = portalLightColors[color] || [255, 255, 255];
-                    drawLight(pos.x, pos.y, 4, 0.6, r, g, b);
-                }
-            }
-
-            // Apply lightmap to main canvas
-            ctx.globalCompositeOperation = 'source-over';
-            ctx.drawImage(engine.lightCanvas, 0, 0);
-        }
-        
-        if (world.activePlanet === 'ARETH') {
-             // Red/orange vignette mask for heat
-             const vignette = ctx.createRadialGradient(
-                 canvas.width / 2, canvas.height / 2, canvas.width * 0.1,
-                 canvas.width / 2, canvas.height / 2, canvas.width * 0.7
-             );
-             vignette.addColorStop(0, 'rgba(255, 69, 0, 0)');
-             vignette.addColorStop(1, 'rgba(180, 20, 0, 0.4)');
-             
-             ctx.fillStyle = vignette;
-             ctx.fillRect(0, 0, canvas.width, canvas.height);
-        } else if (world.activePlanet === 'TARHE') {
-             // Light blue/white frost vignette for cold
-             const vignette = ctx.createRadialGradient(
-                 canvas.width / 2, canvas.height / 2, canvas.width * 0.2,
-                 canvas.width / 2, canvas.height / 2, canvas.width * 0.8
-             );
-             vignette.addColorStop(0, 'rgba(173, 216, 230, 0)');
-             vignette.addColorStop(1, 'rgba(173, 216, 230, 0.35)');
-             
-             ctx.fillStyle = vignette;
-             ctx.fillRect(0, 0, canvas.width, canvas.height);
-        } else if (world.activePlanet === 'TERHA') {
-             // Green/Brown murky vignette for swamp
-             const vignette = ctx.createRadialGradient(
-                 canvas.width / 2, canvas.height / 2, canvas.width * 0.2,
-                 canvas.width / 2, canvas.height / 2, canvas.width * 0.8
-             );
-             vignette.addColorStop(0, 'rgba(34, 139, 34, 0)'); // Forest green
-             vignette.addColorStop(1, 'rgba(85, 107, 47, 0.45)'); // Dark olive green
-             
-             ctx.fillStyle = vignette;
-             ctx.fillRect(0, 0, canvas.width, canvas.height);
-        }
-
-        // Draw Abyssal Floor UI
-        if (player.x >= 60000 * 16) {
-            const currentFloor = Math.floor((player.x / 16 - 60000) / 10);
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-            ctx.fillRect(canvas.width / 2 - 100, 20, 200, 40);
-            ctx.strokeStyle = '#5c3a21';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(canvas.width / 2 - 100, 20, 200, 40);
-            
-            ctx.font = 'bold 20px monospace';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillStyle = '#ff4444';
-            ctx.fillText(`ABYSSAL FLOOR ${currentFloor}`, canvas.width / 2, 40);
-        }
+        DroppedItemRenderer.draw(ctx, engine, halfW, halfH, playerZ);
+        ParticleRenderer.draw(ctx, engine, halfW, halfH, playerZ);
+        LightingRenderer.draw(engine, canvas, ctx, halfW, halfH, visibleLights, playerZ);
+        OverlayRenderer.draw(engine, canvas, ctx);
     }
 }

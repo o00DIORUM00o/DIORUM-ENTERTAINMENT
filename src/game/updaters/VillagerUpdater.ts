@@ -53,12 +53,25 @@ export class VillagerUpdater {
                     block === BlockType.STALL_FABRIC ||
                     block === BlockType.STALL_RUNE_KEYS ||
                     block === BlockType.STALL_BLOCKS ||
-                    block === BlockType.STALL_LEATHER
+                    block === BlockType.STALL_LEATHER ||
+                    block === BlockType.BAG_MERCHANT_STALL ||
+                    block === BlockType.BERRY_FARMER_SHED ||
+                    block === BlockType.PRIEST_TENT ||
+                    block === BlockType.MERCHANT_TENT ||
+                    block === BlockType.WANDERING_BARD_TENT ||
+                    block === BlockType.KING_SPAWNER ||
+                    block === BlockType.QUEST_NPC_SPAWNER
                 ) {
-                    // Spawn merchant NPC and remove the block
-                    engine.world.setBlock(x, y, z, BlockType.AIR);
+                    // Spawn merchant NPC and replace block if it was a tent
+                    if (block === BlockType.MERCHANT_TENT || block === BlockType.PRIEST_TENT || block === BlockType.WANDERING_BARD_TENT) {
+                        engine.world.setBlock(x, y, z, BlockType.TENT); // replace spawner with normal tent
+                    } else if (block === BlockType.BAG_MERCHANT_STALL || block === BlockType.BERRY_FARMER_SHED) {
+                        engine.world.setBlock(x, y, z, BlockType.WOOD_WALL);
+                    } else {
+                        engine.world.setBlock(x, y, z, BlockType.AIR);
+                    }
                     
-                    let npcType: 'VILLAGER' | 'OLD_WIZARD' | 'DRACONIC_MERCHANT' | 'DARK_ELF' | 'DWARF' | 'GNOME' | 'SLUG_FOLK_MERCHANT' = 'VILLAGER';
+                    let npcType: 'VILLAGER' | 'OLD_WIZARD' | 'DRACONIC_MERCHANT' | 'DARK_ELF' | 'DWARF' | 'GNOME' | 'SLUG_FOLK_MERCHANT' | 'NPC_KING' | 'NPC_WIZARD' | 'WANDERING_BARD' = 'VILLAGER';
                     let idPrefix = 'merchant_';
                     let mType = 'VILLAGER_MERCHANT';
 
@@ -66,10 +79,26 @@ export class VillagerUpdater {
                         npcType = 'DRACONIC_MERCHANT';
                         idPrefix = 'draconic_merchant_';
                         mType = 'DRACONIC_MERCHANT';
+                    } else if (block === BlockType.WANDERING_BARD_TENT) {
+                        npcType = 'WANDERING_BARD';
+                        idPrefix = 'bard_';
+                        mType = 'WANDERING_BARD';
                     } else if (block === BlockType.SLUG_FOLK_MERCHANT) {
                         npcType = 'SLUG_FOLK_MERCHANT' as any;
                         idPrefix = 'slug_folk_merchant_';
                         mType = 'SLUG_FOLK_MERCHANT';
+                    } else if (block === BlockType.KING_SPAWNER) {
+                        npcType = 'NPC_KING';
+                        idPrefix = 'king_';
+                        mType = 'KING';
+                    } else if (block === BlockType.QUEST_NPC_SPAWNER) {
+                        npcType = 'NPC_WIZARD';
+                        idPrefix = 'wizard_';
+                        mType = 'WIZARD';
+                    } else if (block === BlockType.PRIEST_TENT) {
+                        mType = 'VILLAGER_PRIEST';
+                    } else if (block === BlockType.MERCHANT_TENT) {
+                        mType = 'VILLAGER_MERCHANT';
                     } else if (block === BlockType.STALL_BOOKS) mType = 'STALL_BOOKS';
                     else if (block === BlockType.STALL_STAVES) mType = 'STALL_STAVES';
                     else if (block === BlockType.STALL_SWORDS) mType = 'STALL_SWORDS';
@@ -80,6 +109,8 @@ export class VillagerUpdater {
                     else if (block === BlockType.STALL_RUNE_KEYS) mType = 'STALL_RUNE_KEYS';
                     else if (block === BlockType.STALL_BLOCKS) mType = 'STALL_BLOCKS';
                     else if (block === BlockType.STALL_LEATHER) mType = 'STALL_LEATHER';
+                    else if (block === BlockType.BAG_MERCHANT_STALL) mType = 'BAG_MERCHANT';
+                    else if (block === BlockType.BERRY_FARMER_SHED) mType = 'BERRY_FARMER';
                     
                     engine.npcs.push({
                         id: idPrefix + Math.random().toString(36).substr(2, 9),
@@ -87,7 +118,8 @@ export class VillagerUpdater {
                         y: y + 0.5,
                         z: z + 1,
                         vx: 0, vy: 0, vz: 0,
-                        health: EntityRegistry.get('villager').maxHealth, maxHealth: EntityRegistry.get('villager').maxHealth,
+                        health: EntityRegistry.get(npcType.toLowerCase())?.maxHealth || EntityRegistry.get('villager').maxHealth, 
+                        maxHealth: EntityRegistry.get(npcType.toLowerCase())?.maxHealth || EntityRegistry.get('villager').maxHealth,
                         type: npcType as any,
                         state: 'IDLE',
                         disposition: 0,

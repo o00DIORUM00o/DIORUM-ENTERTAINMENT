@@ -8,6 +8,7 @@ export class FireDragonBossUpdater {
             const boss = engine.fireDragonBosses[i];
             
             if (boss.health <= 0) {
+                if (Math.random() < 0.4) engine.dropItem(boss.x, boss.y, boss.z, { ...ITEMS['copper_piece'], quantity: Math.floor(Math.random() * 3) + 1 });
                 engine.fireDragonBosses.splice(i, 1);
                 engine.player.addXp(5000);
                 engine.particles.push({

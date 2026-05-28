@@ -71,6 +71,28 @@ To maintain an AI-friendly, scalable, and modular workspace, the following rules
 - **RULE 3: Event-Driven UI.** Core engine code must NEVER touch the DOM or React directly. Rely entirely on `EventEmitter` to broadcast state changes (`engine.events.emit('HUD_UPDATE')`).
 - **RULE 4: Strict Typing Everywhere.** Expose interfaces for all data structures (Entities, Drops, Stats) in a centralized type file (or at the top of domain controllers) so the compiler acts as an anti-hallucination guardrail.
 - **RULE 5: Isolate Memory Boundaries.** Systems should not reach into each other's hidden states arbitrarily. Pass bounded contexts (e.g., `EntityBehaviorContext`, `AbilityContext`) rather than raw global pointers when possible.
+- **RULE 6: The Archetype / Template Pattern.** Rather than code-diving hundreds of unique implementations (e.g., trying to read every one of the 400 Enemy Spawners), think in Archetypes. For example, an ENEMY SPAWNER can be summarized as: *A BLOCK, DESTRUCTIBLE, MAX OF 3 ACTIVE ENEMY SPAWNS*. By understanding the core templates of objects (Buildings, Tools, Companions, Spawners), you can create scalable additions without scanning hundreds of instances. Before digging into 50 files for an implementation, define its archetype template.
+- **RULE 7: Dungeon Templates.** Instead of repeatedly hardcoding custom layouts for every dungeon (e.g., North Dungeon), use modular generation templates. A dungeon archetype looks like: `2 FLOOR DUNGEON, BLOCK_TYPE: [Wall/Floor block], SPAWNER_TYPE: [Goblin Tent / Bone Pile, etc]`. Pass these parameters into a generalized dungeon carving utility to spawn structurally identical but thematically distinct environments without copy-pasting loops.
+
+## 9. The AI Game Dev Roadmap & Phase 5
+
+To maintain simplicity, context awareness, and modularity, we are following a strict internal roadmap called **"THE AI GAME DEV UPDATE"**. We want you to feel that you have the creative tools you WANT, allowing you to easily read the codebase, understand systems, and paint with features rather than fighting spaghetti code.
+
+### The Roadmap:
+- **Phase 1: Player Subsystem Extrication (Completed).** Split the monolithic `Player.ts` and core loops into granular domain code (`PlayerCombat`, `PlayerInteraction`, `PlayerInventory`, etc.).
+- **Phase 2: Procedural Segregation (Completed).** Extracted terrain generation, cave carving, and structure algorithms from chunk management (`TerrainGenerator.ts`, `DungeonGenerator.ts`).
+- **Phase 3: Behavior Registries (Completed).** Replaced massive update switches for entity logic with `EntitySteeringSystem` and localized updaters.
+- **Phase 4: UI Event Decoupling (Completed).** Ensured core code only emits events.
+- **Phase 5: Data Defabrication & Renderer Decoupling (ACTIVE).** Splitting giant, 1000+ line registry files into categorical buckets. Breaking `EnemyRenderer`, `NPCRenderer`, `AnimalRenderer`, and massive item action switches down by genus and capability.
+- **Phase 6: State Machine Unification.** Using a generalized, data-driven State Machine schema for UI, player actions, and complex logic transitions.
+
+### Phase 5 Actions (Just Completed)
+We shattered the massive renderer files (which were up to 1600+ lines long) into sub-folders:
+- `src/game/renderers/enemies/` (categorized into `humanoids.ts`, `dragons.ts`, `undead.ts` etc.)
+- `src/game/renderers/npcs/` (categorized into `villagers.ts`, `merchants.ts`, etc.)
+- `src/game/renderers/animals/` (categorized into mounts, standard animals, etc.)
 
 ---
 *Note: This file is automatically loaded into the AI's context to maintain a persistent understanding of the game's architecture.*
+
+

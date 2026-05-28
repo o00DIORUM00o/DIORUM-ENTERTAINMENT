@@ -1,3 +1,4 @@
+import { EntitySteeringSystem } from '../systems/EntitySteeringSystem';
 import { isSolid } from "../World";
 import { BlockType } from "../constants/BlockType";
 import { ITEMS } from "../Inventory";
@@ -51,7 +52,7 @@ export class DrakeUpdater {
                     }
                     
                     const attackTriggerDist = 1.2;
-                    if (dist2D < attackTriggerDist && Math.abs(dz) < 1.5 && drake.attackCooldown <= 0) {
+                    if (dist2D < attackTriggerDist && Math.abs(dz) < 1.0 && drake.attackCooldown <= 0) {
                         drake.state = 'ATTACK';
                         drake.attackTimer = 0.3; // Quick attack
                         drake.attackCooldown = 1.0;
@@ -63,7 +64,7 @@ export class DrakeUpdater {
                     
                     if (drake.attackTimer <= 0) {
                         // Deal damage
-                        if (dist2D < 1.5 && Math.abs(dz) < 2.0) {
+                        if (dist2D < 1.5 && Math.abs(dz) < 1.0) {
                             engine.player.takeDamage(drake.damage);
                             engine.particles.push({
                                 x: engine.player.x,
@@ -95,8 +96,8 @@ export class DrakeUpdater {
             // Gravity (Drakes can fly slightly but let's stick to ground for now, maybe lessen gravity)
             drake.vz -= 10 * dt;
             
-            Updater.applyBoids(drake, engine, dt);
-            Updater.applyDodge(drake, engine, dt);
+            EntitySteeringSystem.applyBoids(drake, engine, dt);
+            EntitySteeringSystem.applyDodge(drake, engine, dt);
             
             // Movement
             const newX = drake.x + drake.vx * dt;
@@ -153,6 +154,7 @@ export class DrakeUpdater {
             if (drake.attackCooldown > 0) drake.attackCooldown -= dt;
 
             if (drake.health <= 0) {
+                if (Math.random() < 0.4) engine.dropItem(drake.x, drake.y, drake.z, { ...ITEMS['copper_piece'], quantity: Math.floor(Math.random() * 3) + 1 });
                 removeFromArray(engine.drakes, i);
                 engine.player.addXp(Math.floor(60 * (drake.maxHealth / 100)));
                 

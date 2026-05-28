@@ -1,0 +1,65 @@
+import type { Spell } from '../../registries/ItemRegistry';
+
+export const NATURE_SPELLS: Record<string, Spell> = {
+  'animate_stone': {
+        id: "animate_stone",
+        name: "Animate Stone",
+        description: "Turn a stone block into a Stone Golem.",
+        manaCost: 40,
+        cooldown: 20,
+        damage: 0,
+        reach: 8,
+        spread: 0,
+        damageType: "ANIMATE_STONE",
+        type: "PROJECTILE",
+        projectileSpeed: 15,
+        stackable: true,
+        maxStack: 99
+    },
+  'acid_bolt': {
+        id: "acid_bolt",
+        name: "Acid Bolt",
+        description: "Hurl a corrosive bolt of acid.",
+        manaCost: 12,
+        cooldown: 1.2,
+        damage: 18,
+        reach: 5,
+        spread: 0,
+        damageType: "ACID",
+        type: "PROJECTILE",
+        projectileSpeed: 12,
+        statusEffect: { type: "poison", duration: 5.0, chance: 0.5 },
+        stackable: true,
+        maxStack: 99
+    },
+  'acid_ball': {
+        id: "acid_ball",
+        name: "Acid Ball",
+        description: "Unleash a burst of corrosive acid around you.",
+        manaCost: 25,
+        cooldown: 2,
+        damage: 22,
+        reach: 3.5,
+        spread: 0,
+        damageType: "ACID",
+        type: "AOE",
+        stackable: true,
+        maxStack: 99
+    },
+  'rune_of_acid': {
+        id: "rune_of_acid",
+        name: "Rune of Acid",
+        description: "A toxic rune that melts the surrounding area with corrosive acid.",
+        manaCost: 35,
+        cooldown: 10.0,
+        damage: 120,
+        reach: 7,
+        spread: 0,
+        damageType: "ACID",
+        statusEffect: { type: "poison", duration: 10.0, chance: 1.0 },
+        type: "AOE",
+        castTime: 1.2,
+        stackable: true,
+        maxStack: 99
+    },
+};

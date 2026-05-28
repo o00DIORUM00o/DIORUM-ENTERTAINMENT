@@ -58,6 +58,8 @@ export const BLOCK_LOOT_TABLES: Partial<Record<BlockType, LootTableFunc>> = {
     [BlockType.YELLOW_METAL_ORE]: () => [{ item: ITEMS['yellow_metal_ore'] }],
     [BlockType.PLUTONIUM_ORE]: () => [{ item: ITEMS['plUTONIUM_ore'] }],
     [BlockType.COAL_ORE]: () => [{ item: ITEMS['coal'] }],
+    [BlockType.RED_COAL]: () => [{ item: ITEMS['coal'] }],
+    [BlockType.SALT]: () => [{ item: ITEMS['stone'] }],
     [BlockType.CAMPFIRE]: () => [{ item: ITEMS['campfire'] }],
     [BlockType.VILLAGE_BELL]: () => [{ item: ITEMS['village_bell'] }],
     [BlockType.COPPER_BELL]: () => [{ item: ITEMS['village_bell'] }],
@@ -105,6 +107,16 @@ export const BLOCK_LOOT_TABLES: Partial<Record<BlockType, LootTableFunc>> = {
     [BlockType.GIANT_MUSHROOM_STALK]: () => [{ item: ITEMS['fungal_spore'] }],
     [BlockType.CLAY_ORE]: () => [{ item: ITEMS['clay'], quantity: Math.floor(Math.random() * 3) + 1 }],
     [BlockType.SLIME_PUDDLE]: () => [{ item: ITEMS['slime'], quantity: Math.floor(Math.random() * 2) + 1 }],
+
+    [BlockType.PERMAFROST]: () => [{ item: ITEMS['permafrost'] }],
+    [BlockType.FROZEN_WOOD]: () => [{ item: ITEMS['frozen_wood'] }],
+    [BlockType.FROZEN_LEAVES]: () => Math.random() < 0.25 ? [{ item: ITEMS['frozen_wood'] }] : [],
+    [BlockType.GLACIAL_ICE]: () => [{ item: ITEMS['glacial_ice'] }],
+    [BlockType.GLACIAL_CRYSTAL_ORE]: () => [{ item: ITEMS['glacial_crystal'] }, { item: ITEMS['permafrost'] }],
+    [BlockType.STAR_METAL_ORE]: () => [{ item: ITEMS['star_metal_ore'] }],
+    [BlockType.WINTER_ELF_TENT]: () => [{ item: ITEMS['tent'] }],
+    [BlockType.YETI_CAVE]: () => [{ item: ITEMS['stone'] }],
+
     [BlockType.POT]: () => {
         const randomLoot = ['gold_piece', 'copper_piece', 'health_potion', 'red_berry', 'slime'];
         const itemToDrop = randomLoot[Math.floor(Math.random() * randomLoot.length)];
@@ -181,7 +193,7 @@ export const BLOCK_LOOT_TABLES: Partial<Record<BlockType, LootTableFunc>> = {
     [BlockType.ARCHER_MERCENARY]: () => [{ item: ITEMS['archer_contract'] }],
     [BlockType.FABRIC_STATION]: () => [{ item: ITEMS['fabric_station'] }],
     [BlockType.LEATHER_STATION]: () => [{ item: ITEMS['leather_station'] }],
-    [BlockType.DUNGEON_BRICK_HARD]: () => [{ item: ITEMS['dungeon_brick_hard'] }],
+    [BlockType.CASTLE_STONE]: () => [{ item: ITEMS['castle_stone'] }],
     [BlockType.DUNGEON_BRICK_CRACKED]: () => [{ item: ITEMS['dungeon_brick_cracked'] }],
     [BlockType.ANCIENT_WOOD]: () => [{ item: ITEMS['ancient_wood'] }],
     [BlockType.ANCIENT_LEAVES]: () => [{ item: ITEMS['ancient_leaves'] }],
@@ -196,7 +208,108 @@ export const BLOCK_LOOT_TABLES: Partial<Record<BlockType, LootTableFunc>> = {
     [BlockType.TRICERA_TENT]: () => [{ item: ITEMS['tent'] }],
     [BlockType.RAPTOR_TENT]: () => [{ item: ITEMS['tent'] }],
     [BlockType.FROG_TENT]: () => [{ item: ITEMS['tent'] }],
-    [BlockType.FOSSIL_ORE]: () => [{ item: ITEMS['fossil'] }, { item: ITEMS['stone'] }]
+    [BlockType.FOSSIL_ORE]: () => [{ item: ITEMS['fossil'] }, { item: ITEMS['stone'] }],
+    
+    // Clays
+    [BlockType.ORANGE_CLAY]: () => [{ item: ITEMS['clay'] }],
+    [BlockType.PURPLE_CLAY]: () => [{ item: ITEMS['clay'] }],
+    [BlockType.YELLOW_CLAY]: () => [{ item: ITEMS['clay'] }],
+    [BlockType.BROWN_CLAY]: () => [{ item: ITEMS['clay'] }],
+    
+    // Wizard
+    [BlockType.WIZARD_TOWER_WALL]: () => [{ item: ITEMS['stone'] }],
+    [BlockType.WIZARD_TOWER_FLOOR]: () => [{ item: ITEMS['wood_floor'] }],
+    [BlockType.MAGIC_BLOCK]: () => [{ item: ITEMS['stone'] }],
+    
+    // Roads
+    [BlockType.ROAD_SIGN]: () => [{ item: ITEMS['wood'] }],
+    [BlockType.DIRT_PATH]: () => [{ item: ITEMS['dirt'] }],
+    [BlockType.PAVED_ROAD]: () => [{ item: ITEMS['stone'] }],
+    [BlockType.COBBLESTONE_ROAD]: () => [{ item: ITEMS['stone'] }],
+    
+    // Sand/Dirt
+    [BlockType.ORANGE_SAND]: () => [{ item: ITEMS['sand'] }],
+    [BlockType.ORANGE_DIRT]: () => [{ item: ITEMS['dirt'] }],
+    [BlockType.PURPLE_SAND]: () => [{ item: ITEMS['sand'] }],
+    [BlockType.PURPLE_DIRT]: () => [{ item: ITEMS['dirt'] }],
+    [BlockType.YELLOW_SAND]: () => [{ item: ITEMS['sand'] }],
+    [BlockType.YELLOW_DIRT]: () => [{ item: ITEMS['dirt'] }],
+    [BlockType.BROWN_SAND]: () => [{ item: ITEMS['sand'] }],
+    [BlockType.BROWN_DIRT]: () => [{ item: ITEMS['dirt'] }],
+    
+    // Tents/Spawners
+    [BlockType.MERCHANT_TENT]: () => [{ item: ITEMS['tent'] }],
+    [BlockType.PRIEST_TENT]: () => [{ item: ITEMS['tent'] }],
+    [BlockType.WANDERING_BARD_TENT]: () => [{ item: ITEMS['tent'] }],
+    [BlockType.ABYSSAL_SPAWNER]: () => [{ item: ITEMS['stone'] }],
+    [BlockType.OBSERVER_SPAWNER]: () => [{ item: ITEMS['stone'] }],
+    [BlockType.HORDE_SPAWNER]: () => [{ item: ITEMS['stone'] }],
+    [BlockType.ARETH_SPAWNER]: () => [{ item: ITEMS['stone'] }],
+    [BlockType.DRAKE_NEST]: () => [{ item: ITEMS['stone'] }],
+    [BlockType.DARK_ELF_SPAWNER]: () => [{ item: ITEMS['tent'] }],
+    [BlockType.GRYPHON_NEST]: () => [{ item: ITEMS['tent'] }],
+    [BlockType.GNOME_SPAWNER]: () => [{ item: ITEMS['tent'] }],
+    [BlockType.DWARF_SPAWNER]: () => [{ item: ITEMS['tent'] }],
+    [BlockType.ROCK_GOLEM_SPAWNER]: () => [{ item: ITEMS['stone'] }],
+    [BlockType.ESCALATION_SPAWNER]: () => [{ item: ITEMS['stone'] }],
+    [BlockType.LAVA_GOLEM_SPAWNER]: () => [{ item: ITEMS['lava_rock'] }],
+    [BlockType.GARGOYLE_SPAWNER]: () => [{ item: ITEMS['stone'] }],
+    [BlockType.PHANTOM_WIZARD_SPAWNER]: () => [{ item: ITEMS['stone'] }],
+    
+    // Woods
+    [BlockType.ORANGE_WOOD]: () => [{ item: ITEMS['wood'] }],
+    [BlockType.PURPLE_WOOD]: () => [{ item: ITEMS['wood'] }],
+    [BlockType.YELLOW_WOOD]: () => [{ item: ITEMS['wood'] }],
+    [BlockType.BROWN_WOOD]: () => [{ item: ITEMS['wood'] }],
+    [BlockType.FROST_WOOD]: () => [{ item: ITEMS['wood'] }],
+    
+    // Stones/Marbles
+    [BlockType.BLUE_MARBLE]: () => [{ item: ITEMS['marble'] }],
+    [BlockType.ORANGE_STONE]: () => [{ item: ITEMS['stone'] }],
+    [BlockType.ORANGE_MARBLE]: () => [{ item: ITEMS['marble'] }],
+    [BlockType.PURPLE_STONE]: () => [{ item: ITEMS['stone'] }],
+    [BlockType.PURPLE_MARBLE]: () => [{ item: ITEMS['marble'] }],
+    [BlockType.YELLOW_STONE]: () => [{ item: ITEMS['stone'] }],
+    [BlockType.YELLOW_MARBLE]: () => [{ item: ITEMS['marble'] }],
+    [BlockType.BROWN_STONE]: () => [{ item: ITEMS['stone'] }],
+    [BlockType.BROWN_MARBLE]: () => [{ item: ITEMS['marble'] }],
+    [BlockType.BLACK_FIRE_ROCK]: () => [{ item: ITEMS['stone'] }],
+    [BlockType.MOONSTONE]: () => [{ item: ITEMS['stone'] }],
+    [BlockType.BLOOD_STONE]: () => [{ item: ITEMS['stone'] }],
+    [BlockType.SUN_ROCK]: () => [{ item: ITEMS['stone'] }],
+    [BlockType.CORALLINE_ROCK]: () => [{ item: ITEMS['stone'] }],
+    [BlockType.ECHO_STONE]: () => [{ item: ITEMS['stone'] }],
+    [BlockType.VOIDSIGHT_ORE]: () => [{ item: ITEMS['crystal_shard'] }],
+    
+    // Crystals / Misc
+    [BlockType.GREEN_CRYSTAL]: () => [{ item: ITEMS['crystal_shard'], quantity: Math.floor(Math.random() * 3) + 1 }],
+    [BlockType.RED_CRYSTAL]: () => [{ item: ITEMS['crystal_shard'], quantity: Math.floor(Math.random() * 3) + 1 }],
+    [BlockType.BLACK_CRYSTAL]: () => [{ item: ITEMS['crystal_shard'], quantity: Math.floor(Math.random() * 3) + 1 }],
+    [BlockType.BLUE_CRYSTAL]: () => [{ item: ITEMS['crystal_shard'], quantity: Math.floor(Math.random() * 3) + 1 }],
+    [BlockType.ORANGE_CRYSTAL]: () => [{ item: ITEMS['crystal_shard'], quantity: Math.floor(Math.random() * 3) + 1 }],
+    [BlockType.PURPLE_CRYSTAL]: () => [{ item: ITEMS['crystal_shard'], quantity: Math.floor(Math.random() * 3) + 1 }],
+    [BlockType.YELLOW_CRYSTAL]: () => [{ item: ITEMS['crystal_shard'], quantity: Math.floor(Math.random() * 3) + 1 }],
+    [BlockType.GREEN_GLOW_CRYSTAL]: () => [{ item: ITEMS['crystal_shard'], quantity: Math.floor(Math.random() * 3) + 1 }],
+    [BlockType.RED_GLOW_CRYSTAL]: () => [{ item: ITEMS['crystal_shard'], quantity: Math.floor(Math.random() * 3) + 1 }],
+    [BlockType.BLUE_GLOW_CRYSTAL]: () => [{ item: ITEMS['crystal_shard'], quantity: Math.floor(Math.random() * 3) + 1 }],
+    [BlockType.ORANGE_GLOW_CRYSTAL]: () => [{ item: ITEMS['crystal_shard'], quantity: Math.floor(Math.random() * 3) + 1 }],
+    [BlockType.PURPLE_GLOW_CRYSTAL]: () => [{ item: ITEMS['crystal_shard'], quantity: Math.floor(Math.random() * 3) + 1 }],
+    [BlockType.YELLOW_GLOW_CRYSTAL]: () => [{ item: ITEMS['crystal_shard'], quantity: Math.floor(Math.random() * 3) + 1 }],
+    [BlockType.JADE]: () => [{ item: ITEMS['emerald'] }],
+    [BlockType.SAPPHIRE]: () => [{ item: ITEMS['ruby'] }],
+    [BlockType.DIAMOND]: () => [{ item: ITEMS['crystal_shard'], quantity: 5 }],
+    [BlockType.GREEN_DIAMOND]: () => [{ item: ITEMS['crystal_shard'], quantity: 5 }],
+    [BlockType.PURPLE_DIAMOND]: () => [{ item: ITEMS['crystal_shard'], quantity: 5 }],
+    [BlockType.SLIME_TRAIL]: () => [{ item: ITEMS['slime'] }],
+    [BlockType.PALE_SLIME_BLOCK]: () => [{ item: ITEMS['slime'], quantity: 2 }],
+    [BlockType.VOID_MATTER]: () => [{ item: ITEMS['obsidian'] }],
+    [BlockType.ASTRAL_DUST]: () => [{ item: ITEMS['sand'] }],
+    [BlockType.CHRONO_GLASS]: () => [{ item: ITEMS['glass_block'] }],
+    [BlockType.WALL_SHOOTER]: () => [{ item: ITEMS['stone'] }],
+    [BlockType.SPIKE_FLOOR_ACTIVE]: () => [{ item: ITEMS['stone'] }],
+    [BlockType.DOOR_LOCKED]: () => [{ item: ITEMS['door'] }],
+    [BlockType.MERCHANT]: () => [],
+    [BlockType.DRACONIC_MERCHANT]: () => [],
 };
 
 export function getLootForBlock(block: BlockType): { item: Item, quantity?: number }[] {

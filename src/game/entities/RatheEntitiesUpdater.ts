@@ -1,6 +1,7 @@
 import { Gargoyle, Djinn, Gremlin } from '../types/EntityTypes';
 import { removeFromArray } from '../Updater';
 import { BlockType } from '../constants/BlockType';
+import { ITEMS } from '../Inventory';
 
 export class RatheEntitiesUpdater {
     static updateAll(engine: any, dt: number) {
@@ -14,6 +15,7 @@ export class RatheEntitiesUpdater {
             const g = engine.gargoyles[i];
             
             if (g.health <= 0) {
+                if (Math.random() < 0.4) engine.dropItem(g.x, g.y, g.z, { ...ITEMS['copper_piece'], quantity: Math.floor(Math.random() * 3) + 1 });
                 engine.player.addXp(250);
                 engine.dropItem(g.x, g.y, g.z, { id: 'stone', name: 'Stone', category: 'MATERIAL', maxStack: 64, quantity: 2 });
                 if (Math.random() < 0.2) {
@@ -101,6 +103,7 @@ export class RatheEntitiesUpdater {
             const d = engine.djinns[i];
             
             if (d.health <= 0) {
+                if (Math.random() < 0.4) engine.dropItem(d.x, d.y, d.z, { ...ITEMS['copper_piece'], quantity: Math.floor(Math.random() * 3) + 1 });
                 engine.player.addXp(300);
                 engine.dropItem(d.x, d.y, d.z, { id: 'djinn_lamp', name: 'Djinn Lamp', description: 'A magical lamp that grants a wish.', category: 'MISC', maxStack: 1, quantity: 1 });
                 engine.particles.push({
@@ -178,6 +181,7 @@ export class RatheEntitiesUpdater {
             const g = engine.gremlins[i];
             
             if (g.health <= 0) {
+                if (Math.random() < 0.4) engine.dropItem(g.x, g.y, g.z, { ...ITEMS['copper_piece'], quantity: Math.floor(Math.random() * 3) + 1 });
                 engine.player.addXp(120);
                 engine.dropItem(g.x, g.y, g.z, { id: 'scrap_metal', name: 'Scrap Metal', description: 'Rusty iron pieces.', category: 'MATERIAL', maxStack: 64, quantity: 1 });
                 engine.particles.push({

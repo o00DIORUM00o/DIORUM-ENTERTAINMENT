@@ -2,7 +2,6 @@ import { PlanetRegistry } from './registries/PlanetRegistry';
 import { StructureRegistry } from './registries/StructureRegistry';
 import { CHUNK_SIZE, WORLD_HEIGHT } from './Constants';
 import { Item, ITEMS } from './Inventory';
-import { generateProceduralDungeon } from './DungeonGenerator';
 import { StructureGenerator } from './world/StructureGenerator';
 
 import { BlockType } from './constants/BlockType';
@@ -23,7 +22,7 @@ import { ChunkManager } from './world/ChunkManager';
 import { TerrainGenerator } from './world/TerrainGenerator';
 
 export class World {
-    activePlanet: string = 'THRAE';
+    activePlanet: string = 'HERAT';
     chunkManager: ChunkManager = new ChunkManager();
     chestData: Map<string, (Item | null)[]> = new Map();
     blockHealth: Map<string, number> = new Map();
@@ -36,6 +35,10 @@ export class World {
     timeOfDay: number = 8.0; // Start at 8 AM (24 hour clock)
     dayCount: number = 1; // Start on day 1
     
+    get isBloodMoon(): boolean {
+        return this.dayCount > 1 && this.dayCount % 7 === 0 && (this.timeOfDay >= 19.0 || this.timeOfDay < 5.0);
+    }
+
     constructor() {
         this.chunkManager.setWorld(this);
     }
@@ -124,8 +127,13 @@ export class World {
             // Add a generated item on rare occasions
             if (Math.random() < 0.35) {
                 const dangerLevel = Math.abs(z - 15) * 2 + 1; // Deeper/Higher = better
-                if (Math.random() > 0.5) {
+                const roll = Math.random();
+                if (roll > 0.75) {
                     newChest[slot] = ItemGenerator.generateWeapon(dangerLevel);
+                } else if (roll > 0.50) {
+                    newChest[slot] = ItemGenerator.generateArmor(dangerLevel);
+                } else if (roll > 0.25) {
+                    newChest[slot] = ItemGenerator.generateBow(dangerLevel);
                 } else {
                     newChest[slot] = ItemGenerator.generateAccessory(dangerLevel);
                 }
@@ -170,10 +178,6 @@ export class World {
     
     buildStructure(id: string, startX: number, startY: number, startZ: number) {
         StructureGenerator.buildStructure(this, id, startX, startY, startZ);
-    }
-
-    buildDungeon(startX: number, startY: number) {
-        StructureGenerator.buildDungeon(this, startX, startY);
     }
 
     buildWizardTower(startX: number, startY: number) {

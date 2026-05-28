@@ -14,7 +14,7 @@ export const CORE_STRUCTURES: SchematicDef[] = [
             // A space ' ' will mean "Skip / Do not mutate", so the terrain remains untouched.
             // '_' will explicitly place AIR.
             '_': { block: BlockType.AIR },
-            'X': { block: BlockType.HEAVY_STONE },
+            'X': { block: BlockType.CASTLE_STONE },
             'D': { block: BlockType.DOOR_CLOSED },
             'P': { block: BlockType.POT },
             'S': { block: BlockType.WOODEN_STAIRCASE }

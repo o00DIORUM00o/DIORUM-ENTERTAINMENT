@@ -7,6 +7,40 @@ import { Renderer } from '../Renderer';
 
 export class PlayerRenderer {
     static draw(ctx: CanvasRenderingContext2D, player: any, engine: any, halfW: number, halfH: number) {
+        if (player.isEyeMode) {
+            ctx.save();
+            ctx.translate(halfW, halfH);
+            ctx.rotate(player.aimAngle);
+            ctx.fillStyle = '#ff00ff';
+            ctx.beginPath();
+            ctx.arc(0, 0, TILE_SIZE * 0.4, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.arc(TILE_SIZE * 0.1, 0, TILE_SIZE * 0.2, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#000';
+            ctx.beginPath();
+            ctx.arc(TILE_SIZE * 0.15, 0, TILE_SIZE * 0.1, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+            return;
+        }
+
+        if (player.buffs && player.buffs.mistForm > 0) {
+            ctx.save();
+            ctx.translate(halfW, halfH);
+            ctx.globalAlpha = 0.5;
+            ctx.fillStyle = '#cccccc';
+            for (let i = 0; i < 5; i++) {
+                ctx.beginPath();
+                ctx.arc((Math.random() - 0.5) * TILE_SIZE, (Math.random() - 0.5) * TILE_SIZE, TILE_SIZE * 0.4, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            ctx.restore();
+            return;
+        }
+
         // Draw Mount First if mounted
         if (player.isMounted && player.activeMount) {
             ctx.save();

@@ -3,8 +3,8 @@ import { PlanetDef } from '../../registries/PlanetRegistry';
 
 export const CORE_PLANETS: PlanetDef[] = [
     {
-        id: 'THRAE',
-        name: 'Thrae',
+        id: 'HERAT',
+        name: 'Herat',
         description: 'A temperate and familiar world.',
         surfaceBlock: BlockType.GRASS,
         dirtBlock: BlockType.DIRT,
@@ -34,9 +34,15 @@ export const CORE_PLANETS: PlanetDef[] = [
             { block: BlockType.WOLF_FOLK_CAMP, chance: 0.04 },
             { block: BlockType.HUMAN_CASTLE_SPAWNER, chance: 0.02 },
             { block: BlockType.HUMAN_OUTPOST_SPAWNER, chance: 0.02 },
+            { block: BlockType.KING_SPAWNER, chance: 0.02 },
+            { block: BlockType.QUEST_NPC_SPAWNER, chance: 0.03 },
+            { block: BlockType.MERCHANT_TENT, chance: 0.03 },
+            { block: BlockType.WANDERING_BARD_TENT, chance: 0.03 },
+            { block: BlockType.PRIEST_TENT, chance: 0.02 },
             { block: BlockType.ARCHER_TENT, chance: 0.02 },
             { block: BlockType.DARK_KNIGHT_TENT, chance: 0.01 },
-            { block: BlockType.TENT, chance: 0.05 }
+            { block: BlockType.TENT, chance: 0.05 },
+            { block: BlockType.FAIRY_SPAWNER, chance: 0.05 }
         ],
         airColor: 'rgb(10, 35, 25)'
     },
@@ -205,7 +211,7 @@ export const CORE_PLANETS: PlanetDef[] = [
     {
         id: 'THAER',
         name: 'Thaer',
-        description: 'A lush, overgrown jungle.',
+        description: 'A lush, overgrown jungle teeming with beasts and nature.',
         surfaceBlock: BlockType.GREEN_DIRT,
         dirtBlock: BlockType.DIRT,
         stoneBlock: BlockType.GREEN_STONE,
@@ -219,12 +225,11 @@ export const CORE_PLANETS: PlanetDef[] = [
         oreMultiplier: 1,
         safeAreaMethod: 'RADIAL',
         spawnerTable: [
-            { block: BlockType.BEE_HIVE, chance: 0.20 },
-            { block: BlockType.GOBLIN_CAMP, chance: 0.20 },
-            { block: BlockType.ORC_TENT, chance: 0.15 },
-            { block: BlockType.GOBLIN_SHAMAN_TENT, chance: 0.10 },
-            { block: BlockType.BONE_PILE_SPAWNER, chance: 0.20 },
+            { block: BlockType.BEE_HIVE, chance: 0.15 },
             { block: BlockType.ANT_HILL, chance: 0.14 },
+            { block: BlockType.SQUIRREL_FOLK_TREEHOUSE, chance: 0.25 },
+            { block: BlockType.BEAST_CAMP, chance: 0.30 },
+            { block: BlockType.BEAST_TAMER_CAMP, chance: 0.15 },
             { block: BlockType.SPIDER_WEB, chance: 0.01 }
         ],
         airColor: 'rgb(0, 40, 10)'
@@ -258,29 +263,26 @@ export const CORE_PLANETS: PlanetDef[] = [
     {
         id: 'THREA',
         name: 'Threa',
-        description: 'Extremely biodiverse and strange.',
-        surfaceBlock: BlockType.BLUE_DIRT,
-        dirtBlock: BlockType.BLUE_CLAY,
-        stoneBlock: BlockType.BLUE_STONE,
+        description: 'The Biodiverse Melting Pot. A majestic world of dramatic alpine peaks, deep canyons, tropical thickets, freezing tundras, and magic crystal forests.',
+        surfaceBlock: BlockType.GRASS,
+        dirtBlock: BlockType.DIRT,
+        stoneBlock: BlockType.STONE,
         waterBlock: BlockType.WATER,
-        woodBlock: BlockType.ORANGE_WOOD,
-        leafBlock: BlockType.ORANGE_LEAVES,
-        pineLeafBlock: BlockType.ORANGE_LEAVES,
+        woodBlock: BlockType.WOOD_LOG,
+        leafBlock: BlockType.LEAVES,
+        pineLeafBlock: BlockType.PINE_LEAVES,
         elevationMod: 12,
         baseElevation: 15,
         waterLevel: 10,
         oreMultiplier: 1,
         safeAreaMethod: 'RADIAL',
         spawnerTable: [
-            { block: BlockType.BEE_HIVE, chance: 0.20 },
-            { block: BlockType.GOBLIN_CAMP, chance: 0.20 },
-            { block: BlockType.ORC_TENT, chance: 0.15 },
-            { block: BlockType.GOBLIN_SHAMAN_TENT, chance: 0.10 },
-            { block: BlockType.BONE_PILE_SPAWNER, chance: 0.20 },
-            { block: BlockType.ANT_HILL, chance: 0.14 },
-            { block: BlockType.SPIDER_WEB, chance: 0.01 }
+            { block: BlockType.BEE_HIVE, chance: 0.10 },
+            { block: BlockType.GOBLIN_CAMP, chance: 0.10 },
+            { block: BlockType.ORC_TENT, chance: 0.05 },
+            { block: BlockType.BONE_PILE_SPAWNER, chance: 0.10 }
         ],
-        airColor: 'rgb(10, 35, 25)'
+        airColor: 'rgb(20, 25, 30)'
     },
     {
         id: 'THERA',
@@ -305,5 +307,29 @@ export const CORE_PLANETS: PlanetDef[] = [
             { block: BlockType.BONE_PILE_SPAWNER, chance: 0.35 }
         ],
         airColor: 'rgb(25, 40, 25)'
+    },
+    {
+        id: 'NORTH_HEART',
+        name: 'North Heart',
+        description: 'A freezing, treacherous region of Heart inhabited by winter elves and yeti.',
+        surfaceBlock: BlockType.SNOW,
+        dirtBlock: BlockType.PERMAFROST,
+        stoneBlock: BlockType.ICE,
+        waterBlock: BlockType.GLACIAL_ICE,
+        woodBlock: BlockType.FROZEN_WOOD,
+        leafBlock: BlockType.FROZEN_LEAVES,
+        pineLeafBlock: BlockType.FROZEN_LEAVES,
+        elevationMod: 25, // mountainous
+        baseElevation: 15,
+        waterLevel: 10,
+        oreMultiplier: 3.0,
+        safeAreaMethod: 'BOX',
+        spawnerTable: [
+            { block: BlockType.WINTER_ELF_TENT, chance: 0.25 },
+            { block: BlockType.YETI_CAVE, chance: 0.25 },
+            { block: BlockType.FROST_CASTER_TENT, chance: 0.15 },
+            { block: BlockType.SHRINE, chance: 0.05 }
+        ],
+        airColor: 'rgb(200, 230, 255)'
     }
 ];

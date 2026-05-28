@@ -6,7 +6,7 @@ export const EQUIPMENT_SLOTS: EquipmentSlot[] = [
 
 export type ItemCategory = 'WEAPON' | 'ARMOR' | 'CONSUMABLE' | 'MISC' | 'AMMO' | 'MATERIAL' | 'TOOL';
 
-export type DamageType = 'PHYSICAL' | 'FIRE' | 'ICE' | 'LIGHTNING' | 'ARCANE' | 'ACID' | 'MAGIC' | 'DIG' | 'ANIMATE_STONE' | 'BOOMERANG' | 'MAGIC_SWORD' | 'GRAPPLE' | 'PIERCING';
+export type DamageType = 'PHYSICAL' | 'FIRE' | 'ICE' | 'LIGHTNING' | 'ARCANE' | 'ACID' | 'MAGIC' | 'DIG' | 'ANIMATE_STONE' | 'BOOMERANG' | 'MAGIC_SWORD' | 'GRAPPLE' | 'PIERCING' | 'VAMPIRIC';
 
 export interface TradeListing {
     itemToGive: { id: string, quantity: number, stackable?: boolean, maxStack?: number };
@@ -25,8 +25,10 @@ export type Rarity = 'COMMON' | 'UNCOMMON' | 'RARE' | 'EPIC' | 'LEGENDARY';
 
 export interface Item {
     secondaryAbility?: string;
+    swordBeamModifier?: string;
     chargeTime?: number;
     chargeManaCost?: number;
+    chargeStaminaCost?: number;
     id: string;
     name: string;
     description: string;
@@ -55,6 +57,7 @@ export interface Item {
     statusEffect?: { type: 'burn' | 'poison' | 'chill' | 'bleed', chance: number, duration: number };
     // Consumable specific
     summonsMount?: string;
+    summonsCompanion?: string;
     spellId?: string;
     spellIds?: string[];
     healing?: number;
@@ -73,6 +76,8 @@ export interface Item {
     equipmentSlot?: EquipmentSlot;
     armorWeight?: 'LIGHT' | 'MEDIUM' | 'HEAVY';
     defense?: number;
+    magicDefense?: number;
+    jumpPowerBonus?: number;
     
     // Bonus Stat Modifiers
     lifesteal?: number;

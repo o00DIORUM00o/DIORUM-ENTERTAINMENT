@@ -6,9 +6,12 @@ import { BlockRegistry } from '../registries/BlockRegistry';
 import { audioEngine } from '../AudioEngine';
 import { WORLD_HEIGHT } from '../Constants';
 
+import { PlayerBlockInteraction } from './PlayerBlockInteraction';
+import { PlayerSpellCasting } from './PlayerSpellCasting';
+
 export class PlayerCombat {
         static update(player: Player, ctx: UpdateContext) {
-        let { world, dx, dy, aimX, aimY, attacking, casting, interacting, jumping, jumpDown, dashing, quick1, quick2, quick3, dt, onHit, onShoot, onAoE, onCastSpell, onMelee, onDropItem, onOpenPortalMenu, onSaddleUse, onPlantBomb, onTriggerSecondary } = ctx;
+        let { engine, world, dx, dy, aimX, aimY, attacking, casting, interacting, jumping, jumpDown, dashing, quick1, quick2, quick3, dt, onHit, onShoot, onAoE, onCastSpell, onMelee, onDropItem, onOpenPortalMenu, onSaddleUse, onPlantBomb, onTriggerSecondary } = ctx;
 
         const originalDropItem = onDropItem;
         if (originalDropItem) {
@@ -57,9 +60,20 @@ export class PlayerCombat {
                 player.attackSpread = weapon?.spread || 0.5;
 
                 // Override for MAGITECH_MECH
-                if (player.isMounted && player.activeMount && player.activeMount.type === 'MAGITECH_MECH') {
-                    player.attackDuration = 0.5;
-                    player.attackReach = 15.0;
+                if (player.isMounted && player.activeMount) {
+                    if (player.activeMount.type === 'MAGITECH_MECH') {
+                        player.attackDuration = 0.5;
+                        player.attackReach = 15.0;
+                    } else if ((player.activeMount.type.endsWith('_DRAGON') || player.activeMount.type === 'FIRE_DRAGON')) {
+                        player.attackDuration = 0.8;
+                        player.attackReach = 15.0;
+                    } else if (player.activeMount.type === 'T_REX') {
+                        player.attackDuration = 0.8;
+                        player.attackReach = 3.5;
+                    } else if (player.activeMount.type === 'WILD_RAPTOR' || player.activeMount.type === 'GIANT_EAGLE' || player.activeMount.type === 'PTERODACTYL') {
+                        player.attackDuration = 0.5;
+                        player.attackReach = 3.5;
+                    }
                 }
                 
                 if (weapon?.id === 'staff_fire_ranged' || weapon?.id === 'staff_lightning_ranged') {
@@ -117,6 +131,24 @@ export class PlayerCombat {
                         player.attackTimer = player.attackDuration;
                         player.stamina -= 10; // Costs more stamina
 
+                        // Spin attack visual splash
+                        if (engine) {
+                            for (let i = 0; i < 30; i++) {
+                                const angle = (i / 30) * Math.PI * 2;
+                                const dist = player.attackReach;
+                                engine.particles.push({
+                                    x: player.x + Math.cos(angle) * dist,
+                                    y: player.y + Math.sin(angle) * dist,
+                                    z: player.z + 0.5,
+                                    text: '✦',
+                                    color: weapon?.itemColor || '#ffffff',
+                                    life: 0.4, maxLife: 0.4,
+                                    vx: Math.cos(angle) * 5, vy: Math.sin(angle) * 5, vz: Math.random() * 2,
+                                    speed: 0
+                                });
+                            }
+                        }
+
                         if (weapon && weapon.affixes) {
                             if (weapon.affixes.some((a: string) => a.includes('magic circle of protection'))) {
                                 player.buffs.arcaneProtection = 20.0;
@@ -130,6 +162,20 @@ export class PlayerCombat {
                                 }
                             }
                         }
+                        if (weapon && weapon.secondaryAbility) {
+                            const manaCost = weapon.chargeManaCost || 0;
+                            const stamCost = weapon.chargeStaminaCost || 0;
+                            if (player.mana >= manaCost && player.stamina >= stamCost) {
+                                player.mana -= manaCost;
+                                player.stamina -= stamCost;
+                                if (weapon.secondaryAbility === 'BLINK') {
+                                    player.castBlink(ctx);
+                                } else if (ctx.onTriggerSecondary) {
+                                    ctx.onTriggerSecondary(weapon.secondaryAbility, player.aimAngle, player.x, player.y, player.z);
+                                }
+                            }
+                        }
+
                     } else if (hasSecondary) {
                         const chargeCost = weapon?.chargeManaCost || 20;
                         if (player.mana >= chargeCost) {
@@ -199,11 +245,18 @@ export class PlayerCombat {
                         audioEngine.playShoot();
                     }
                 }
-            } else if (player.isMounted && player.activeMount && player.activeMount.type === 'GIANT_EAGLE') {
+            } else if (player.isMounted && player.activeMount && (player.activeMount.type === 'GIANT_EAGLE' || player.activeMount.type === 'PTERODACTYL' || player.activeMount.type === 'WILD_RAPTOR' || player.activeMount.type === 'T_REX' || (player.activeMount.type.endsWith('_DRAGON') || player.activeMount.type === 'FIRE_DRAGON'))) {
                 if (!player.hasHitThisSwing) {
                     player.hasHitThisSwing = true;
-                    if (onMelee) {
-                        onMelee(3.0, Math.PI / 2, 45); // Eagle swipe
+                    if ((player.activeMount.type.endsWith('_DRAGON') || player.activeMount.type === 'FIRE_DRAGON') && onShoot) {
+                        const speed = 20;
+                        const vx = Math.cos(player.aimAngle) * speed;
+                        const vy = Math.sin(player.aimAngle) * speed;
+                        onShoot(player.x, player.y, player.z + 0.5, vx, vy, 120, 'EXPLOSION', 12.0 / speed); // Fireball
+                        audioEngine.playShoot();
+                    } else if (onMelee) {
+                        const dmg = player.activeMount.type === 'T_REX' ? 80 : 45;
+                        onMelee(3.5, Math.PI / 2, dmg); 
                         audioEngine.playMelee();
                     }
                 }
@@ -220,7 +273,16 @@ export class PlayerCombat {
                         const range = talentLevel >= 3 ? 10 : 5;
                         const life = range / speed;
                         
-                        onShoot(player.x, player.y, player.z + 0.5, vx, vy, weaponDamage, 'BOOMERANG', life);
+                        onShoot(player.x, player.y, player.z + 0.5, vx, vy, weaponDamage, 'BOOMERANG', life, weapon.statusEffect);
+                        
+                        if (weapon.id === 'splitting_boomerang') {
+                            const vx1 = Math.cos(player.aimAngle - 0.2) * speed;
+                            const vy1 = Math.sin(player.aimAngle - 0.2) * speed;
+                            onShoot(player.x, player.y, player.z + 0.5, vx1, vy1, weaponDamage, 'BOOMERANG', life, weapon.statusEffect);
+                            const vx2 = Math.cos(player.aimAngle + 0.2) * speed;
+                            const vy2 = Math.sin(player.aimAngle + 0.2) * speed;
+                            onShoot(player.x, player.y, player.z + 0.5, vx2, vy2, weaponDamage, 'BOOMERANG', life, weapon.statusEffect);
+                        }
                                     audioEngine.playShoot();
                     }
                 }
@@ -304,261 +366,7 @@ export class PlayerCombat {
                             if (dx*dx + dy*dy <= radius*radius) {
                                 const block = world.getBlock(bx, by, pZ);
                                 if (!isIndestructible(block)) {
-                                    if (block === BlockType.BUSH || block === BlockType.FERN || block === BlockType.RED_BERRY_BUSH || block === BlockType.BLUE_BERRY_BUSH || block === BlockType.BLACK_BERRY_BUSH || block === BlockType.YELLOW_BERRY_BUSH || block === BlockType.DIRT || block === BlockType.GRASS || block === BlockType.WEED) {
-                                        if (weapon?.id === 'hoe_1' && (block === BlockType.DIRT || block === BlockType.GRASS || block === BlockType.WEED)) {
-                                            world.setBlock(bx, by, pZ, BlockType.SOIL);
-                                        } else {
-                                            world.setBlock(bx, by, pZ, BlockType.AIR);
-                                            audioEngine.playBreakBlock();
-                                            if (block === BlockType.RED_BERRY_BUSH && onDropItem) {
-                                                onDropItem(bx, by, pZ, { ...ITEMS['red_berry'], quantity: 2 });
-                                                onDropItem(bx, by, pZ, { ...ITEMS['red_berry_seed'], quantity: 2 });
-                                            } else if (block === BlockType.BLUE_BERRY_BUSH && onDropItem) {
-                                                onDropItem(bx, by, pZ, { ...ITEMS['blue_berry'], quantity: 2 });
-                                                onDropItem(bx, by, pZ, { ...ITEMS['blue_berry_seed'], quantity: 2 });
-                                            } else if (block === BlockType.BLACK_BERRY_BUSH && onDropItem) {
-                                                onDropItem(bx, by, pZ, { ...ITEMS['black_berry'], quantity: 2 });
-                                                onDropItem(bx, by, pZ, { ...ITEMS['black_berry_seed'], quantity: 2 });
-                                            } else if (block === BlockType.YELLOW_BERRY_BUSH && onDropItem) {
-                                                onDropItem(bx, by, pZ, { ...ITEMS['yellow_berry'], quantity: 2 });
-                                                onDropItem(bx, by, pZ, { ...ITEMS['yellow_berry_seed'], quantity: 2 });
-                                            } else if (block === BlockType.WEED && onDropItem) {
-                                                onDropItem(bx, by, pZ, { ...ITEMS['weed'], quantity: Math.floor(Math.random() * 2) + 1 });
-                                                onDropItem(bx, by, pZ, { ...ITEMS['weed_seed'], quantity: Math.floor(Math.random() * 2) + 1 });
-                                            } else if (block === BlockType.FERN && onDropItem) {
-                                                onDropItem(bx, by, pZ, { ...ITEMS['fern_frond'], quantity: Math.floor(Math.random() * 2) + 1 });
-                                            }
-                                        }
-                                    } else if (block === BlockType.DUMMY) {
-                                        const key = `${bx},${by},${pZ}`;
-                                        let hp = world.blockHealth.get(key) ?? 50;
-                                        hp -= weaponDamage;
-                                        if (hp <= 0) {
-                                            world.setBlock(bx, by, pZ, BlockType.AIR);
-                                        audioEngine.playBreakBlock();
-                                            world.blockHealth.delete(key);
-                                            world.respawningBlocks.set(key, { type: BlockType.DUMMY, timer: 30.0 });
-                                            player.addXp(10);
-                                        } else {
-                                            world.blockHealth.set(key, hp);
-                                        }
-                                    } else if (block === BlockType.BEE_HIVE) {
-                                        const key = `${bx},${by},${pZ}`;
-                                        let hp = world.blockHealth.get(key) ?? 30;
-                                        hp -= weaponDamage;
-                                        if (hp <= 0) {
-                                            world.setBlock(bx, by, pZ, BlockType.AIR);
-                                        audioEngine.playBreakBlock();
-                                            world.blockHealth.delete(key);
-                                        } else {
-                                            world.blockHealth.set(key, hp);
-                                        }
-                                    } else {
-                                        const key = `${bx},${by},${pZ}`;
-                                        let hp = world.blockHealth.get(key) ?? (
-                                            BlockRegistry.getHardness(block)
-                                        );
-                                        
-                                        let actualDamage = weaponDamage;
-                                        if ((block === BlockType.TRUNK || block === BlockType.TROPICAL_WOOD) && weapon?.id === 'axe_1') actualDamage *= 5;
-                                        const isOresAndMetals = (block >= BlockType.COPPER_ORE && block <= BlockType.PLUTONIUM_ORE) || (block >= BlockType.COPPER_BLOCK && block <= BlockType.PLUTONIUM_BLOCK);
-                                        const isStoneGemMetal = block === BlockType.STONE || block === BlockType.GRAVESTONE || isOresAndMetals || block === BlockType.IRON_ORE || block === BlockType.GREEN_METAL_ORE || block === BlockType.RED_METAL_ORE || block === BlockType.MITHRIL_ORE || block === BlockType.COAL_ORE || block === BlockType.MARBLE || block === BlockType.BLACK_MARBLE || block === BlockType.GREEN_MARBLE || block === BlockType.OBSIDIAN || block === BlockType.LAVA_ROCK || block === BlockType.RUBY || block === BlockType.EMERALD || block === BlockType.BLACK_DIAMOND || block === BlockType.CLAY_ORE;
-                                        
-                                        if (isStoneGemMetal && weapon?.id === 'pickaxe_1') actualDamage *= 5;
-                                        if (isStoneGemMetal && (player.race === 'HILL DWARF' || player.race === 'MOUNTAIN DWARF' || player.race === 'CYCLOPSE DWARF')) actualDamage *= 2; // Dwarven bonus
-
-                                        if (block === BlockType.CARPENTERS_BENCH && weapon?.id === 'axe_1') actualDamage *= 5;
-                                        if (block === BlockType.CHEST && weapon?.id === 'axe_1') actualDamage *= 5;
-                                        if (block === BlockType.CAMPFIRE && weapon?.id === 'axe_1') actualDamage *= 5;
-                                        if (block === BlockType.WOODEN_STAIRCASE && weapon?.id === 'axe_1') actualDamage *= 5;
-                                        
-                                        hp -= actualDamage;
-                                        if (hp <= 0) {
-                                            world.setBlock(bx, by, pZ, BlockType.AIR);
-                                        audioEngine.playBreakBlock();
-                                            world.blockHealth.delete(key);
-
-                                            if (player.hasFavoredDeity('RANA') && Math.random() < 0.15) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['gold_piece'], quantity: 1 });
-                                            }
-
-                                            if (block === BlockType.TENT || block === BlockType.GOBLIN_CAMP || block === BlockType.GOBLIN_SHAMAN_TENT || block === BlockType.ORC_TENT) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['tent'] });
-                                            } else if (block === BlockType.GOBLIN_TENT_ROCKHURLER) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['goblin_tent_rockhurler'] });
-                                            } else if (block === BlockType.GOBLIN_TENT_GARDENER) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['goblin_tent_gardener'] });
-                                            } else if (block === BlockType.GOBLIN_TENT_BOOMERANGER) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['goblin_tent_boomeranger'] });
-                                            } else if (block === BlockType.GOBLIN_TENT_ALCHEMIST) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['goblin_tent_alchemist'] });
-                                            } else if (block === BlockType.GOBLIN_TENT_MINER) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['goblin_tent_miner'] });
-                                            } else if (block === BlockType.ORC_TENT_BRUTE) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['orc_tent_brute'] });
-                                            } else if (block === BlockType.ORC_TENT_SHAMAN) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['orc_tent_shaman'] });
-                                            } else if (block === BlockType.ORC_TENT_HUNTER) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['orc_tent_hunter'] });
-                                            } else if (block === BlockType.KOBOLD_TENT) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['kobold_tent'] });
-                                            } else if (block === BlockType.KOBOLD_TENT_TRAPPER) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['kobold_tent_trapper'] });
-                                            } else if (block === BlockType.KOBOLD_TENT_WARRIOR) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['kobold_tent_warrior'] });
-                                            } else if (block === BlockType.KOBOLD_TENT_SHAMAN) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['kobold_tent_shaman'] });
-                                            } else if (block === BlockType.KOBOLD_TENT_BOMBER) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['kobold_tent_bomber'] });
-                                            } else if (block === BlockType.KOBOLD_TENT_DRAGONKEEPER) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['kobold_tent_dragonkeeper'] });
-                                            } else if (block === BlockType.DARK_ELF_TENT) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['dark_elf_tent'] });
-                                            } else if (block === BlockType.HALFLING_HOUSE_SPAWNER) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['halfling_house_spawner'] });
-                                            } else if (block === BlockType.PIT_BULL_TENT) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['pit_bull_tent'] });
-                                            } else if (block === BlockType.POMERANIAN_WAGON) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['pomeranian_wagon'] });
-                                            } else if (block === BlockType.TERRIER_TENT) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['terrier_tent'] });
-                                            } else if (block === BlockType.WOLF_FOLK_CAMP) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['wolf_folk_camp'] });
-                                            } else if (block === BlockType.GIANT_CAMP) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['giant_camp'] });
-                                            } else if (block === BlockType.TITAN_NEST) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['titan_nest'] });
-                                            } else if (block === BlockType.VOID_BEACON) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['void_beacon'] });
-                                            } else if (block === BlockType.GARGOYLE_PEDESTAL) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['gargoyle_pedestal'] });
-                                            } else if (block === BlockType.DJINN_LAMP_SHRINE) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['djinn_lamp_shrine'] });
-                                            } else if (block === BlockType.GREMLIN_CAMP) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['gremlin_camp'] });
-                                            } else if (block === BlockType.SPHINX_SPAWNER) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['sphinx_spawner'] });
-                                            } else if (block === BlockType.WOOD_WALL) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['wood'] });
-                                                                                } else if (block === BlockType.GIANT_MUSHROOM_STALK) {
-                                        if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['fungal_spore'] });
-                                        let currentZ = pZ + 1;
-                                        while (currentZ < WORLD_HEIGHT) {
-                                            const aboveBlock = world.getBlock(bx, by, currentZ);
-                                            if (aboveBlock === BlockType.GIANT_MUSHROOM_STALK || aboveBlock === BlockType.GIANT_MUSHROOM_CAP_RED || aboveBlock === BlockType.GIANT_MUSHROOM_CAP_BROWN) {
-                                                world.setBlock(bx, by, currentZ, BlockType.AIR);
-                                                if (aboveBlock === BlockType.GIANT_MUSHROOM_STALK && onDropItem && Math.random() < 0.5) onDropItem(bx, by, currentZ, { ...ITEMS['fungal_spore'] });
-                                                for (let lx = -2; lx <= 2; lx++) {
-                                                    for (let ly = -2; ly <= 2; ly++) {
-                                                        if (lx === 0 && ly === 0) continue;
-                                                        const leafBlock = world.getBlock(bx + lx, by + ly, currentZ);
-                                                        if (leafBlock === BlockType.GIANT_MUSHROOM_CAP_RED || leafBlock === BlockType.GIANT_MUSHROOM_CAP_BROWN || leafBlock === BlockType.GLOWCAP_MUSHROOM) {
-                                                            world.setBlock(bx + lx, by + ly, currentZ, BlockType.AIR);
-                                                            if (leafBlock === BlockType.GLOWCAP_MUSHROOM && onDropItem && Math.random() < 0.2) onDropItem(bx + lx, by + ly, currentZ, { ...ITEMS['glowcap'] });
-                                                        }
-                                                    }
-                                                }
-                                                currentZ++;
-                                            } else { break; }
-                                        }
-                                    } else if (block === BlockType.CLAY_ORE) {
-                                        if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['clay'], quantity: Math.floor(Math.random() * 3) + 2 });
-} else if (block === BlockType.STONE || block === BlockType.GRAVESTONE) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['stone'] });
-                                            } else if (block === BlockType.COPPER_ORE) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['copper_ore'] });
-                                            } else if (block === BlockType.IRON_ORE) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['iron_ore'] });
-                                            } else if (block === BlockType.GREEN_METAL_ORE) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['green_metal_ore'] });
-                                            } else if (block === BlockType.RED_METAL_ORE) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['red_metal_ore'] });
-                                            } else if (block === BlockType.MITHRIL_ORE) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['mithril_ore'] });
-                                            } else if (block === BlockType.COAL_ORE) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['coal'] });
-                                            } else if (block === BlockType.CHEST) {
-                                                const chestInv = world.getChest(bx, by, pZ);
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['storage_chest'], chestInventory: chestInv });
-                                                world.chestData.delete(world.getChestKey(bx, by, pZ));
-                                            } else if ((block >= BlockType.VILLAGE_BELL && block <= BlockType.BLACK_BELL)) {
-                                                    if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['village_bell'] });
-                                                } else if (block === BlockType.ALCHEMY_TABLE) {
-                                                    if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['alchemy_table'] });
-                                                } else if (block === BlockType.CARPENTERS_BENCH) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['carpenters_bench'] });
-                                            } else if (block === BlockType.COOKING_POT) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['cooking_pot'] });
-                                            } else if (block === BlockType.WOODEN_STAIRCASE) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['wooden_staircase'] });
-                                            } else if (block === BlockType.MARBLE) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['marble'] });
-                                            } else if (block === BlockType.BLACK_MARBLE) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['black_marble'] });
-                                            } else if (block === BlockType.GREEN_MARBLE) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['green_marble'] });
-                                            } else if (block === BlockType.OBSIDIAN) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['obsidian'] });
-                                            } else if (block === BlockType.LAVA_ROCK) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['lava_rock'] });
-                                            } else if (block === BlockType.RUBY) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['ruby'] });
-                                            } else if (block === BlockType.EMERALD) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['emerald'] });
-                                            } else if (block === BlockType.BLACK_DIAMOND) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['black_diamond'] });
-                                            } else if (block === BlockType.CONVEYOR_BELT_N || block === BlockType.CONVEYOR_BELT_S || block === BlockType.CONVEYOR_BELT_E || block === BlockType.CONVEYOR_BELT_W) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['conveyor_belt'] });
-                                            } else if (block === BlockType.AUTO_MINER) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['auto_miner'] });
-                                            } else if (block === BlockType.AUTO_DROPPER) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['auto_dropper'] });
-                                            } else if (block === BlockType.AUTO_CRAFTER) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['auto_crafter'] });
-                                            } else if (block === BlockType.VACUUM_HOPPER) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['vacuum_hopper'] });
-                                            } else if (block === BlockType.BONE_PILE_SPAWNER) {
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['bone'], quantity: 5 });
-                                            } else if (block === BlockType.POT) {
-                                                if (onDropItem && Math.random() < 0.5) {
-                                                    const randomLoot = ['gold_piece', 'copper_piece', 'health_potion', 'red_berry', 'slime'];
-                                                    const itemToDrop = randomLoot[Math.floor(Math.random() * randomLoot.length)];
-                                                    onDropItem(bx, by, pZ, { ...ITEMS[itemToDrop] });
-                                                }
-                                            } else if (block === BlockType.TRUNK || block === BlockType.TROPICAL_WOOD) {
-                                                const woodType = block === BlockType.TROPICAL_WOOD ? 'tropical_wood' : 'wood';
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS[woodType], quantity: Math.floor(Math.random() * 3) + 1 });
-                                                let currentZ = pZ + 1;
-                                                while (currentZ < WORLD_HEIGHT) {
-                                                    const aboveBlock = world.getBlock(bx, by, currentZ);
-                                                    if (aboveBlock === BlockType.TRUNK || aboveBlock === BlockType.LEAVES || aboveBlock === BlockType.PINE_LEAVES || aboveBlock === BlockType.TROPICAL_WOOD || aboveBlock === BlockType.TROPICAL_LEAVES) {
-                                                        world.setBlock(bx, by, currentZ, BlockType.AIR);
-                                        audioEngine.playBreakBlock();
-                                                        if ((aboveBlock === BlockType.TRUNK || aboveBlock === BlockType.TROPICAL_WOOD) && onDropItem && Math.random() < 0.5) {
-                                                            const woodTypeAbove = aboveBlock === BlockType.TROPICAL_WOOD ? 'tropical_wood' : 'wood';
-                                                            onDropItem(bx, by, currentZ, { ...ITEMS[woodTypeAbove] });
-                                                        }
-                                                        for (let lx = -2; lx <= 2; lx++) {
-                                                            for (let ly = -2; ly <= 2; ly++) {
-                                                                if (lx === 0 && ly === 0) continue;
-                                                                const leafBlock = world.getBlock(bx + lx, by + ly, currentZ);
-                                                                if (leafBlock === BlockType.LEAVES || leafBlock === BlockType.PINE_LEAVES || leafBlock === BlockType.TROPICAL_LEAVES) {
-                                                                    world.setBlock(bx + lx, by + ly, currentZ, BlockType.AIR);
-                                        audioEngine.playBreakBlock();
-                                                                }
-                                                            }
-                                                        }
-                                                        currentZ++;
-                                                    } else {
-                                                        break;
-                                                    }
-                                                }
-                                            }
-                                        } else {
-                                            world.blockHealth.set(key, hp);
-                                        }
-                                    }
-                                    if (onHit) onHit(bx, by, pZ, weaponDamage, block);
+                                    PlayerBlockInteraction.damageBlock(player, world, bx, by, pZ, weaponDamage, weapon, onDropItem, onHit, ctx);
                                 }
                             }
                         }
@@ -578,12 +386,59 @@ export class PlayerCombat {
                 // Sword Beam
                 if (isSword && swordTalentLevel >= 3 && player.health >= player.maxHealth / 2) {
                     if (onShoot) {
-                        const speed = 20;
-                        const vx = Math.cos(player.aimAngle) * speed;
-                        const vy = Math.sin(player.aimAngle) * speed;
-                        const life = 10.0 / speed; // 10 blocks range
-                        onShoot(player.x, player.y, player.z + 0.5, vx, vy, weaponDamage, 'MAGIC_SWORD', life);
-                                    audioEngine.playShoot();
+                        const beamMod = weapon?.swordBeamModifier;
+                        let speed = 20;
+                        let scale = 1.0;
+                        let count = 1;
+                        let angleSpread = 0;
+                        let pierce = false;
+
+                        let homing = false;
+                        let bounce = false;
+
+                        if (beamMod === 'GIANT') {
+                            speed = 10;
+                            scale = 3.0;
+                        } else if (beamMod === 'SPREAD') {
+                            count = 3;
+                            angleSpread = Math.PI / 8; // 22.5 degrees spread
+                        } else if (beamMod === 'BURST') {
+                            count = 8;
+                            angleSpread = Math.PI / 4; 
+                        } else if (beamMod === 'RAPID') {
+                            speed = 30; // Faster moving, duration adjustment handled via life formula
+                        } else if (beamMod === 'PIERCE') {
+                            pierce = true;
+                        } else if (beamMod === 'HOMING') {
+                            homing = true;
+                        } else if (beamMod === 'BOUNCE') {
+                            bounce = true;
+                        }
+
+                        for(let i=0; i<count; i++) {
+                            const angleOffset = (i - Math.floor(count/2)) * angleSpread;
+                            const curAngle = player.aimAngle + angleOffset;
+                            const vx = Math.cos(curAngle) * speed;
+                            const vy = Math.sin(curAngle) * speed;
+                            const life = 10.0 / speed; // 10 blocks range
+                            if (engine) {
+                                engine.projectiles.push({
+                                    x: player.x,
+                                    y: player.y,
+                                    z: player.z + 0.5,
+                                    vx, vy, damage: weaponDamage,
+                                    life, damageType: 'MAGIC_SWORD',
+                                    isPlayer: true,
+                                    scale, pierce,
+                                    isHoming: homing,
+                                    bounce: bounce ? 3 : 0,
+                                    owner: player
+                                });
+                            } else {
+                                onShoot(player.x, player.y, player.z + 0.5, vx, vy, weaponDamage, 'MAGIC_SWORD', life, undefined, scale, pierce);
+                            }
+                        }
+                        audioEngine.playShoot();
                     }
                 }
 
@@ -637,213 +492,7 @@ export class PlayerCombat {
                         }
 
                         if (blockHit) {
-                            if (block === BlockType.WATER && weapon?.id === 'fishing_pole') {
-                                // Add fishing mechanics
-                                if (!player.isFishing) {
-                                    player.isFishing = true;
-                                    
-                                    const fishingLevel = player.talents['fishing'] || 0;
-                                    let rand = Math.random();
-                                    let itemOutput: Item | null = null;
-                                    
-                                    if (fishingLevel >= 3 && Math.random() < 0.05) {
-                                        itemOutput = { ...ITEMS['djinn_lamp'] };
-                                    } else if (fishingLevel >= 2 && Math.random() < 0.1) {
-                                        itemOutput = { ...ITEMS['golden_fish'] };
-                                    } else if (rand < 0.3 + (fishingLevel * 0.15)) {
-                                        itemOutput = { ...ITEMS['raw_fish'] };
-                                    }
-                                    
-                                    if (itemOutput) {
-                                        // Spawn it slightly randomly 
-                                        if (onDropItem) {
-                                            onDropItem(bx, by, targetZ + 1, itemOutput);
-                                            audioEngine.playSplash(); // We'll need to define this or reuse
-                                        }
-                                        if (ctx.onAoE) {
-                                            ctx.onAoE(bx, by, targetZ, 1, 0, 'WATER'); // Splash visual
-                                        }
-                                        player.addXp(15);
-                                    } else {
-                                        if (ctx.onAoE) {
-                                            ctx.onAoE(bx, by, targetZ, 0.5, 0, 'WATER'); // Small miss splash
-                                        }
-                                    }
-                                    
-                                    // Set a cooldown flag so we only fish one block per swing
-                                    const cooldownTime = fishingLevel >= 3 ? 1000 : 2000;
-                                    setTimeout(() => { if(player) player.isFishing = false; }, cooldownTime);
-                                }
-                                break; // Only check one water block per swing
-                            } else if (block === BlockType.BEE_HIVE) {
-                                const key = `${bx},${by},${pZ}`;
-                                let hp = world.blockHealth.get(key) ?? 30; // default health 30
-                                hp -= weaponDamage;
-                                if (hp <= 0) {
-                                    world.setBlock(bx, by, pZ, BlockType.AIR);
-                                        audioEngine.playBreakBlock();
-                                    world.blockHealth.delete(key);
-                                    if (weapon?.id === 'golden_shovel') {
-                                        if (onDropItem) {
-                                            onDropItem(bx, by, pZ, { ...ITEMS['honeycomb'], quantity: Math.floor(Math.random() * 3) + 1 });
-                                        }
-                                    } else if (weapon?.id === 'shovel_1' && Math.random() < 0.5) {
-                                        if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['bee_hive'] });
-                                    }
-                                } else {
-                                    world.blockHealth.set(key, hp);
-                                }
-                            } else if (block === BlockType.DUMMY) {
-                                const key = `${bx},${by},${pZ}`;
-                                let hp = world.blockHealth.get(key) ?? 50; // default health 50
-                                hp -= weaponDamage;
-                                if (hp <= 0) {
-                                    world.setBlock(bx, by, pZ, BlockType.AIR);
-                                        audioEngine.playBreakBlock();
-                                    world.blockHealth.delete(key);
-                                    world.respawningBlocks.set(key, { type: BlockType.DUMMY, timer: 30.0 });
-                                    player.addXp(10); // Grant 10 XP
-                                } else {
-                                    world.blockHealth.set(key, hp);
-                                }
-                            } else if (block === BlockType.BUSH || block === BlockType.FERN || block === BlockType.RED_BERRY_BUSH || block === BlockType.BLUE_BERRY_BUSH || block === BlockType.BLACK_BERRY_BUSH || block === BlockType.YELLOW_BERRY_BUSH || block === BlockType.DIRT || block === BlockType.GRASS || block === BlockType.TILLED_SOIL_DRY || block === BlockType.CROP_STAGE_1 || block === BlockType.CROP_STAGE_2 || block === BlockType.CROP_STAGE_3 || block === BlockType.WEED) {
-                                if (weapon?.id === 'hoe_1' && (block === BlockType.DIRT || block === BlockType.GRASS || block === BlockType.WEED)) {
-                                    world.setBlock(bx, by, targetZ, BlockType.TILLED_SOIL_DRY);
-                                } else if (weapon?.id === 'watering_can' && block === BlockType.TILLED_SOIL_DRY) {
-                                    world.setBlock(bx, by, targetZ, BlockType.TILLED_SOIL_WET);
-                                } else if (block === BlockType.DIRT || block === BlockType.GRASS || block === BlockType.TILLED_SOIL_DRY) {
-                                    // if it's dirt/grass and we aren't hoeing/watering it, allow pick/shovel to destroy? 
-                                    // Actually we just don't do anything unless it's a shovel/pickaxe
-                                    if (weapon?.id?.includes('shovel')) {
-                                        world.setBlock(bx, by, targetZ, BlockType.AIR);
-                                        audioEngine.playBreakBlock();
-                                    }
-                                } else {
-                                    world.setBlock(bx, by, targetZ, BlockType.AIR);
-                                        audioEngine.playBreakBlock();
-                                    if (block === BlockType.RED_BERRY_BUSH && onDropItem) {
-                                        onDropItem(bx, by, targetZ, { ...ITEMS['red_berry'], quantity: 2 });
-                                        onDropItem(bx, by, targetZ, { ...ITEMS['red_berry_seed'], quantity: 2 });
-                                    } else if (block === BlockType.BLUE_BERRY_BUSH && onDropItem) {
-                                        onDropItem(bx, by, targetZ, { ...ITEMS['blue_berry'], quantity: 2 });
-                                        onDropItem(bx, by, targetZ, { ...ITEMS['blue_berry_seed'], quantity: 2 });
-                                    } else if (block === BlockType.BLACK_BERRY_BUSH && onDropItem) {
-                                        onDropItem(bx, by, targetZ, { ...ITEMS['black_berry'], quantity: 2 });
-                                        onDropItem(bx, by, targetZ, { ...ITEMS['black_berry_seed'], quantity: 2 });
-                                    } else if (block === BlockType.YELLOW_BERRY_BUSH && onDropItem) {
-                                        onDropItem(bx, by, targetZ, { ...ITEMS['yellow_berry'], quantity: 2 });
-                                        onDropItem(bx, by, targetZ, { ...ITEMS['yellow_berry_seed'], quantity: 2 });
-                                    } else if (block === BlockType.WEED && onDropItem) {
-                                        onDropItem(bx, by, targetZ, { ...ITEMS['weed'], quantity: Math.floor(Math.random() * 2) + 1 });
-                                        onDropItem(bx, by, targetZ, { ...ITEMS['weed_seed'], quantity: Math.floor(Math.random() * 2) + 1 });
-                                    } else if (block === BlockType.FERN && onDropItem) {
-                                        onDropItem(bx, by, targetZ, { ...ITEMS['fern_frond'], quantity: Math.floor(Math.random() * 2) + 1 });
-                                    } else if (block === BlockType.CROP_STAGE_3 && onDropItem) {
-                                        onDropItem(bx, by, targetZ, { ...ITEMS['carrot'], quantity: Math.floor(Math.random() * 2) + 2 }); // 2-3 carrots
-                                        onDropItem(bx, by, targetZ, { ...ITEMS['carrot_seed'], quantity: Math.floor(Math.random() * 2) + 1 }); // 1-2 seeds
-                                    } else if ((block === BlockType.CROP_STAGE_2 || block === BlockType.CROP_STAGE_1) && onDropItem) {
-                                        onDropItem(bx, by, targetZ, { ...ITEMS['carrot_seed'], quantity: 1 }); // refund seed
-                                    }
-                                }
-                            } else {
-                                const key = `${bx},${by},${pZ}`;
-                                let hp = world.blockHealth.get(key) ?? (
-                                    BlockRegistry.getHardness(block)
-                                );
-
-                                let actualDamage = weaponDamage;
-                                if ((block === BlockType.TRUNK || block === BlockType.TROPICAL_WOOD) && weapon?.id === 'axe_1') actualDamage *= 5; // Axe is super effective against trees
-                                const isOresAndMetals = (block >= BlockType.COPPER_ORE && block <= BlockType.PLUTONIUM_ORE) || (block >= BlockType.COPPER_BLOCK && block <= BlockType.PLUTONIUM_BLOCK);
-                                const isStoneGemMetal = block === BlockType.STONE || block === BlockType.GRAVESTONE || isOresAndMetals || block === BlockType.IRON_ORE || block === BlockType.GREEN_METAL_ORE || block === BlockType.RED_METAL_ORE || block === BlockType.MITHRIL_ORE || block === BlockType.COAL_ORE || block === BlockType.MARBLE || block === BlockType.BLACK_MARBLE || block === BlockType.GREEN_MARBLE || block === BlockType.OBSIDIAN || block === BlockType.LAVA_ROCK || block === BlockType.RUBY || block === BlockType.EMERALD || block === BlockType.BLACK_DIAMOND || block === BlockType.CLAY_ORE;
-                                
-                                if (isStoneGemMetal && weapon?.id === 'pickaxe_1') actualDamage *= 5;
-                                if (isStoneGemMetal && (player.race === 'HILL DWARF' || player.race === 'MOUNTAIN DWARF' || player.race === 'CYCLOPSE DWARF')) actualDamage *= 2; // Dwarven bonus
-                                
-                                if (block === BlockType.CARPENTERS_BENCH && weapon?.id === 'axe_1') actualDamage *= 5;
-                                if (block === BlockType.CHEST && weapon?.id === 'axe_1') actualDamage *= 5;
-
-                                hp -= actualDamage;
-                                if (hp <= 0) {
-                                    world.setBlock(bx, by, pZ, BlockType.AIR);
-                                        audioEngine.playBreakBlock();
-                                    world.blockHealth.delete(key);
-                                    if (block === BlockType.CHEST) {
-                                        const chestInv = world.getChest(bx, by, pZ);
-                                        if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['storage_chest'], chestInventory: chestInv });
-                                        world.chestData.delete(world.getChestKey(bx, by, pZ));
-                                    } else if (block === BlockType.TRUNK || block === BlockType.TROPICAL_WOOD) {
-                                        const woodType = block === BlockType.TROPICAL_WOOD ? 'tropical_wood' : 'wood';
-                                        if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS[woodType], quantity: Math.floor(Math.random() * 3) + 1 });
-                                        // Dwarf fortress style: destroy all connected trunk/leaves above
-                                        let currentZ = pZ + 1;
-                                        while (currentZ < WORLD_HEIGHT) {
-                                            const aboveBlock = world.getBlock(bx, by, currentZ);
-                                            if (aboveBlock === BlockType.TRUNK || aboveBlock === BlockType.LEAVES || aboveBlock === BlockType.PINE_LEAVES || aboveBlock === BlockType.TROPICAL_WOOD || aboveBlock === BlockType.TROPICAL_LEAVES) {
-                                                world.setBlock(bx, by, currentZ, BlockType.AIR);
-                                        audioEngine.playBreakBlock();
-                                                if ((aboveBlock === BlockType.TRUNK || aboveBlock === BlockType.TROPICAL_WOOD) && onDropItem && Math.random() < 0.5) {
-                                                    const woodTypeAbove = aboveBlock === BlockType.TROPICAL_WOOD ? 'tropical_wood' : 'wood';
-                                                    onDropItem(bx, by, currentZ, { ...ITEMS[woodTypeAbove] });
-                                                }
-                                                // Also clear adjacent leaves
-                                                for (let lx = -2; lx <= 2; lx++) {
-                                                    for (let ly = -2; ly <= 2; ly++) {
-                                                        if (lx === 0 && ly === 0) continue;
-                                                        const leafBlock = world.getBlock(bx + lx, by + ly, currentZ);
-                                                        if (leafBlock === BlockType.LEAVES || leafBlock === BlockType.PINE_LEAVES || leafBlock === BlockType.TROPICAL_LEAVES) {
-                                                            world.setBlock(bx + lx, by + ly, currentZ, BlockType.AIR);
-                                        audioEngine.playBreakBlock();
-                                                        }
-                                                    }
-                                                }
-                                                currentZ++;
-                                            } else {
-                                                break;
-                                            }
-                                        }
-                                    } else if (block === BlockType.GIANT_MUSHROOM_STALK) {
-                                        if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['fungal_spore'] });
-                                        let currentZ = pZ + 1;
-                                        while (currentZ < WORLD_HEIGHT) {
-                                            const aboveBlock = world.getBlock(bx, by, currentZ);
-                                            if (aboveBlock === BlockType.GIANT_MUSHROOM_STALK || aboveBlock === BlockType.GIANT_MUSHROOM_CAP_RED || aboveBlock === BlockType.GIANT_MUSHROOM_CAP_BROWN) {
-                                                world.setBlock(bx, by, currentZ, BlockType.AIR);
-                                                audioEngine.playBreakBlock();
-                                                if (aboveBlock === BlockType.GIANT_MUSHROOM_STALK && onDropItem && Math.random() < 0.5) onDropItem(bx, by, currentZ, { ...ITEMS['fungal_spore'] });
-                                                for (let lx = -2; lx <= 2; lx++) {
-                                                    for (let ly = -2; ly <= 2; ly++) {
-                                                        if (lx === 0 && ly === 0) continue;
-                                                        const leafBlock = world.getBlock(bx + lx, by + ly, currentZ);
-                                                        if (leafBlock === BlockType.GIANT_MUSHROOM_CAP_RED || leafBlock === BlockType.GIANT_MUSHROOM_CAP_BROWN || leafBlock === BlockType.GLOWCAP_MUSHROOM) {
-                                                            world.setBlock(bx + lx, by + ly, currentZ, BlockType.AIR);
-                                                            audioEngine.playBreakBlock();
-                                                            if (leafBlock === BlockType.GLOWCAP_MUSHROOM && onDropItem && Math.random() < 0.2) onDropItem(bx + lx, by + ly, currentZ, { ...ITEMS['glowcap'] });
-                                                        }
-                                                    }
-                                                }
-                                                currentZ++;
-                                            } else { break; }
-                                        }
-                                    } else {
-                                        if (onDropItem) {
-                                            const drops = getLootForBlock(block);
-                                            for (const drop of drops) {
-                                                onDropItem(bx, by, pZ, { ...drop.item, quantity: drop.quantity ?? 1 });
-                                            }
-                                        }
-                                    }
-                                    
-                                    if (player.hasFavoredDeity('ANIMA') && player.health < player.effectiveMaxHealth && Math.random() < 0.05) {
-                                        player.health = Math.min(player.effectiveMaxHealth, player.health + 1);
-                                        // audioEngine.playHeal();
-                                    }
-                                } else {
-                                    world.blockHealth.set(key, hp);
-                                }
-                            }
-                            if (onHit) {
-                                onHit(bx, by, pZ, weaponDamage, block);
-                            }
+                            PlayerBlockInteraction.damageBlock(player, world, bx, by, targetZ, weaponDamage, weapon, onDropItem, onHit, ctx);
                         }
                     }
                 }
@@ -859,428 +508,7 @@ export class PlayerCombat {
             player.isAttacking = false;
         }
 
-        // Casting
-        if (player.castTimer > 0) {
-            player.castTimer -= dt;
-            if (player.castTimer <= 0) {
-                player.isCasting = false;
-            }
-        } else {
-            player.isCasting = false;
-        }
-
-        if (casting && player.castTimer <= 0 && player.activeSpell) {
-            const spell = SPELLS[player.activeSpell];
-            if (spell && player.mana >= spell.manaCost) {
-                let actualCost = spell.manaCost;
-                if (spell.type === 'UTILITY') {
-                    const travelLevel = player.talents['travel_caster'] || 0;
-                    if (travelLevel >= 2) actualCost *= 0.75;
-                    if (travelLevel >= 3) actualCost *= 0.5;
-                }
-                player.mana -= actualCost;
-                player.isCasting = true;
-                player.hasHitThisCast = false;
-                
-                let cooldown = spell.cooldown;
-                if (player.activeSpell?.endsWith('_bolt')) {
-                    const boltCasterLevel = player.talents['bolt_caster'] || 0;
-                    if (boltCasterLevel >= 2) cooldown *= 0.8;
-                    if (boltCasterLevel >= 3) cooldown *= 0.75; // Total 40% reduction
-                }
-                
-                player.castDuration = cooldown;
-                player.castTimer = player.castDuration;
-            }
-        }
-
-        if (player.isCasting && !player.hasHitThisCast && player.activeSpell) {
-            const spell = SPELLS[player.activeSpell];
-            if (spell) {
-                const castTime = spell.castTime !== undefined ? spell.castTime : player.castDuration * 0.5;
-                if (player.castTimer <= player.castDuration - castTime) {
-                    player.hasHitThisCast = true;
-                    
-                    if (onCastSpell) {
-                        onCastSpell(player.x, player.y, player.z + 0.5, player.activeSpell, player.aimAngle);
-                    }
-
-                    if (spell.type === 'PROJECTILE') {
-                        if (onShoot) {
-                            const speed = spell.projectileSpeed || 15.0;
-                            const vx = Math.cos(player.aimAngle) * speed;
-                            const vy = Math.sin(player.aimAngle) * speed;
-                            
-                            let damage = spell.damage;
-                            let reach = spell.reach || 5.0;
-                            
-                            if (player.activeSpell?.endsWith('_bolt')) {
-                                const boltCasterLevel = player.talents['bolt_caster'] || 0;
-                                let damageMult = 1.0;
-                                if (boltCasterLevel >= 1) {
-                                    reach += 2;
-                                    damageMult += 0.10;
-                                }
-                                if (boltCasterLevel >= 2) {
-                                    damageMult += 0.15;
-                                }
-                                if (boltCasterLevel >= 3) {
-                                    reach += 4;
-                                    damageMult += 0.20;
-                                }
-                                damage *= damageMult;
-                            }
-                            
-                            const life = reach / speed;
-                            
-                            onShoot(player.x, player.y, player.z + 0.5, vx, vy, damage, spell.damageType, life);
-                                    audioEngine.playShoot();
-                        }
-                    } else if (spell.type === 'UTILITY') {
-                        if (player.activeSpell === 'mark') {
-                            player.markPosition = { x: player.x, y: player.y, z: player.z, planet: world.activePlanet };
-                            if (player.onMessage) player.onMessage("Mark placed!");
-                        } else if (player.activeSpell === 'return') {
-                            if (player.markPosition) {
-                                if (player.markPosition.planet && player.markPosition.planet !== world.activePlanet && ctx.onChangePlanet) {
-                                    ctx.onChangePlanet(player.markPosition.planet);
-                                }
-                                player.x = player.markPosition.x;
-                                player.y = player.markPosition.y;
-                                player.z = player.markPosition.z;
-                                if (player.onMessage) player.onMessage("Returned to mark!");
-                            } else {
-                                if (player.onMessage) player.onMessage("No mark found!");
-                            }
-                        } else if (player.activeSpell?.startsWith('portal_')) {
-                            const color = player.activeSpell.split('_')[1];
-                            player.portals[color] = { x: player.x, y: player.y, z: player.z, planet: world.activePlanet };
-                            if (player.onMessage) player.onMessage(`${color.charAt(0).toUpperCase() + color.slice(1)} Portal placed!`);
-                        }
-                    } else if (spell.type === 'CONE') {
-                        if (onMelee) {
-                            let dmg = spell.damage;
-                            if (player.race === 'BEAR FOLK' || player.race === 'ORC' || player.race === 'DARK ORC' || player.race === 'OGRE' || player.race === 'PIT BULL FOLK' || player.race === 'WOLF FOLK') {
-                                dmg = Math.floor(dmg * 1.25);
-                            }
-                            onMelee(spell.reach, spell.spread, dmg);
-                    audioEngine.playMelee();
-                        }
-                    } else if (spell.type === 'AOE') {
-                        let reach = spell.reach;
-                        let damage = spell.damage;
-                        const ballCasterLevel = player.talents['ball_caster'] || 0;
-                        if (ballCasterLevel >= 1) reach += 1;
-                        if (ballCasterLevel >= 2) { reach += 1; damage *= 1.15; }
-                        if (ballCasterLevel >= 3) { reach += 1; damage *= 1.25; }
-                        
-                        if (onAoE) {
-                            onAoE(player.x, player.y, player.z + 0.5, reach, damage, spell.damageType, spell.statusEffect);
-                        }
-                        
-                        const radius = reach;
-                        const pZ = Math.floor(player.z);
-                        const minX = Math.floor(player.x - radius);
-                        const maxX = Math.floor(player.x + radius);
-                        const minY = Math.floor(player.y - radius);
-                        const maxY = Math.floor(player.y + radius);
-
-                        for(let bx = minX; bx <= maxX; bx++) {
-                            for(let by = minY; by <= maxY; by++) {
-                                const dx = bx + 0.5 - player.x;
-                                const dy = by + 0.5 - player.y;
-                                if (dx*dx + dy*dy <= radius*radius) {
-                                    const block = world.getBlock(bx, by, pZ);
-                                    if (!isIndestructible(block)) {
-                                        if (block === BlockType.BUSH || block === BlockType.FERN || block === BlockType.RED_BERRY_BUSH || block === BlockType.BLUE_BERRY_BUSH || block === BlockType.BLACK_BERRY_BUSH || block === BlockType.YELLOW_BERRY_BUSH || block === BlockType.DIRT || block === BlockType.GRASS) {
-                                            world.setBlock(bx, by, pZ, BlockType.AIR);
-                                        audioEngine.playBreakBlock();
-                                            let mult = player.race === 'RABBIT FOLK' ? 2 : 1;
-                                            if (block === BlockType.RED_BERRY_BUSH && onDropItem) {
-                                                onDropItem(bx, by, pZ, { ...ITEMS['red_berry'], quantity: 2 * mult });
-                                                onDropItem(bx, by, pZ, { ...ITEMS['red_berry_seed'], quantity: 2 * mult });
-                                            } else if (block === BlockType.BLUE_BERRY_BUSH && onDropItem) {
-                                                onDropItem(bx, by, pZ, { ...ITEMS['blue_berry'], quantity: 2 * mult });
-                                                onDropItem(bx, by, pZ, { ...ITEMS['blue_berry_seed'], quantity: 2 * mult });
-                                            } else if (block === BlockType.BLACK_BERRY_BUSH && onDropItem) {
-                                                onDropItem(bx, by, pZ, { ...ITEMS['black_berry'], quantity: 2 * mult });
-                                                onDropItem(bx, by, pZ, { ...ITEMS['black_berry_seed'], quantity: 2 * mult });
-                                            } else if (block === BlockType.YELLOW_BERRY_BUSH && onDropItem) {
-                                                onDropItem(bx, by, pZ, { ...ITEMS['yellow_berry'], quantity: 2 * mult });
-                                                onDropItem(bx, by, pZ, { ...ITEMS['yellow_berry_seed'], quantity: 2 * mult });
-                                            } else if (block === BlockType.FERN && onDropItem) {
-                                                onDropItem(bx, by, pZ, { ...ITEMS['fern_frond'], quantity: Math.floor(Math.random() * 2 * mult) + 1 });
-                                            }
-                                        } else if (block === BlockType.DUMMY) {
-                                            const key = `${bx},${by},${pZ}`;
-                                            let hp = world.blockHealth.get(key) ?? 50;
-                                            hp -= (spell.type === 'AOE' ? damage : spell.damage);
-                                            if (hp <= 0) {
-                                                world.setBlock(bx, by, pZ, BlockType.AIR);
-                                        audioEngine.playBreakBlock();
-                                                world.blockHealth.delete(key);
-                                                world.respawningBlocks.set(key, { type: BlockType.DUMMY, timer: 30.0 });
-                                                player.addXp(10);
-                                            } else {
-                                                world.blockHealth.set(key, hp);
-                                            }
-                                        } else if (block === BlockType.BEE_HIVE) {
-                                            const key = `${bx},${by},${pZ}`;
-                                            let hp = world.blockHealth.get(key) ?? 30;
-                                            hp -= (spell.type === 'AOE' ? damage : spell.damage);
-                                            if (hp <= 0) {
-                                                world.setBlock(bx, by, pZ, BlockType.AIR);
-                                        audioEngine.playBreakBlock();
-                                                world.blockHealth.delete(key);
-                                            } else {
-                                                world.blockHealth.set(key, hp);
-                                            }
-                                        } else {
-                                            const key = `${bx},${by},${pZ}`;
-                                            let hp = world.blockHealth.get(key) ?? (
-                                                BlockRegistry.getHardness(block)
-                                            );
-                                            let appliedDamage = (spell.type === 'AOE' ? damage : spell.damage);
-                                            if (player.race === 'HILL DWARF' || player.race === 'MOUNTAIN DWARF' || player.race === 'CYCLOPSE DWARF') {
-                                                if (block === BlockType.STONE || block === BlockType.HEAVY_STONE || block === BlockType.COPPER_ORE || block === BlockType.IRON_ORE || block === BlockType.GREEN_METAL_ORE || block === BlockType.RED_METAL_ORE || block === BlockType.MITHRIL_ORE || block === BlockType.COAL_ORE || block === BlockType.RUBY || block === BlockType.EMERALD || block === BlockType.BLACK_DIAMOND) {
-                                                    appliedDamage *= 2;
-                                                }
-                                            }
-                                            hp -= appliedDamage;
-                                            if (hp <= 0) {
-                                                world.setBlock(bx, by, pZ, BlockType.AIR);
-                                        audioEngine.playBreakBlock();
-                                                world.blockHealth.delete(key);
-                                                if (block === BlockType.CHEST) {
-                                                    const chestInv = world.getChest(bx, by, pZ);
-                                                    if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['storage_chest'], chestInventory: chestInv });
-                                                    world.chestData.delete(world.getChestKey(bx, by, pZ));
-                                                } else if (block === BlockType.TRUNK || block === BlockType.TROPICAL_WOOD) {
-                                                    const woodType = block === BlockType.TROPICAL_WOOD ? 'tropical_wood' : 'wood';
-                                                    if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS[woodType], quantity: Math.floor(Math.random() * 3) + 1 });
-                                                    let currentZ = pZ + 1;
-                                                    while (currentZ < WORLD_HEIGHT) {
-                                                        const aboveBlock = world.getBlock(bx, by, currentZ);
-                                                        if (aboveBlock === BlockType.TRUNK || aboveBlock === BlockType.LEAVES || aboveBlock === BlockType.PINE_LEAVES || aboveBlock === BlockType.TROPICAL_WOOD || aboveBlock === BlockType.TROPICAL_LEAVES) {
-                                                            world.setBlock(bx, by, currentZ, BlockType.AIR);
-                                        audioEngine.playBreakBlock();
-                                                            if ((aboveBlock === BlockType.TRUNK || aboveBlock === BlockType.TROPICAL_WOOD) && onDropItem && Math.random() < 0.5) {
-                                                                const woodTypeAbove = aboveBlock === BlockType.TROPICAL_WOOD ? 'tropical_wood' : 'wood';
-                                                                onDropItem(bx, by, currentZ, { ...ITEMS[woodTypeAbove] });
-                                                            }
-                                                            for (let lx = -2; lx <= 2; lx++) {
-                                                                for (let ly = -2; ly <= 2; ly++) {
-                                                                    if (lx === 0 && ly === 0) continue;
-                                                                    const leafBlock = world.getBlock(bx + lx, by + ly, currentZ);
-                                                                    if (leafBlock === BlockType.LEAVES || leafBlock === BlockType.PINE_LEAVES || leafBlock === BlockType.TROPICAL_LEAVES) {
-                                                                        world.setBlock(bx + lx, by + ly, currentZ, BlockType.AIR);
-                                        audioEngine.playBreakBlock();
-                                                                    }
-                                                                }
-                                                            }
-                                                            currentZ++;
-                                                        } else {
-                                                            break;
-                                                        }
-                                                    }
-                                                } else {
-                                                    if (onDropItem) {
-                                                        const drops = getLootForBlock(block);
-                                                        for (const drop of drops) {
-                                                            let qty = drop.quantity ?? 1;
-                                                            if (player.hasFavoredDeity('FIDIRI') && (block === BlockType.COPPER_ORE || block === BlockType.IRON_ORE || block === BlockType.GREEN_METAL_ORE || block === BlockType.RED_METAL_ORE || block === BlockType.MITHRIL_ORE || block === BlockType.COAL_ORE)) {
-                                                                if (Math.random() < 0.2) qty *= 2;
-                                                            }
-                                                            if ((player.race === 'TINKER GNOME' || player.race === 'GLOW GNOME') && (block === BlockType.RUBY || block === BlockType.EMERALD || block === BlockType.BLACK_DIAMOND)) {
-                                                                qty *= 2;
-                                                            }
-                                                            onDropItem(bx, by, pZ, { ...drop.item, quantity: qty });
-                                                        }
-                                                    }
-                                                }
-                                            } else {
-                                                world.blockHealth.set(key, hp);
-                                            }
-
-                                            if (player.hasFavoredDeity('ANIMA') && player.health < player.effectiveMaxHealth && Math.random() < 0.05) {
-                                                player.health = Math.min(player.effectiveMaxHealth, player.health + 1);
-                                                // audioEngine.playHeal(); // Provide audio feedback if healing happens
-                                            }
-                                        }
-                                        if (onHit) onHit(bx, by, pZ, (spell.type === 'AOE' ? damage : spell.damage), block);
-                                    }
-                                }
-                            }
-                        }
-                    } else {
-                        // Handle damage for cone AoE
-                        const reach = spell.reach;
-                        const spread = spell.spread;
-                        const pZ = Math.floor(player.z);
-
-                        const minX = Math.floor(player.x - reach);
-                        const maxX = Math.floor(player.x + reach);
-                        const minY = Math.floor(player.y - reach);
-                        const maxY = Math.floor(player.y + reach);
-
-                        for(let bx = minX; bx <= maxX; bx++) {
-                            for(let by = minY; by <= maxY; by++) {
-                                const block = world.getBlock(bx, by, pZ);
-                                if (isIndestructible(block)) continue;
-                                
-                                let blockHit = false;
-                                for (let i = 0; i <= 4; i++) {
-                                    for (let j = 0; j <= 4; j++) {
-                                        const testX = bx + (i * 0.25);
-                                        const testY = by + (j * 0.25);
-                                        const dx = testX - player.x;
-                                        const dy = testY - player.y;
-                                        const dist = Math.sqrt(dx*dx + dy*dy);
-                                        
-                                        if (dist === 0) {
-                                            blockHit = true;
-                                            break;
-                                        } else if (dist <= reach) {
-                                            const angle = Math.atan2(dy, dx);
-                                            let angleDiff = angle - player.aimAngle;
-                                            while (angleDiff > Math.PI) angleDiff -= Math.PI * 2;
-                                            while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
-                                            
-                                            if (Math.abs(angleDiff) <= spread) {
-                                                blockHit = true;
-                                                break;
-                                            }
-                                        }
-                                    }
-                                    if (blockHit) break;
-                                }
-
-                                if (blockHit) {
-                                    if (block === BlockType.BUSH || block === BlockType.FERN || block === BlockType.RED_BERRY_BUSH || block === BlockType.BLUE_BERRY_BUSH || block === BlockType.BLACK_BERRY_BUSH || block === BlockType.YELLOW_BERRY_BUSH || block === BlockType.DIRT || block === BlockType.GRASS) {
-                                        world.setBlock(bx, by, pZ, BlockType.AIR);
-                                        audioEngine.playBreakBlock();
-                                        let mult = player.race === 'RABBIT FOLK' ? 2 : 1;
-                                        if (block === BlockType.RED_BERRY_BUSH && onDropItem) {
-                                            onDropItem(bx, by, pZ, { ...ITEMS['red_berry'], quantity: 2 * mult });
-                                            onDropItem(bx, by, pZ, { ...ITEMS['red_berry_seed'], quantity: 2 * mult });
-                                        } else if (block === BlockType.BLUE_BERRY_BUSH && onDropItem) {
-                                            onDropItem(bx, by, pZ, { ...ITEMS['blue_berry'], quantity: 2 * mult });
-                                            onDropItem(bx, by, pZ, { ...ITEMS['blue_berry_seed'], quantity: 2 * mult });
-                                        } else if (block === BlockType.BLACK_BERRY_BUSH && onDropItem) {
-                                            onDropItem(bx, by, pZ, { ...ITEMS['black_berry'], quantity: 2 * mult });
-                                            onDropItem(bx, by, pZ, { ...ITEMS['black_berry_seed'], quantity: 2 * mult });
-                                        } else if (block === BlockType.YELLOW_BERRY_BUSH && onDropItem) {
-                                            onDropItem(bx, by, pZ, { ...ITEMS['yellow_berry'], quantity: 2 * mult });
-                                            onDropItem(bx, by, pZ, { ...ITEMS['yellow_berry_seed'], quantity: 2 * mult });
-                                        } else if (block === BlockType.FERN && onDropItem) {
-                                            onDropItem(bx, by, pZ, { ...ITEMS['fern_frond'], quantity: Math.floor(Math.random() * 2 * mult) + 1 });
-                                        }
-                                    } else if (block === BlockType.BEE_HIVE) {
-                                        const key = `${bx},${by},${pZ}`;
-                                        let hp = world.blockHealth.get(key) ?? 30;
-                                        hp -= spell.damage;
-                                        if (hp <= 0) {
-                                            world.setBlock(bx, by, pZ, BlockType.AIR);
-                                        audioEngine.playBreakBlock();
-                                            world.blockHealth.delete(key);
-                                        } else {
-                                            world.blockHealth.set(key, hp);
-                                        }
-                                    } else if (block === BlockType.DUMMY) {
-                                        const key = `${bx},${by},${pZ}`;
-                                        let hp = world.blockHealth.get(key) ?? 50;
-                                        hp -= spell.damage;
-                                        if (hp <= 0) {
-                                            world.setBlock(bx, by, pZ, BlockType.AIR);
-                                        audioEngine.playBreakBlock();
-                                            world.blockHealth.delete(key);
-                                            world.respawningBlocks.set(key, { type: BlockType.DUMMY, timer: 30.0 });
-                                            player.addXp(10);
-                                        } else {
-                                            world.blockHealth.set(key, hp);
-                                        }
-                                    } else {
-                                        const key = `${bx},${by},${pZ}`;
-                                        let hp = world.blockHealth.get(key) ?? (
-                                                BlockRegistry.getHardness(block)
-                                            );
-                                        let appliedDamage = spell.damage;
-                                        if (player.race === 'HILL DWARF' || player.race === 'MOUNTAIN DWARF' || player.race === 'CYCLOPSE DWARF') {
-                                            if (block === BlockType.STONE || block === BlockType.HEAVY_STONE || block === BlockType.COPPER_ORE || block === BlockType.IRON_ORE || block === BlockType.GREEN_METAL_ORE || block === BlockType.RED_METAL_ORE || block === BlockType.MITHRIL_ORE || block === BlockType.COAL_ORE || block === BlockType.RUBY || block === BlockType.EMERALD || block === BlockType.BLACK_DIAMOND) {
-                                                appliedDamage *= 2;
-                                            }
-                                        }
-                                        hp -= appliedDamage;
-                                        if (hp <= 0) {
-                                            world.setBlock(bx, by, pZ, BlockType.AIR);
-                                        audioEngine.playBreakBlock();
-                                            world.blockHealth.delete(key);
-                                            if (block === BlockType.CHEST) {
-                                                const chestInv = world.getChest(bx, by, pZ);
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS['storage_chest'], chestInventory: chestInv });
-                                                world.chestData.delete(world.getChestKey(bx, by, pZ));
-                                            } else if (block === BlockType.TRUNK || block === BlockType.TROPICAL_WOOD) {
-                                                const woodType = block === BlockType.TROPICAL_WOOD ? 'tropical_wood' : 'wood';
-                                                if (onDropItem) onDropItem(bx, by, pZ, { ...ITEMS[woodType], quantity: Math.floor(Math.random() * 3) + 1 });
-                                                let currentZ = pZ + 1;
-                                                while (currentZ < WORLD_HEIGHT) {
-                                                    const aboveBlock = world.getBlock(bx, by, currentZ);
-                                                    if (aboveBlock === BlockType.TRUNK || aboveBlock === BlockType.LEAVES || aboveBlock === BlockType.PINE_LEAVES || aboveBlock === BlockType.TROPICAL_WOOD || aboveBlock === BlockType.TROPICAL_LEAVES) {
-                                                        world.setBlock(bx, by, currentZ, BlockType.AIR);
-                                        audioEngine.playBreakBlock();
-                                                        if ((aboveBlock === BlockType.TRUNK || aboveBlock === BlockType.TROPICAL_WOOD) && onDropItem && Math.random() < 0.5) {
-                                                            const woodTypeAbove = aboveBlock === BlockType.TROPICAL_WOOD ? 'tropical_wood' : 'wood';
-                                                            onDropItem(bx, by, currentZ, { ...ITEMS[woodTypeAbove] });
-                                                        }
-                                                        for (let lx = -2; lx <= 2; lx++) {
-                                                            for (let ly = -2; ly <= 2; ly++) {
-                                                                if (lx === 0 && ly === 0) continue;
-                                                                const leafBlock = world.getBlock(bx + lx, by + ly, currentZ);
-                                                                if (leafBlock === BlockType.LEAVES || leafBlock === BlockType.PINE_LEAVES || leafBlock === BlockType.TROPICAL_LEAVES) {
-                                                                    world.setBlock(bx + lx, by + ly, currentZ, BlockType.AIR);
-                                        audioEngine.playBreakBlock();
-                                                                }
-                                                            }
-                                                        }
-                                                        currentZ++;
-                                                    } else {
-                                                        break;
-                                                    }
-                                                }
-                                            } else {
-                                                if (onDropItem) {
-                                                    const drops = getLootForBlock(block);
-                                                    for (const drop of drops) {
-                                                        let qty = drop.quantity ?? 1;
-                                                        if (player.hasFavoredDeity('FIDIRI') && (block === BlockType.COPPER_ORE || block === BlockType.IRON_ORE || block === BlockType.GREEN_METAL_ORE || block === BlockType.RED_METAL_ORE || block === BlockType.MITHRIL_ORE || block === BlockType.COAL_ORE)) {
-                                                            if (Math.random() < 0.2) qty *= 2;
-                                                        }
-                                                        if ((player.race === 'TINKER GNOME' || player.race === 'GLOW GNOME') && (block === BlockType.RUBY || block === BlockType.EMERALD || block === BlockType.BLACK_DIAMOND)) {
-                                                            qty *= 2;
-                                                        }
-                                                        onDropItem(bx, by, pZ, { ...drop.item, quantity: qty });
-                                                    }
-                                                }
-                                            }
-
-                                            if (player.hasFavoredDeity('ANIMA') && player.health < player.effectiveMaxHealth && Math.random() < 0.05) {
-                                                player.health = Math.min(player.effectiveMaxHealth, player.health + 1);
-                                                // audioEngine.playHeal();
-                                            }
-                                        } else {
-                                            world.blockHealth.set(key, hp);
-                                        }
-                                    }
-                                    if (onHit) {
-                                        onHit(bx, by, pZ, spell.damage, block);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        PlayerSpellCasting.handleCasting(player, world, dt, casting, ctx, onCastSpell, onShoot, onMelee, onAoE, onDropItem, onHit);
 
         
     }

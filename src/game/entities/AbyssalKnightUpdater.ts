@@ -1,3 +1,4 @@
+import { EntitySteeringSystem } from '../systems/EntitySteeringSystem';
 function removeFromArray<T>(array: T[], index: number) {
     if (index === array.length - 1) {
         array.pop();
@@ -111,8 +112,8 @@ export class AbyssalKnightUpdater {
             
             k.vz -= 20 * dt;
             
-            Updater.applyBoids(k, engine, dt);
-            Updater.applyDodge(k, engine, dt);
+            EntitySteeringSystem.applyBoids(k, engine, dt);
+            EntitySteeringSystem.applyDodge(k, engine, dt);
             
             const newX = k.x + k.vx * dt;
             const newY = k.y + k.vy * dt;
@@ -142,6 +143,7 @@ export class AbyssalKnightUpdater {
             }
             
             if (k.health <= 0) {
+                if (Math.random() < 0.4) engine.dropItem(k.x, k.y, k.z, { ...ITEMS['copper_piece'], quantity: Math.floor(Math.random() * 3) + 1 });
                 engine.player.addXp(100);
                 engine.dropItem(k.x, k.y, k.z, { ...ITEMS['abyssal_core'] });
                 removeFromArray(engine.abyssalKnights, i);

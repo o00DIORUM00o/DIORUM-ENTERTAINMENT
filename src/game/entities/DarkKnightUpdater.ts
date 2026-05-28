@@ -19,7 +19,7 @@ export class DarkKnightUpdater {
             // Check if spawner still exists
             if (knight.spawnerKey) {
                 const [cx, cy, cz] = knight.spawnerKey.split(',').map(Number);
-                if (engine.world.getBlock(cx, cy, cz) !== BlockType.DARK_KNIGHT_TENT) {
+                if (engine.world.getBlock(cx, cy, cz) === 0) { // 0 is BlockType.AIR
                     removeFromArray(engine.darkKnights, i);
                     continue;
                 }
@@ -49,7 +49,7 @@ export class DarkKnightUpdater {
                 // Fallback wander via ZeldaAI for simple wandering
                 ZeldaAI.update(knight, engine, dt);
 
-                if (dist < 8.0 && Math.abs(engine.player.z - knight.z) < 2) {
+                if (dist < 8.0 && Math.abs(engine.player.z - knight.z) < 1.0) {
                     // Line of sight check? We can just trigger AIM
                     knight.state = 'AIM';
                     knight.stateTimer = 0.8; // Time spent aiming/drawing sword
@@ -87,8 +87,8 @@ export class DarkKnightUpdater {
                 const nextY = knight.y + knight.vy * dt;
                 const pz = Math.floor(knight.z);
 
-                if (!engine.world.isSolid(Math.floor(nextX), Math.floor(knight.y), pz) &&
-                    !engine.world.isSolid(Math.floor(nextX), Math.floor(knight.y), pz + 1)) {
+                if (!isSolid(engine.world.getBlock(Math.floor(nextX), Math.floor(knight.y), pz)) &&
+                    !isSolid(engine.world.getBlock(Math.floor(nextX), Math.floor(knight.y), pz + 1))) {
                     knight.x = nextX;
                 } else {
                     hitWall = true;
@@ -100,15 +100,15 @@ export class DarkKnightUpdater {
                     });
                 }
 
-                if (!engine.world.isSolid(Math.floor(knight.x), Math.floor(nextY), pz) &&
-                    !engine.world.isSolid(Math.floor(knight.x), Math.floor(nextY), pz + 1)) {
+                if (!isSolid(engine.world.getBlock(Math.floor(knight.x), Math.floor(nextY), pz)) &&
+                    !isSolid(engine.world.getBlock(Math.floor(knight.x), Math.floor(nextY), pz + 1))) {
                     knight.y = nextY;
                 } else {
                     hitWall = true;
                 }
 
                 // Check player collision during charge
-                if (dist < 1.2 && Math.abs(engine.player.z - knight.z) < 2) {
+                if (dist < 1.2 && Math.abs(engine.player.z - knight.z) < 1.0) {
                     // Hit player!
                     engine.player.health -= knight.damage;
                     engine.events.emit('HUD_UPDATE');
@@ -138,7 +138,7 @@ export class DarkKnightUpdater {
             let nextZ = knight.z + knight.vz * dt;
 
             // Floor collision
-            if (engine.world.isSolid(Math.floor(knight.x), Math.floor(knight.y), Math.floor(nextZ))) {
+            if (isSolid(engine.world.getBlock(Math.floor(knight.x), Math.floor(knight.y), Math.floor(nextZ)))) {
                 knight.z = Math.floor(nextZ) + 1;
                 knight.vz = 0;
             } else {

@@ -1,3 +1,4 @@
+import { EntitySteeringSystem } from '../systems/EntitySteeringSystem';
 function removeFromArray<T>(array: T[], index: number) {
     if (index === array.length - 1) {
         array.pop();
@@ -17,8 +18,8 @@ for (let i = engine.npcs.length - 1; i >= 0; i--) {
             const npc = engine.npcs[i];
             
             npc.vz -= 20 * dt; // Gravity
-            Updater.applyBoids(npc, engine, dt);
-                    Updater.applyDodge(npc, engine, dt);
+            EntitySteeringSystem.applyBoids(npc, engine, dt);
+                    EntitySteeringSystem.applyDodge(npc, engine, dt);
             npc.x += npc.vx * dt;
             npc.y += npc.vy * dt;
             npc.z += npc.vz * dt;
@@ -48,6 +49,15 @@ for (let i = engine.npcs.length - 1; i >= 0; i--) {
                 const dy = engine.player.y - npc.y;
                 const dist = Math.sqrt(dx*dx + dy*dy);
 
+                if (npc.type === 'WANDERING_BARD' && Math.random() < 0.05) {
+                    engine.particles.push({
+                        x: npc.x + (Math.random() - 0.5), y: npc.y + (Math.random() - 0.5), z: npc.z + 1 + Math.random(),
+                        text: ['♪', '♫', '♩', '♬'][Math.floor(Math.random() * 4)],
+                        color: `hsl(${Math.random() * 360}, 80%, 70%)`,
+                        life: 1.0, maxLife: 1.0, speed: 0, vy: 0.5, vx: (Math.random()-0.5)*0.5, vz: (Math.random()-0.5)*0.5, size: 1.5
+                    });
+                }
+
                 if (npc.disposition <= -50) {
                     npc.state = 'COMBAT';
                 } else if (npc.state === 'COMBAT' && npc.disposition > -50) {
@@ -62,7 +72,7 @@ for (let i = engine.npcs.length - 1; i >= 0; i--) {
                     let closestDist = 15;
                     for(const e of enemiesList) {
                          const d = Math.hypot(e.x - npc.x, e.y - npc.y);
-                         if (d < closestDist && Math.abs(e.z - npc.z) < 2) {
+                         if (d < closestDist && Math.abs(e.z - npc.z) < 1.0) {
                               closestDist = d;
                               targetEnemy = e;
                          }
@@ -82,7 +92,7 @@ for (let i = engine.npcs.length - 1; i >= 0; i--) {
                 }
                 
                 // Halfling / Pit Bull / Terrier / Human defensive logic
-                if ((npc.type === 'HALFLING' || npc.type === 'PIT_BULL_FOLK' || npc.type === 'TERRIER_FOLK' || npc.type === 'HUMAN_KNIGHT' || npc.type === 'HUMAN_PALADIN' || npc.type === 'HUMAN_RANGER' || npc.type === 'DWARF' || npc.type === 'GNOME' || npc.type === 'VILLAGER')) {
+                if ((npc.type === 'HALFLING' || npc.type === 'PIT_BULL_FOLK' || npc.type === 'TERRIER_FOLK' || npc.type === 'HUMAN_KNIGHT' || npc.type === 'HUMAN_PALADIN' || npc.type === 'HUMAN_RANGER' || npc.type === 'DWARF' || npc.type === 'GNOME' || npc.type === 'VILLAGER' || npc.type === 'SQUIRREL_FOLK' || npc.type === 'BEAST_TAMER')) {
                     // Check if nearby friendlies are under attack
                     let friendlyUnderAttack = false;
                     for (const otherNpc of engine.npcs) {
@@ -98,7 +108,7 @@ for (let i = engine.npcs.length - 1; i >= 0; i--) {
                     if (npc.disposition <= -50 && (distToHome < 30 || friendlyUnderAttack)) {
                         npc.state = 'COMBAT';
                         if (npc.onMessage && Math.random() < 0.05) {
-                            let text = 'For Thrae!';
+                            let text = 'For Herat!';
                             if (npc.type === 'DWARF') text = 'For Tarhe! For the mountain!';
                             if (npc.type === 'GNOME') text = 'Intruder in the machinery!';
                             if (npc.type === 'VILLAGER') text = 'Guards! Help!';
@@ -237,9 +247,9 @@ for (let i = engine.npcs.length - 1; i >= 0; i--) {
                             npc.attackTimer = 0.5;
                             npc.attackCooldown = 2.0;
 
-                            if (npc.type === 'WOLF_FOLK' || npc.type === 'PIT_BULL_FOLK' || npc.type === 'TERRIER_FOLK' || npc.type === 'POMERANIAN_FOLK' || npc.type === 'HALFLING' || npc.type === 'HUMAN_KNIGHT') {
+                            if (npc.type === 'WOLF_FOLK' || npc.type === 'PIT_BULL_FOLK' || npc.type === 'TERRIER_FOLK' || npc.type === 'POMERANIAN_FOLK' || npc.type === 'HALFLING' || npc.type === 'HUMAN_KNIGHT' || npc.type === 'SQUIRREL_FOLK' || npc.type === 'BEAST_TAMER') {
                                 if (dist < 3.5) {
-                                  const dmg = npc.type === 'HUMAN_KNIGHT' ? 25 : 15;
+                                  const dmg = npc.type === 'HUMAN_KNIGHT' ? 25 : npc.type === 'BEAST_TAMER' ? 30 : npc.type === 'SQUIRREL_FOLK' ? 10 : 15;
                                   engine.player.takeDamage(dmg);
                                   engine.particles.push({x: engine.player.x, y: engine.player.y, z: engine.player.z + 1, text: dmg.toString(), color: '#ff0000', life: 0.5, maxLife: 0.5, speed: 0, vy: -1, vx: 0, vz: 0});
                                   npc.attackCooldown = 1.0;
@@ -404,6 +414,14 @@ for (let i = engine.npcs.length - 1; i >= 0; i--) {
                     if (Math.random() < 0.3) engine.dropItem(npc.x, npc.y, npc.z, { ...ITEMS['gnomish_crossbow'] });
                     if (Math.random() < 0.5) engine.dropItem(npc.x, npc.y, npc.z, { ...ITEMS['gnomish_gear'], quantity: Math.floor(Math.random() * 3) + 1 });
                     engine.dropItem(npc.x, npc.y, npc.z, { ...ITEMS['gold_piece'], quantity: Math.floor(Math.random() * 30) + 10 });
+                } else if (npc.type === 'SQUIRREL_FOLK') {
+                    engine.player.addXp(120);
+                    engine.dropItem(npc.x, npc.y, npc.z, { ...ITEMS['acorn'], quantity: Math.floor(Math.random() * 3) + 1 });
+                    if (Math.random() < 0.2) engine.dropItem(npc.x, npc.y, npc.z, { ...ITEMS['gold_piece'], quantity: Math.floor(Math.random() * 20) + 5 });
+                } else if (npc.type === 'BEAST_TAMER') {
+                    engine.player.addXp(400);
+                    engine.dropItem(npc.x, npc.y, npc.z, { ...ITEMS['leather'], quantity: Math.floor(Math.random() * 3) + 1 });
+                    engine.dropItem(npc.x, npc.y, npc.z, { ...ITEMS['gold_piece'], quantity: Math.floor(Math.random() * 50) + 10 });
                 } else if (npc.type === 'WOLF_FOLK' || npc.type === 'PIT_BULL_FOLK' || npc.type === 'POMERANIAN_FOLK' || npc.type === 'TERRIER_FOLK' || npc.type === 'HALFLING') {
                     engine.player.addXp(100);
                     engine.dropItem(npc.x, npc.y, npc.z, { ...ITEMS['gold_piece'], quantity: Math.floor(Math.random() * 50) + 10 });

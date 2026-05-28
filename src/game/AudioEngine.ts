@@ -172,6 +172,28 @@ export class AudioEngine {
         osc.stop(time + 0.05);
     }
 
+    playHeal() {
+        if (!this.initialized) this.init();
+        if (!this.ctx || !this.masterGain) return;
+        const ctx = this.ctx;
+        const time = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(this.masterGain);
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(600, time);
+        osc.frequency.exponentialRampToValueAtTime(1200, time + 0.5);
+
+        gain.gain.setValueAtTime(0, time);
+        gain.gain.linearRampToValueAtTime(0.3, time + 0.1);
+        gain.gain.exponentialRampToValueAtTime(0.01, time + 1.0);
+
+        osc.start(time);
+        osc.stop(time + 1.0);
+    }
+
     playJump() {
         if (!this.initialized) this.init();
         if (!this.ctx || !this.masterGain) return;

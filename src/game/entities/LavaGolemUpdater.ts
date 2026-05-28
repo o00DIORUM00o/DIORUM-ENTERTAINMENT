@@ -1,3 +1,4 @@
+import { EntitySteeringSystem } from '../systems/EntitySteeringSystem';
 function removeFromArray<T>(array: T[], index: number) {
     if (index === array.length - 1) {
         array.pop();
@@ -100,8 +101,8 @@ for (let i = engine.lavaGolems.length - 1; i >= 0; i--) {
 
             golem.vx = Math.cos(golem.aimAngle) * speed;
             golem.vy = Math.sin(golem.aimAngle) * speed;
-            Updater.applyBoids(golem, engine, dt);
-                    Updater.applyDodge(golem, engine, dt);
+            EntitySteeringSystem.applyBoids(golem, engine, dt);
+                    EntitySteeringSystem.applyDodge(golem, engine, dt);
 
             golem.x += golem.vx * dt;
             golem.y += golem.vy * dt;
@@ -114,6 +115,7 @@ for (let i = engine.lavaGolems.length - 1; i >= 0; i--) {
             }
 
             if (golem.health <= 0) {
+                if (Math.random() < 0.4) engine.dropItem(golem.x, golem.y, golem.z, { ...ITEMS['copper_piece'], quantity: Math.floor(Math.random() * 3) + 1 });
                 removeFromArray(engine.lavaGolems, i);
                 engine.player.addXp(50);
                 engine.dropItem(golem.x, golem.y, golem.z, { ...ITEMS['stone'], quantity: Math.floor(Math.random() * 5) + 3 });

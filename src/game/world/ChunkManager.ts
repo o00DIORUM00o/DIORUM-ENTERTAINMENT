@@ -10,6 +10,9 @@ export class ChunkManager {
     lastChunkCy: number | null = null;
     lastChunkPlanet: string | null = null;
     lastChunk: Chunk | null = null;
+    
+    // MRU Cache array to prevent hash map thrashing on chunk borders
+    mruCache: Chunk[] = [];
 
     setWorld(world: any) {
         this.world = world;
@@ -24,6 +27,22 @@ export class ChunkManager {
             return this.lastChunk;
         }
 
+        for (let i = 0; i < this.mruCache.length; i++) {
+            const c = this.mruCache[i];
+            if (c.cx === cx && c.cy === cy && c.activePlanet === activePlanet) {
+                this.lastChunkCx = cx;
+                this.lastChunkCy = cy;
+                this.lastChunkPlanet = activePlanet;
+                this.lastChunk = c;
+                // Move to front
+                if (i > 0) {
+                    this.mruCache.splice(i, 1);
+                    this.mruCache.unshift(c);
+                }
+                return c;
+            }
+        }
+
         const key = this.getChunkKey(activePlanet, cx, cy);
         let chunk = this.chunks.get(key);
         
@@ -31,10 +50,6 @@ export class ChunkManager {
             chunk = new Chunk(cx, cy, activePlanet);
             // Pre-register to prevent recursion
             this.chunks.set(key, chunk);
-            this.lastChunkCx = cx;
-            this.lastChunkCy = cy;
-            this.lastChunkPlanet = activePlanet;
-            this.lastChunk = chunk;
             
             TerrainGenerator.generate(chunk);
             chunk.rebuildMetadata();
@@ -51,7 +66,6 @@ export class ChunkManager {
                             const block = chunk.blocks[x + y * CHUNK_SIZE + z * CHUNK_SIZE * CHUNK_SIZE];
                             if (block === BlockType.QUEST_DUNGEON_SPAWNER) {
                                 chunk.blocks[x + y * CHUNK_SIZE + z * CHUNK_SIZE * CHUNK_SIZE] = BlockType.AIR;
-                                this.world.buildDungeon(cx * CHUNK_SIZE + x, cy * CHUNK_SIZE + y);
                             } else if (block === BlockType.QUEST_NPC_SPAWNER) {
                                 chunk.blocks[x + y * CHUNK_SIZE + z * CHUNK_SIZE * CHUNK_SIZE] = BlockType.AIR;
                                 this.world.questNpcEntrances.push({ x: cx * CHUNK_SIZE + x, y: cy * CHUNK_SIZE + y, z });
@@ -68,12 +82,15 @@ export class ChunkManager {
                     }
                 }
             }
-        } else {
-            this.lastChunkCx = cx;
-            this.lastChunkCy = cy;
-            this.lastChunkPlanet = activePlanet;
-            this.lastChunk = chunk;
         }
+        
+        this.lastChunkCx = cx;
+        this.lastChunkCy = cy;
+        this.lastChunkPlanet = activePlanet;
+        this.lastChunk = chunk;
+
+        this.mruCache.unshift(chunk);
+        if (this.mruCache.length > 8) this.mruCache.pop(); // Keep 8 chunks in fast cache
         
         return chunk;
     }
@@ -84,36 +101,36 @@ export class ChunkManager {
 
     getBlock(activePlanet: string, x: number, y: number, z: number): BlockType {
         if (z < 0 || z >= WORLD_HEIGHT) return BlockType.AIR;
-        const cx = Math.floor(x / CHUNK_SIZE);
-        const cy = Math.floor(y / CHUNK_SIZE);
+        const cx = x >> 4;
+        const cy = y >> 4;
         
         const chunk = this.getChunk(activePlanet, cx, cy);
         
-        const lx = x - cx * CHUNK_SIZE;
-        const ly = y - cy * CHUNK_SIZE;
+        const lx = x & 15;
+        const ly = y & 15;
         return chunk.getBlock(lx, ly, z);
     }
 
     setBlock(activePlanet: string, x: number, y: number, z: number, type: BlockType) {
         if (z < 0 || z >= WORLD_HEIGHT) return;
-        const cx = Math.floor(x / CHUNK_SIZE);
-        const cy = Math.floor(y / CHUNK_SIZE);
+        const cx = x >> 4;
+        const cy = y >> 4;
         
         const chunk = this.getChunk(activePlanet, cx, cy);
         
-        const lx = x - cx * CHUNK_SIZE;
-        const ly = y - cy * CHUNK_SIZE;
+        const lx = x & 15;
+        const ly = y & 15;
         chunk.setBlock(lx, ly, z, type);
     }
 
     getSurface(activePlanet: string, x: number, y: number, maxZ: number) {
-        const cx = Math.floor(x / CHUNK_SIZE);
-        const cy = Math.floor(y / CHUNK_SIZE);
+        const cx = x >> 4;
+        const cy = y >> 4;
         
         const chunk = this.getChunk(activePlanet, cx, cy);
         
-        const lx = x - cx * CHUNK_SIZE;
-        const ly = y - cy * CHUNK_SIZE;
+        const lx = x & 15;
+        const ly = y & 15;
         
         const highestZ = chunk.heightMap[lx + ly * CHUNK_SIZE];
         let drawZ = Math.min(maxZ, highestZ);
