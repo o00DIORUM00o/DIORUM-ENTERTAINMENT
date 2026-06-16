@@ -8,6 +8,7 @@ import { NPCChat } from './components/NPCChat';
 import { ShopUI } from './components/ShopUI';
 import { audioEngine } from './game/AudioEngine';
 import { ThemeManager, THEMES } from './game/ThemeManager';
+import { SaveManager } from './game/SaveManager';
 import { formatZodiacStats } from './game/StarSigns';
 import { STARTING_PACKS } from './game/content/packs/core_packs';
 
@@ -2209,8 +2210,42 @@ export default function App() {
                                 
                                 {activeTab === 'SETTINGS' && (
                                     <div className="flex flex-col gap-4 bg-[#1a0f0a] p-2 md:p-4 border border-[#3a2214] shadow-inner h-full overflow-y-auto no-scrollbar">
+
+                                        <div className="text-orange-400 text-lg font-bold border-b border-[#5c3a21] pb-2">Game State</div>
+                                        <div className="text-gray-400 text-xs md:text-sm mb-2">Save your progress offline in your browser.</div>
                                         
-                                        <div className="text-orange-400 text-lg font-bold border-b border-[#5c3a21] pb-2">Texture Packs</div>
+                                        <div className="flex gap-4">
+                                            <button 
+                                                onClick={() => {
+                                                    if (engineRef.current) {
+                                                        const result = SaveManager.saveGame(engineRef.current);
+                                                        engineRef.current.particles.push({
+                                                            x: engineRef.current.player.x, y: engineRef.current.player.y, z: engineRef.current.player.z,
+                                                            text: result, color: '#fb923c', life: 2.0, maxLife: 2.0, vy: -1
+                                                        });
+                                                    }
+                                                }}
+                                                className="flex-1 p-3 border-2 border-[#8b5a33] bg-[#2a1b14] hover:bg-[#3a2214] hover:border-orange-400 text-orange-200 font-bold transition-all"
+                                            >
+                                                SAVE GAME
+                                            </button>
+                                            <button 
+                                                onClick={() => {
+                                                    if (engineRef.current) {
+                                                        const result = SaveManager.loadGame(engineRef.current);
+                                                        engineRef.current.particles.push({
+                                                            x: engineRef.current.player.x, y: engineRef.current.player.y, z: engineRef.current.player.z,
+                                                            text: result, color: '#32cd32', life: 2.0, maxLife: 2.0, vy: -1
+                                                        });
+                                                    }
+                                                }}
+                                                className="flex-1 p-3 border-2 border-[#8b5a33] bg-[#2a1b14] hover:bg-[#3a2214] hover:border-orange-400 text-orange-200 font-bold transition-all"
+                                            >
+                                                LOAD GAME
+                                            </button>
+                                        </div>
+
+                                        <div className="mt-4 text-orange-400 text-lg font-bold border-b border-[#5c3a21] pb-2">Texture Packs</div>
                                         <div className="text-gray-400 text-xs md:text-sm mb-2">Instantly change the entire color palette of the world.</div>
 
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

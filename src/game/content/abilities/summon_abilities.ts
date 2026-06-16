@@ -88,7 +88,7 @@ export function defineSummonAbilities() {
       a = Math.floor(e.player.y + Math.sin(i) * 2),
       s = Math.floor(e.player.z);
     if (e.world.getBlock(o, a, s) === 0) {
-      e.world.setBlock(o, a, s, BlockType.BONE_PILE);
+      e.world.setBlock(o, a, s, BlockType.BONE_PILE_SPAWNER);
       for (let c = 0; c < 30; c++)
         e.particles.push({
           x: o + 0.5,
