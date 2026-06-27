@@ -1138,9 +1138,7 @@ export default function App() {
                         
                         {gameState === 'TITLE_2' && (
                             <div className="flex flex-col items-center gap-12">
-                                <h1 className="text-4xl md:text-6xl text-white tracking-[0.3em] font-light">
-                                    DIORUM ENTERTAINMENT
-                                </h1>
+                                <img src={new URL('./assets/images/deorum_logo_1782589787632.jpg', import.meta.url).href} alt="DEORUM ENTERTAINMENT" className="w-[80vw] max-w-[600px] shadow-2xl rounded-sm" />
                                 <button 
                                     onClick={() => setGameState('TITLE_3')}
                                     className="px-8 py-2 text-gray-500 hover:text-white transition-colors tracking-widest text-sm"
