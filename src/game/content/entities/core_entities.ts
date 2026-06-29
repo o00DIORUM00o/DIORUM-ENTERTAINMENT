@@ -37,6 +37,7 @@ export const CORE_ENTITIES: EntityDef[] = [
     { id: 'wolf_folk', name: 'Wolf Folk', maxHealth: 500, damage: 0, speed: 2.0 },
     { id: 'squirrel_folk', name: 'Squirrel Folk', maxHealth: 400, damage: 10, speed: 5.0 },
     { id: 'beast_tamer', name: 'Beast Tamer', maxHealth: 800, damage: 0, speed: 3.0 },
+    { id: 'bounty_hunter', name: 'Bounty Hunter', maxHealth: 800, damage: 30, speed: 2.5 },
     { id: 'human_knight', name: 'Human Knight', maxHealth: 200, damage: 25, speed: 3.5 },
     { id: 'human_paladin', name: 'Human Paladin', maxHealth: 250, damage: 30, speed: 3.0 },
     { id: 'human_ranger', name: 'Human Ranger', maxHealth: 150, damage: 20, speed: 4.5 },

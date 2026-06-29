@@ -1,4 +1,5 @@
 import { EntitySteeringSystem } from '../systems/EntitySteeringSystem';
+import { QuestSystem } from '../systems/QuestSystem';
 function removeFromArray<T>(array: T[], index: number) {
     if (index === array.length - 1) {
         array.pop();
@@ -218,6 +219,7 @@ export class OrcUpdater {
                 if (Math.random() < 0.4) engine.dropItem(orc.x, orc.y, orc.z, { ...ITEMS['copper_piece'], quantity: Math.floor(Math.random() * 3) + 1 });
                 removeFromArray(engine.orcs, i);
                 engine.player.addXp(Math.floor(50 * (orc.maxHealth / 80))); // More XP
+                QuestSystem.onEnemyKilled(engine, 'ORC');
                 
                 // Loot drop
                 const rand = Math.random();

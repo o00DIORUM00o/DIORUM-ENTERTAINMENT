@@ -60,7 +60,8 @@ export class VillagerUpdater {
                     block === BlockType.MERCHANT_TENT ||
                     block === BlockType.WANDERING_BARD_TENT ||
                     block === BlockType.KING_SPAWNER ||
-                    block === BlockType.QUEST_NPC_SPAWNER
+                    block === BlockType.QUEST_NPC_SPAWNER ||
+                    block === BlockType.BOUNTY_HUNTER_SPAWNER
                 ) {
                     // Spawn merchant NPC and replace block if it was a tent
                     if (block === BlockType.MERCHANT_TENT || block === BlockType.PRIEST_TENT || block === BlockType.WANDERING_BARD_TENT) {
@@ -71,7 +72,7 @@ export class VillagerUpdater {
                         engine.world.setBlock(x, y, z, BlockType.AIR);
                     }
                     
-                    let npcType: 'VILLAGER' | 'OLD_WIZARD' | 'DRACONIC_MERCHANT' | 'DARK_ELF' | 'DWARF' | 'GNOME' | 'SLUG_FOLK_MERCHANT' | 'NPC_KING' | 'NPC_WIZARD' | 'WANDERING_BARD' = 'VILLAGER';
+                    let npcType: 'VILLAGER' | 'OLD_WIZARD' | 'DRACONIC_MERCHANT' | 'DARK_ELF' | 'DWARF' | 'GNOME' | 'SLUG_FOLK_MERCHANT' | 'NPC_KING' | 'NPC_WIZARD' | 'WANDERING_BARD' | 'BOUNTY_HUNTER' = 'VILLAGER';
                     let idPrefix = 'merchant_';
                     let mType = 'VILLAGER_MERCHANT';
 
@@ -95,6 +96,10 @@ export class VillagerUpdater {
                         npcType = 'NPC_WIZARD';
                         idPrefix = 'wizard_';
                         mType = 'WIZARD';
+                    } else if (block === BlockType.BOUNTY_HUNTER_SPAWNER) {
+                        npcType = 'BOUNTY_HUNTER';
+                        idPrefix = 'bounty_hunter_';
+                        mType = 'BOUNTY_HUNTER';
                     } else if (block === BlockType.PRIEST_TENT) {
                         mType = 'VILLAGER_PRIEST';
                     } else if (block === BlockType.MERCHANT_TENT) {

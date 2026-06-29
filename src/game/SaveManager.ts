@@ -74,6 +74,12 @@ export class SaveManager {
                 quickSlots: (p as any).quickSlots
             };
 
+            // Serialize chestData
+            const chestDataObj: Record<string, any> = {};
+            for (const [key, val] of engine.world.chestData.entries()) {
+                chestDataObj[key] = val;
+            }
+
             const saveData = {
                 version: 1,
                 activePlanet: engine.world.activePlanet,
@@ -81,6 +87,7 @@ export class SaveManager {
                 dayCount: engine.world.dayCount,
                 player: playerData,
                 chunks: chunksData,
+                chests: chestDataObj,
             };
 
             const json = JSON.stringify(saveData);
@@ -104,6 +111,14 @@ export class SaveManager {
             engine.world.activePlanet = data.activePlanet || 'HERAT';
             if (data.timeOfDay !== undefined) engine.world.timeOfDay = data.timeOfDay;
             if (data.dayCount !== undefined) engine.world.dayCount = data.dayCount;
+
+            // Restore chestData
+            engine.world.chestData.clear();
+            if (data.chests) {
+                for (const [key, val] of Object.entries(data.chests)) {
+                    engine.world.chestData.set(key, val as any);
+                }
+            }
 
             // Clear existing chunks and restore
             engine.world.chunkManager.chunks.clear();

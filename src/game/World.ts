@@ -124,6 +124,26 @@ export class World {
                 slot++;
             }
             
+            // Ultra rare chance for a GEMINI coin
+            if (Math.random() < 0.01) {
+                newChest[slot] = { ...ITEMS['gemini_coin'], quantity: 1 };
+                slot++;
+            }
+
+            // Chance for colored metal swords
+            if (Math.random() < 0.15) {
+                const colorSwords = [
+                    'copper_broadsword', 'iron_longsword', 'mithril_greatsword', 'sword_1', 'silver_sword', 'platinum_sword', 'gold_sword', 'star_metal_sword',
+                    'green_metal_sword', 'yellow_metal_sword', 'blue_metal_sword', 
+                    'red_metal_sword', 'black_metal_sword', 'purple_metal_sword', 'orange_metal_sword'
+                ];
+                const swordKey = colorSwords[Math.floor(Math.random() * colorSwords.length)];
+                if (ITEMS[swordKey]) {
+                    newChest[slot] = { ...ITEMS[swordKey], quantity: 1 };
+                    slot++;
+                }
+            }
+            
             // Add a generated item on rare occasions
             if (Math.random() < 0.35) {
                 const dangerLevel = Math.abs(z - 15) * 2 + 1; // Deeper/Higher = better

@@ -401,6 +401,8 @@ export class CityGenerator {
              chunk.blocks[x + y * CHUNK_SIZE + (targetElev + 1) * CHUNK_SIZE * CHUNK_SIZE] = BlockType.DUMMY;
          } else if (localX === 16 && (localY === 10 || localY === 22)) {
              chunk.blocks[x + y * CHUNK_SIZE + (targetElev + 1) * CHUNK_SIZE * CHUNK_SIZE] = BlockType.LANTERN_BLOCK;
+         } else if (localX === 12 && localY === 20) {
+             chunk.blocks[x + y * CHUNK_SIZE + (targetElev + 1) * CHUNK_SIZE * CHUNK_SIZE] = BlockType.BOUNTY_HUNTER_SPAWNER;
          } else if (Math.random() < 0.05) {
              chunk.blocks[x + y * CHUNK_SIZE + (targetElev + 1) * CHUNK_SIZE * CHUNK_SIZE] = BlockType.GUARD_MERCENARY;
          }
@@ -435,6 +437,8 @@ export class CityGenerator {
              chunk.blocks[x + y * CHUNK_SIZE + (targetElev + 1) * CHUNK_SIZE * CHUNK_SIZE] = BlockType.MERCHANT; // Barkeep
          } else if (localX === 22 && localY === 22) {
              chunk.blocks[x + y * CHUNK_SIZE + (targetElev + 1) * CHUNK_SIZE * CHUNK_SIZE] = BlockType.WANDERING_BARD_TENT;
+         } else if (localX === 10 && localY === 22) {
+             chunk.blocks[x + y * CHUNK_SIZE + (targetElev + 1) * CHUNK_SIZE * CHUNK_SIZE] = BlockType.BOUNTY_HUNTER_SPAWNER;
          } else if (localX % 4 === 0 && localY % 4 === 0 && Math.random() < 0.5) {
              chunk.blocks[x + y * CHUNK_SIZE + (targetElev + 1) * CHUNK_SIZE * CHUNK_SIZE] = BlockType.BED;
          } else if (Math.random() < 0.05) {

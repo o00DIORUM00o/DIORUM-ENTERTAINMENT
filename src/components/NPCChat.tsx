@@ -423,6 +423,22 @@ Example Output:
   "response": "Welcome to my court, traveler. The realm faces dark times.",
   "options": ["What plagues the realm, Your Majesty?", "I must be going. (Leave)"]
 }`;
+            } else if (npc.type === 'BOUNTY_HUNTER') {
+                systemInstruction = `You are a Bounty Hunter Guild Master in a top-down 2D RPG game. 
+You offer bounties for slaying monsters. You are tough, pragmatic, and care only about results and coin.
+You are currently located in: ${locationName || 'a settlement'}.
+You speak gruffly, like a seasoned mercenary.
+Keep your responses relatively concise (1-3 sentences).
+You MUST respond with a JSON object containing these fields:
+1. "response": Your spoken response to the player.
+2. "options": An array of 2 to 4 possible strings the player can say back to you. Keep these short (under 10 words). Include options like "Goodbye".
+3. "action": (Optional) If the player insults you or threatens you, set this to "turn_hostile". Otherwise, omit this field.
+
+Example Output:
+{
+  "response": "Here for work? Only the tough survive out there.",
+  "options": ["What bounties are available?", "Not interested. (Leave)"]
+}`;
             } else if (npc.type === 'VILLAGER') {
                 systemInstruction = `You are a Villager in a top-down 2D RPG game. 
 Your profession is ${(npc as any).profession ? (npc as any).profession.replace('VILLAGER_', '') : 'Peasant'}. You live in a small settlement. You are friendly, practical, and talk like a medieval commoner.
@@ -501,6 +517,7 @@ Example Output:
                 <div className="bg-gradient-to-b from-[#3e2718] to-[#1a0f0a] border-b-2 border-[#5c3a21] p-2 flex items-center gap-3 shrink-0">
                     <div className="w-8 h-8 bg-[#0f0805] border border-[#5c3a21] flex items-center justify-center text-lg rounded-sm shrink-0">
                         {npc.type === 'NPC_KING' ? '👑' :
+                         npc.type === 'BOUNTY_HUNTER' ? '🗡️' :
                          npc.type === 'VILLAGER' ? (
                             (npc as any).profession === 'VILLAGER_GUARD' ? '🛡️' :
                             (npc as any).profession === 'VILLAGER_FARMER' ? '🌾' :
@@ -509,10 +526,10 @@ Example Output:
                     </div>
                     <div className="flex-1 leading-tight">
                         <h2 className="text-lg font-bold text-orange-400">
-                            {npc.type === 'NPC_KING' ? 'The King' : npc.type === 'VILLAGER' ? 'Villager' : 'Arcanis'}
+                            {npc.type === 'NPC_KING' ? 'The King' : npc.type === 'BOUNTY_HUNTER' ? 'Bounty Hunter' : npc.type === 'VILLAGER' ? 'Villager' : 'Arcanis'}
                         </h2>
                         <div className="text-[#d4b499] text-[10px] uppercase tracking-wider">
-                            {npc.type === 'NPC_KING' ? 'Ruler of Pantheona' : npc.type === 'VILLAGER' ? ((npc as any).profession || 'Commoner').replace('VILLAGER_', '') : 'Old Wizard'}
+                            {npc.type === 'NPC_KING' ? 'Ruler of Pantheona' : npc.type === 'BOUNTY_HUNTER' ? 'Guild Master' : npc.type === 'VILLAGER' ? ((npc as any).profession || 'Commoner').replace('VILLAGER_', '') : 'Old Wizard'}
                         </div>
                     </div>
                     <button 
@@ -541,7 +558,7 @@ Example Output:
                         messages.map((msg, i) => (
                             <div key={i} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
                                 <span className="text-[10px] text-[#d4b499] mb-0.5 opacity-70 px-1">
-                                    {msg.role === 'user' ? 'You' : (npc.type === 'NPC_KING' ? 'The King' : npc.type === 'VILLAGER' ? 'Villager' : 'Arcanis')}
+                                    {msg.role === 'user' ? 'You' : (npc.type === 'NPC_KING' ? 'The King' : npc.type === 'BOUNTY_HUNTER' ? 'Bounty Hunter' : npc.type === 'VILLAGER' ? 'Villager' : 'Arcanis')}
                                 </span>
                                 <div className={`max-w-[90%] px-3 py-1.5 text-sm rounded-sm ${
                                     msg.role === 'user' 
@@ -556,7 +573,7 @@ Example Output:
                     {isLoading && (
                         <div className="flex flex-col items-start">
                             <span className="text-[10px] text-[#d4b499] mb-0.5 opacity-70 px-1">
-                                {npc.type === 'VILLAGER' ? 'Villager' : 'Arcanis'}
+                                {npc.type === 'NPC_KING' ? 'The King' : npc.type === 'BOUNTY_HUNTER' ? 'Bounty Hunter' : npc.type === 'VILLAGER' ? 'Villager' : 'Arcanis'}
                             </span>
                             <div className="bg-[#2a1b14] p-2 rounded-sm border border-[#4a2e1b] flex items-center gap-1.5">
                                 <div className="w-1.5 h-1.5 bg-orange-500/50 rounded-full animate-pulse"></div>

@@ -1,4 +1,5 @@
 import { EntitySteeringSystem } from '../systems/EntitySteeringSystem';
+import { QuestSystem } from '../systems/QuestSystem';
 function removeFromArray<T>(array: T[], index: number) {
     if (index === array.length - 1) {
         array.pop();
@@ -124,6 +125,7 @@ export class SkeletonUpdater {
             if (skel.health <= 0) {
                 if (Math.random() < 0.4) engine.dropItem(skel.x, skel.y, skel.z, { ...ITEMS['copper_piece'], quantity: Math.floor(Math.random() * 3) + 1 });
                 removeFromArray(engine.skeletons, i);
+                QuestSystem.onEnemyKilled(engine, 'SKELETON');
                 
                 // Turn into remains
                 engine.skeletonRemains.push({

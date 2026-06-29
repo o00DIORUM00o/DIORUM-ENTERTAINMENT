@@ -41,6 +41,7 @@ export const INGOTS_AND_METALS_ITEMS: Record<string, Item> = {
         quantity: 1,
         maxStack: 64
     },
+    'gold_ingot': { id: "gold_ingot", name: "Gold Ingot", description: "Smelted gold.", category: "MISC", quantity: 1, maxStack: 64 },
     'silver_ingot': { id: "silver_ingot", name: "Silver Ingot", description: "Smelted silver.", category: "MISC", quantity: 1, maxStack: 64 },
     'platinum_ingot': { id: "platinum_ingot", name: "Platinum Ingot", description: "Smelted platinum.", category: "MISC", quantity: 1, maxStack: 64 },
     'adamantium_ingot': { id: "adamantium_ingot", name: "Adamantium Ingot", description: "Smelted adamantium.", category: "MISC", quantity: 1, maxStack: 64 },

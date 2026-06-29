@@ -53,5 +53,44 @@ export const QuestsConfig: Record<string, any> = {
             { type: 'GOLD', amount: 200 },
             { type: 'ITEM', id: 'ring_of_wealth', amount: 1 }
         ]
+    },
+    QUEST_BOUNTY_GOBLINS: {
+        id: 'QUEST_BOUNTY_GOBLINS',
+        giverType: 'BOUNTY_HUNTER',
+        title: 'Bounty: Goblin Scourge',
+        description: 'Goblins have been ambushing travelers. Slay 10 of them.',
+        type: 'KILL',
+        targetId: 'GOBLIN',
+        requiredCount: 10,
+        rewards: [
+            { type: 'XP', amount: 800 },
+            { type: 'GOLD', amount: 300 }
+        ]
+    },
+    QUEST_BOUNTY_ORCS: {
+        id: 'QUEST_BOUNTY_ORCS',
+        giverType: 'BOUNTY_HUNTER',
+        title: 'Bounty: Orc Raiding Party',
+        description: 'An Orc raiding party was spotted nearby. Hunt down 5 Orcs.',
+        type: 'KILL',
+        targetId: 'ORC',
+        requiredCount: 5,
+        rewards: [
+            { type: 'XP', amount: 1200 },
+            { type: 'GOLD', amount: 500 }
+        ]
+    },
+    QUEST_BOUNTY_SKELETONS: {
+        id: 'QUEST_BOUNTY_SKELETONS',
+        giverType: 'BOUNTY_HUNTER',
+        title: 'Bounty: Undead Menace',
+        description: 'The undead are rising. Put 15 Skeletons to rest.',
+        type: 'KILL',
+        targetId: 'SKELETON',
+        requiredCount: 15,
+        rewards: [
+            { type: 'XP', amount: 1500 },
+            { type: 'GOLD', amount: 600 }
+        ]
     }
 };

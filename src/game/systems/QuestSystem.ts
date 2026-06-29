@@ -24,6 +24,26 @@ export class QuestSystem {
         return changed;
     }
 
+    static onEnemyKilled(engine: Engine, enemyType: string) {
+        let changed = false;
+        for (const quest of engine.player.quests) {
+            if (quest.state === 'ACTIVE' && quest.type === 'KILL') {
+                if (quest.targetId === enemyType) {
+                    quest.currentCount = (quest.currentCount || 0) + 1;
+                    changed = true;
+                    if (quest.currentCount < quest.requiredCount) {
+                        engine.events.emit('HUD_MESSAGE', { text: `${quest.title}: (${quest.currentCount}/${quest.requiredCount})`, color: 'orange' });
+                    } else if (quest.currentCount >= quest.requiredCount) {
+                        quest.currentCount = quest.requiredCount;
+                        quest.state = 'COMPLETED';
+                        engine.events.emit('HUD_MESSAGE', { text: `Objective Complete: ${quest.title}! Return for bounty.`, color: '#ffcc00' });
+                    }
+                }
+            }
+        }
+        return changed;
+    }
+
     static onBlockDestroyed(engine: Engine, blockType: BlockType) {
         let changed = false;
         for (const quest of engine.player.quests) {

@@ -53,6 +53,38 @@ export function defineVillagersRenderers() {
         }
     });
 
+    RenderRegistry.register('BOUNTY_HUNTER', {
+        draw: (ctx: RenderContext) => {
+            // Dark leather armor
+            ctx.ctx.fillStyle = '#451a03'; 
+            ctx.ctx.beginPath();
+            ctx.ctx.arc(0, 0, ctx.TILE_SIZE * 0.3, 0, Math.PI * 2);
+            ctx.ctx.fill();
+            
+            // Head
+            ctx.ctx.fillStyle = '#fcd34d';
+            ctx.ctx.beginPath();
+            ctx.ctx.arc(ctx.TILE_SIZE * 0.1, 0, ctx.TILE_SIZE * 0.25, 0, Math.PI * 2);
+            ctx.ctx.fill();
+            
+            // Hood
+            ctx.ctx.fillStyle = '#292524';
+            ctx.ctx.beginPath();
+            ctx.ctx.arc(ctx.TILE_SIZE * 0.05, 0, ctx.TILE_SIZE * 0.28, Math.PI / 2, -Math.PI / 2);
+            ctx.ctx.fill();
+            
+            // Crossbow on back
+            ctx.ctx.fillStyle = '#78350f';
+            ctx.ctx.fillRect(ctx.TILE_SIZE * -0.2, -ctx.TILE_SIZE * 0.3, 4, ctx.TILE_SIZE * 0.6);
+            ctx.ctx.fillStyle = '#9ca3af';
+            ctx.ctx.beginPath();
+            ctx.ctx.moveTo(ctx.TILE_SIZE * -0.2, -ctx.TILE_SIZE * 0.3);
+            ctx.ctx.lineTo(ctx.TILE_SIZE * -0.4, 0);
+            ctx.ctx.lineTo(ctx.TILE_SIZE * -0.2, ctx.TILE_SIZE * 0.3);
+            ctx.ctx.stroke();
+        }
+    });
+
     RenderRegistry.register('VILLAGER', {
         draw: (ctx: RenderContext) => {
             const ent = ctx.entity;

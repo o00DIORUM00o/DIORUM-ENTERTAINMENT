@@ -351,7 +351,7 @@ export function defineBlockRenderers() {
                         ctx.arc(screenX + TILE_SIZE*0.5, screenY + TILE_SIZE*0.5, TILE_SIZE*0.1, 0, Math.PI*2);
                         ctx.fill();
                     }
-                } else if (block === BlockType.BONE_PILE_SPAWNER || block === BlockType.ABYSSAL_SPAWNER || block === BlockType.HORDE_SPAWNER || block === BlockType.ARETH_SPAWNER || block === BlockType.FAIRY_SPAWNER || block === BlockType.DARK_ELF_SPAWNER || block === BlockType.DWARF_SPAWNER || block === BlockType.GNOME_SPAWNER || block === BlockType.ROCK_GOLEM_SPAWNER || block === BlockType.OBSERVER_SPAWNER || block === BlockType.SPHINX_SPAWNER || block === BlockType.QUEST_DUNGEON_SPAWNER || block === BlockType.QUEST_NPC_SPAWNER || block === BlockType.ESCALATION_SPAWNER || block === BlockType.LAVA_GOLEM_SPAWNER || block === BlockType.GARGOYLE_SPAWNER || block === BlockType.PHANTOM_WIZARD_SPAWNER || block === BlockType.KING_SPAWNER) {
+                } else if (block === BlockType.BONE_PILE_SPAWNER || block === BlockType.ABYSSAL_SPAWNER || block === BlockType.HORDE_SPAWNER || block === BlockType.ARETH_SPAWNER || block === BlockType.FAIRY_SPAWNER || block === BlockType.DARK_ELF_SPAWNER || block === BlockType.DWARF_SPAWNER || block === BlockType.GNOME_SPAWNER || block === BlockType.ROCK_GOLEM_SPAWNER || block === BlockType.OBSERVER_SPAWNER || block === BlockType.SPHINX_SPAWNER || block === BlockType.QUEST_DUNGEON_SPAWNER || block === BlockType.QUEST_NPC_SPAWNER || block === BlockType.BOUNTY_HUNTER_SPAWNER || block === BlockType.ESCALATION_SPAWNER || block === BlockType.LAVA_GOLEM_SPAWNER || block === BlockType.GARGOYLE_SPAWNER || block === BlockType.PHANTOM_WIZARD_SPAWNER || block === BlockType.KING_SPAWNER) {
                     ctx.fillStyle = isDark ? `rgba(20,20,20,${shade * 0.8})` : `rgba(40,40,40,${shade * 0.8})`;
                     ctx.beginPath();
                     ctx.arc(screenX + TILE_SIZE*0.5, screenY + TILE_SIZE*0.5, TILE_SIZE*0.4, 0, Math.PI*2);
@@ -544,7 +544,7 @@ export function defineBlockRenderers() {
                     BlockType.BONE_PILE_SPAWNER, BlockType.ABYSSAL_SPAWNER, BlockType.HORDE_SPAWNER, BlockType.ARETH_SPAWNER,
                     BlockType.FAIRY_SPAWNER, BlockType.DARK_ELF_SPAWNER, BlockType.DWARF_SPAWNER, BlockType.GNOME_SPAWNER,
                     BlockType.ROCK_GOLEM_SPAWNER, BlockType.OBSERVER_SPAWNER, BlockType.SPHINX_SPAWNER, 
-                    BlockType.QUEST_DUNGEON_SPAWNER, BlockType.QUEST_NPC_SPAWNER, BlockType.ESCALATION_SPAWNER, 
+                    BlockType.QUEST_DUNGEON_SPAWNER, BlockType.QUEST_NPC_SPAWNER, BlockType.BOUNTY_HUNTER_SPAWNER, BlockType.ESCALATION_SPAWNER, 
                     BlockType.LAVA_GOLEM_SPAWNER, BlockType.GARGOYLE_SPAWNER, BlockType.PHANTOM_WIZARD_SPAWNER, BlockType.KING_SPAWNER
                 ].includes(block)) {
                     return; 

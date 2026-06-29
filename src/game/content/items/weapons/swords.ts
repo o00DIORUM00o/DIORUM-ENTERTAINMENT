@@ -132,6 +132,18 @@ export const SWORDS_ITEMS: Record<string, Item> = {
         spread: 1.2,
         statusEffect: { type: 'burn', chance: 0.3, duration: 3.0 }
     },
+    'green_metal_sword': {
+        id: "green_metal_sword",
+        name: "Green Metal Sword",
+        description: "A lightweight and sharp sword forged from green metal.",
+        category: "WEAPON",
+        type: "MELEE",
+        twoHanded: false,
+        damage: 18,
+        reach: 1.5,
+        cooldown: 0.5,
+        spread: 1
+    },
     'mithril_greatsword': {
         id: "mithril_greatsword",
         name: "Mithril Greatsword",
@@ -374,5 +386,113 @@ export const SWORDS_ITEMS: Record<string, Item> = {
         damageType: 'PHYSICAL',
         swordBeamModifier: 'GIANT',
         itemColor: '#ffb000'
-    }
+    },
+    'yellow_metal_sword': {
+        id: "yellow_metal_sword",
+        name: "Yellow Metal Sword",
+        description: "A lightweight and sharp sword forged from yellow metal.",
+        category: "WEAPON",
+        type: "MELEE",
+        twoHanded: false,
+        damage: 18,
+        reach: 1.5,
+        cooldown: 0.5,
+        spread: 1
+    },
+    'blue_metal_sword': {
+        id: "blue_metal_sword",
+        name: "Blue Metal Sword",
+        description: "A lightweight and sharp sword forged from blue metal.",
+        category: "WEAPON",
+        type: "MELEE",
+        twoHanded: false,
+        damage: 18,
+        reach: 1.5,
+        cooldown: 0.5,
+        spread: 1
+    },
+    'red_metal_sword': {
+        id: "red_metal_sword",
+        name: "Red Metal Sword",
+        description: "A lightweight and sharp sword forged from red metal.",
+        category: "WEAPON",
+        type: "MELEE",
+        twoHanded: false,
+        damage: 18,
+        reach: 1.5,
+        cooldown: 0.5,
+        spread: 1
+    },
+    'black_metal_sword': {
+        id: "black_metal_sword",
+        name: "Black Metal Sword",
+        description: "A lightweight and sharp sword forged from black metal.",
+        category: "WEAPON",
+        type: "MELEE",
+        twoHanded: false,
+        damage: 18,
+        reach: 1.5,
+        cooldown: 0.5,
+        spread: 1
+    },
+    'purple_metal_sword': {
+        id: "purple_metal_sword",
+        name: "Purple Metal Sword",
+        description: "A lightweight and sharp sword forged from purple metal.",
+        category: "WEAPON",
+        type: "MELEE",
+        twoHanded: false,
+        damage: 18,
+        reach: 1.5,
+        cooldown: 0.5,
+        spread: 1
+    },
+    'orange_metal_sword': {
+        id: "orange_metal_sword",
+        name: "Orange Metal Sword",
+        description: "A lightweight and sharp sword forged from orange metal.",
+        category: "WEAPON",
+        type: "MELEE",
+        twoHanded: false,
+        damage: 18,
+        reach: 1.5,
+        cooldown: 0.5,
+        spread: 1
+    },
+    'gold_sword': {
+        id: "gold_sword",
+        name: "Gold Sword",
+        description: "A lightweight and sharp sword forged from gold.",
+        category: "WEAPON",
+        type: "MELEE",
+        twoHanded: false,
+        damage: 15,
+        reach: 1.5,
+        cooldown: 0.5,
+        spread: 1
+    },
+    'silver_sword': {
+        id: "silver_sword",
+        name: "Silver Sword",
+        description: "A lightweight and sharp sword forged from silver.",
+        category: "WEAPON",
+        type: "MELEE",
+        twoHanded: false,
+        damage: 15,
+        reach: 1.5,
+        cooldown: 0.5,
+        spread: 1
+    },
+    'platinum_sword': {
+        id: "platinum_sword",
+        name: "Platinum Sword",
+        description: "A lightweight and sharp sword forged from platinum.",
+        category: "WEAPON",
+        type: "MELEE",
+        twoHanded: false,
+        damage: 15,
+        reach: 1.5,
+        cooldown: 0.5,
+        spread: 1
+    },
 };

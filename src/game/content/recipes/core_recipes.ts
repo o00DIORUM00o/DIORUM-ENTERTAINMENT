@@ -90,7 +90,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         description: 'Craft Copper Broadsword',
         ingredients: [
             { id: 'copper_ingot', quantity: 5 },
-            { id: 'wood', quantity: 2 },
+            { id: 'wood', quantity: 1 }
         ],
         result: { id: 'copper_broadsword', quantity: 1 },
         requiredStation: 'anvil',
@@ -102,7 +102,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         description: 'Craft Iron Longsword',
         ingredients: [
             { id: 'iron_ingot', quantity: 8 },
-            { id: 'wood', quantity: 2 },
+            { id: 'wood', quantity: 1 }
         ],
         result: { id: 'iron_longsword', quantity: 1 },
         requiredStation: 'anvil',
@@ -125,6 +125,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         description: 'Craft Mithril Greatsword',
         ingredients: [
             { id: 'mithril_ingot', quantity: 12 },
+            { id: 'wood', quantity: 2 }
         ],
         result: { id: 'mithril_greatsword', quantity: 1 },
         requiredStation: 'anvil',
@@ -135,7 +136,8 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Steel Sword',
         description: 'Craft Steel Sword',
         ingredients: [
-            { id: 'iron_ingot', quantity: 5 },
+            { id: 'steel_ingot', quantity: 5 },
+            { id: 'wood', quantity: 1 }
         ],
         result: { id: 'sword_1', quantity: 1 },
         requiredStation: 'anvil',
@@ -146,7 +148,8 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Iron Greatsword',
         description: 'Craft Iron Greatsword',
         ingredients: [
-            { id: 'iron_ingot', quantity: 12 },
+            { id: 'iron_ingot', quantity: 10 },
+            { id: 'wood', quantity: 1 }
         ],
         result: { id: 'greatsword_1', quantity: 1 },
         requiredStation: 'anvil',
@@ -157,7 +160,8 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Obsidian Greatsword',
         description: 'Craft Obsidian Greatsword',
         ingredients: [
-            { id: 'obsidian', quantity: 5 },
+            { id: 'obsidian', quantity: 8 },
+            { id: 'wood', quantity: 1 }
         ],
         result: { id: 'obsidian_sword', quantity: 1 },
         requiredStation: 'anvil',
@@ -268,6 +272,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         description: 'Craft Star Metal Sword',
         ingredients: [
             { id: 'star_metal_ingot', quantity: 5 },
+            { id: 'wood', quantity: 1 }
         ],
         result: { id: 'star_metal_sword', quantity: 1 },
         requiredStation: 'anvil',
@@ -279,6 +284,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         description: 'Craft Star Metal Greatsword',
         ingredients: [
             { id: 'star_metal_ingot', quantity: 12 },
+            { id: 'wood', quantity: 2 }
         ],
         result: { id: 'star_metal_greatsword', quantity: 1 },
         requiredStation: 'anvil',
@@ -2376,6 +2382,126 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         ],
         result: { id: 'key_boss', quantity: 1 },
         requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_green_metal_sword',
+        name: 'Green Metal Sword',
+        description: 'Craft Green Metal Sword',
+        ingredients: [
+            { id: 'green_metal_ingot', quantity: 10 },
+            { id: 'wood', quantity: 1 }
+        ],
+        result: { id: 'green_metal_sword', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_yellow_metal_sword',
+        name: 'Yellow Metal Sword',
+        description: 'Craft Yellow Metal Sword',
+        ingredients: [
+            { id: 'yellow_metal_ingot', quantity: 10 },
+            { id: 'wood', quantity: 1 }
+        ],
+        result: { id: 'yellow_metal_sword', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_blue_metal_sword',
+        name: 'Blue Metal Sword',
+        description: 'Craft Blue Metal Sword',
+        ingredients: [
+            { id: 'blue_metal_ingot', quantity: 10 },
+            { id: 'wood', quantity: 1 }
+        ],
+        result: { id: 'blue_metal_sword', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_red_metal_sword',
+        name: 'Red Metal Sword',
+        description: 'Craft Red Metal Sword',
+        ingredients: [
+            { id: 'red_metal_ingot', quantity: 10 },
+            { id: 'wood', quantity: 1 }
+        ],
+        result: { id: 'red_metal_sword', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_black_metal_sword',
+        name: 'Black Metal Sword',
+        description: 'Craft Black Metal Sword',
+        ingredients: [
+            { id: 'black_metal_ingot', quantity: 10 },
+            { id: 'wood', quantity: 1 }
+        ],
+        result: { id: 'black_metal_sword', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_purple_metal_sword',
+        name: 'Purple Metal Sword',
+        description: 'Craft Purple Metal Sword',
+        ingredients: [
+            { id: 'purple_metal_ingot', quantity: 10 },
+            { id: 'wood', quantity: 1 }
+        ],
+        result: { id: 'purple_metal_sword', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_orange_metal_sword',
+        name: 'Orange Metal Sword',
+        description: 'Craft Orange Metal Sword',
+        ingredients: [
+            { id: 'orange_metal_ingot', quantity: 10 },
+            { id: 'wood', quantity: 1 }
+        ],
+        result: { id: 'orange_metal_sword', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_gold_sword',
+        name: 'Gold Sword',
+        description: 'Craft Gold Sword',
+        ingredients: [
+            { id: 'gold_ingot', quantity: 10 },
+            { id: 'wood', quantity: 1 }
+        ],
+        result: { id: 'gold_sword', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_silver_sword',
+        name: 'Silver Sword',
+        description: 'Craft Silver Sword',
+        ingredients: [
+            { id: 'silver_ingot', quantity: 10 },
+            { id: 'wood', quantity: 1 }
+        ],
+        result: { id: 'silver_sword', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_platinum_sword',
+        name: 'Platinum Sword',
+        description: 'Craft Platinum Sword',
+        ingredients: [
+            { id: 'platinum_ingot', quantity: 10 },
+            { id: 'wood', quantity: 1 }
+        ],
+        result: { id: 'platinum_sword', quantity: 1 },
+        requiredStation: 'anvil',
         requiredTalent: undefined
     },
 ];

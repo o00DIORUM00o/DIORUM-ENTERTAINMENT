@@ -1,4 +1,5 @@
 import { EntitySteeringSystem } from '../systems/EntitySteeringSystem';
+import { QuestSystem } from '../systems/QuestSystem';
 function removeFromArray<T>(array: T[], index: number) {
     if (index === array.length - 1) {
         array.pop();
@@ -266,6 +267,7 @@ for (let i = engine.goblins.length - 1; i >= 0; i--) {
             if (gob.health <= 0) {
                 removeFromArray(engine.goblins, i);
                 engine.player.addXp(Math.floor(25 * (gob.maxHealth / 30)));
+                QuestSystem.onEnemyKilled(engine, 'GOBLIN');
                 
                 // Loot drop
                 const rand = Math.random();

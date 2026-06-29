@@ -73,4 +73,12 @@ export const MISC_MATERIALS_ITEMS: Record<string, Item> = {
         quantity: 1,
         maxStack: 999
     },
+    'gemini_coin': {
+        id: "gemini_coin",
+        name: "Gemini Coin",
+        description: "A very rare coin minted by an artificial intelligence.",
+        category: "MISC",
+        quantity: 1,
+        maxStack: 999
+    },
 };
