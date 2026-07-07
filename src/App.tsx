@@ -1166,7 +1166,7 @@ export default function App() {
                         {gameState === 'TITLE_4' && (
                             <div className="flex flex-col items-center gap-16">
                                 <h1 className="text-6xl md:text-9xl font-bold text-orange-500 tracking-widest" style={{ textShadow: '0 0 40px rgba(234,88,12,0.8), 0 0 10px rgba(255,255,255,0.5)' }}>
-                                    DIORUM
+                                    DEORUM
                                 </h1>
                                 <button 
                                     onClick={() => setGameState('TITLE_5')}

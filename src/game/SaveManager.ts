@@ -91,7 +91,7 @@ export class SaveManager {
             };
 
             const json = JSON.stringify(saveData);
-            localStorage.setItem('diorum_save', json);
+            localStorage.setItem('deorum_save', json);
             return 'Game Saved Successfully!';
         } catch (e: any) {
             console.error(e);
@@ -101,7 +101,7 @@ export class SaveManager {
 
     static loadGame(engine: Engine): string {
         try {
-            const json = localStorage.getItem('diorum_save');
+            const json = localStorage.getItem('deorum_save');
             if (!json) return 'No save found!';
             
             const data = JSON.parse(json);

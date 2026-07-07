@@ -1,4 +1,4 @@
-# DIORUM, THE FIRST CHAPTER - Cheat Sheet & Reference
+# DEORUM, THE FIRST CHAPTER - Cheat Sheet & Reference
 
 This document serves as a read-only reference for the current state of the game. It provides a high-level overview of the architecture, systems, and features to ensure context is maintained across long development sessions.
 
