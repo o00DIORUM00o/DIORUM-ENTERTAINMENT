@@ -1,6 +1,12 @@
 import { BlockType } from '../constants/BlockType';
 
 export const ITEM_TO_BLOCK: Record<string, BlockType> = {
+    'dirt': BlockType.DIRT,
+    'mud': BlockType.MUD,
+    'sand': BlockType.SAND,
+    'clay': BlockType.CLAY,
+    'snow': BlockType.SNOW,
+    'ice': BlockType.ICE,
     'door': BlockType.DOOR_CLOSED,
     'tent': BlockType.TENT,
     'glass_block': BlockType.GLASS,

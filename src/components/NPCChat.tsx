@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { NPC } from '../game/Engine';
-import { GoogleGenAI } from '@google/genai';
 import { ITEMS } from '../game/Inventory';
 import { QuestSystem } from '../game/systems/QuestSystem';
 
@@ -383,128 +382,58 @@ export const NPCChat: React.FC<NPCChatProps> = ({ npc, engine, onClose, playerIn
         }, 1000);
     };
 
-    const generateResponse = async (history: ChatMessage[]) => {
+        const generateResponse = async (history: ChatMessage[]) => {
         setIsLoading(true);
         setOptions([]);
         
         try {
-            const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+            // Simulated delay
+            await new Promise(resolve => setTimeout(resolve, 300));
             
-            let systemInstruction = `You are an Old Wizard NPC in a top-down 2D RPG game. 
-Your name is Arcanis. You live in a tower. You are wise, slightly eccentric, and speak in a mystical, slightly archaic manner.
-You are currently located near: ${locationName || 'Unknown Region'}. Use this location occasionally for flavor, but don't force it.
-You can teach the player about magic, the world, and offer trades.
-Keep your responses relatively concise (1-3 sentences).
-You MUST respond with a JSON object containing these fields:
-1. "response": Your spoken response to the player.
-2. "options": An array of 2 to 4 possible strings the player can say back to you. Keep these short (under 10 words). Include options like "Goodbye" or "Show me your wares" if appropriate.
-3. "action": (Optional) If the player asks to trade, set this to "open_trade_menu". If the player insults you, threatens you, or tries to rob you, set this to "turn_hostile". If the player answers a riddle correctly or you feel generous, set this to "give_item". Otherwise, omit this field.
-4. "itemId": (Optional) If "action" is "give_item", set this to the ID of the item to give (e.g., "health_potion", "mana_potion", "book_fire_bolt", "gold_piece").
-
-Example Output:
-{
-  "response": "Ah, a traveler! What brings you to my humble tower?",
-  "options": ["I seek knowledge.", "Do you have anything to trade?", "Just passing through. (Leave)"]
-}`;
-
-            if (npc.type === 'NPC_KING') {
-                systemInstruction = `You are the King of Pantheona in a top-down 2D RPG game. 
-Your name is King Alaric. You rule from the capital city. You are noble, commanding, and deeply concerned about the safety of your people.
-You are currently located in: ${locationName || 'Pantheona Castle'}.
-You speak with authority but fairness.
-Keep your responses relatively concise (1-3 sentences).
-You MUST respond with a JSON object containing these fields:
-1. "response": Your spoken response to the player.
-2. "options": An array of 2 to 4 possible strings the player can say back to you. Keep these short (under 10 words). Include options like "Goodbye".
-3. "action": (Optional) If the player insults you or threatens you, set this to "turn_hostile". Otherwise, omit this field.
-
-Example Output:
-{
-  "response": "Welcome to my court, traveler. The realm faces dark times.",
-  "options": ["What plagues the realm, Your Majesty?", "I must be going. (Leave)"]
-}`;
-            } else if (npc.type === 'BOUNTY_HUNTER') {
-                systemInstruction = `You are a Bounty Hunter Guild Master in a top-down 2D RPG game. 
-You offer bounties for slaying monsters. You are tough, pragmatic, and care only about results and coin.
-You are currently located in: ${locationName || 'a settlement'}.
-You speak gruffly, like a seasoned mercenary.
-Keep your responses relatively concise (1-3 sentences).
-You MUST respond with a JSON object containing these fields:
-1. "response": Your spoken response to the player.
-2. "options": An array of 2 to 4 possible strings the player can say back to you. Keep these short (under 10 words). Include options like "Goodbye".
-3. "action": (Optional) If the player insults you or threatens you, set this to "turn_hostile". Otherwise, omit this field.
-
-Example Output:
-{
-  "response": "Here for work? Only the tough survive out there.",
-  "options": ["What bounties are available?", "Not interested. (Leave)"]
-}`;
-            } else if (npc.type === 'VILLAGER') {
-                systemInstruction = `You are a Villager in a top-down 2D RPG game. 
-Your profession is ${(npc as any).profession ? (npc as any).profession.replace('VILLAGER_', '') : 'Peasant'}. You live in a small settlement. You are friendly, practical, and talk like a medieval commoner.
-You are currently located near: ${locationName || 'Unknown Region'}. Use this location occasionally for flavor, but don't force it.
-You can chat, talk about the weather, or offer to trade your goods.
-Keep your responses relatively concise (1-3 sentences).
-You MUST respond with a JSON object containing these fields:
-1. "response": Your spoken response to the player.
-2. "options": An array of 2 to 4 possible strings the player can say back to you. Keep these short (under 10 words). Include options like "Goodbye" or "Show me your wares" if appropriate.
-3. "action": (Optional) If the player asks to trade, set this to "open_trade_menu". If the player insults you or attacks, set this to "turn_hostile". Otherwise, omit this field.
-
-Example Output:
-{
-  "response": "Hello there, traveler! Fine day for the crops, ain't it?",
-  "options": ["What do you do here?", "Let's trade.", "Goodbye."]
-}`;
-            }
-
-            const response = await ai.models.generateContent({
-                model: 'gemini-2.5-flash',
-                contents: history.map(m => ({
-                    role: m.role,
-                    parts: [{ text: m.text }]
-                })),
-                config: {
-                    systemInstruction: systemInstruction,
-                    responseMimeType: "application/json",
+            const lastMsg = history[history.length - 1];
+            const lowerText = lastMsg?.text.toLowerCase() || '';
+            
+            let parsed = {
+                response: "Hello there, traveler. What do you need?",
+                options: ["Let's trade.", "Who are you?", "Goodbye."],
+                action: ""
+            };
+            
+            if (lowerText.includes('trade') || lowerText.includes('wares') || lowerText.includes('buy')) {
+                parsed.action = "open_trade_menu";
+            } else if (lowerText.includes('who are you') || lowerText.includes('what do you do')) {
+                if (npc.type === 'NPC_KING') {
+                    parsed.response = "I am King Alaric, ruler of Pantheona. We face dark times.";
+                } else if (npc.type === 'BOUNTY_HUNTER') {
+                    parsed.response = "I lead the bounty hunters. Only the strong survive.";
+                } else if (npc.type === 'OLD_WIZARD') {
+                    parsed.response = "I am Arcanis, a humble wizard seeking knowledge.";
+                } else {
+                    parsed.response = "I am just a simple villager, trying to make a living.";
                 }
-            });
-
-            if (response.text) {
-                try {
-                    const parsed = JSON.parse(response.text);
-                    
-                    if (parsed.action === 'open_trade_menu' && onTrade) {
-                        onTrade();
-                        return;
-                    } else if (parsed.action === 'turn_hostile' && onHostile) {
-                        onHostile();
-                        return;
-                    } else if (parsed.action === 'give_item' && onGiveItem && parsed.itemId) {
-                        onGiveItem(parsed.itemId);
-                        setMessages(prev => [...prev, { role: 'model', text: `*The NPC hands you an item: ${parsed.itemId}*` }]);
-                        setOptions(["Thank you.", "Goodbye"]);
-                        setIsLoading(false);
-                        return;
-                    }
-
-                    setMessages(prev => [...prev, { role: 'model', text: parsed.response }]);
-                    setOptions(parsed.options || ["Goodbye"]);
-                    setSelectedIndex(0);
-                } catch (e) {
-                    console.error("Failed to parse JSON from Gemini:", e);
-                    setMessages(prev => [...prev, { role: 'model', text: response.text || "..." }]);
-                    setOptions(["Goodbye"]);
-                }
+                parsed.options = ["Let's trade.", "Goodbye."];
+            } else if (lowerText.includes('die') || lowerText.includes('attack') || lowerText.includes('kill')) {
+                parsed.action = "turn_hostile";
+            } else if (lowerText.includes('goodbye') || lowerText.includes('leave')) {
+                parsed.response = "Farewell, traveler.";
+                parsed.options = [];
             }
-        } catch (error: any) {
-            console.error("Error communicating with Gemini:", error);
-            if (error.status === 429) {
-                (window as any).__AI_EXHAUSTED__ = true;
-                setMode('ERROR');
-            } else {
-                setMessages(prev => [...prev, { role: 'model', text: "*The NPC seems distracted and mumbles something incomprehensible.* (Error connecting to AI)" }]);
-                setOptions(["Goodbye"]);
+            
+            if (parsed.action === 'open_trade_menu' && onTrade) {
+                onTrade();
+                return;
+            } else if (parsed.action === 'turn_hostile' && onHostile) {
+                onHostile();
+                return;
             }
+            
+            setMessages(prev => [...prev, { role: 'model', text: parsed.response }]);
+            setOptions(parsed.options.length ? parsed.options : ["Goodbye"]);
+            setSelectedIndex(0);
+        } catch (error) {
+            console.error(error);
+            setMessages(prev => [...prev, { role: 'model', text: "*The NPC mumbles.*" }]);
+            setOptions(["Goodbye"]);
         } finally {
             setIsLoading(false);
         }

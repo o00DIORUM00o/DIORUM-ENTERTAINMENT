@@ -150,6 +150,40 @@ export class AudioEngine {
         osc.stop(time + 0.1);
     }
 
+    playThrowBush() {
+        if (!this.initialized) this.init();
+        if (!this.ctx || !this.masterGain) return;
+        const ctx = this.ctx;
+        const time = ctx.currentTime;
+        
+        // Use noise for a rustle/whoosh
+        const bufferSize = ctx.sampleRate * 0.2;
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+            data[i] = Math.random() * 2 - 1;
+        }
+        
+        const noiseSource = ctx.createBufferSource();
+        noiseSource.buffer = buffer;
+        
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(800, time);
+        filter.frequency.linearRampToValueAtTime(100, time + 0.2);
+        
+        const gain = ctx.createGain();
+        gain.gain.setValueAtTime(0.5, time);
+        gain.gain.exponentialRampToValueAtTime(0.01, time + 0.2);
+        
+        noiseSource.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.masterGain);
+        
+        noiseSource.start(time);
+        noiseSource.stop(time + 0.2);
+    }
+
     playBreakBlock() {
         if (!this.initialized) this.init();
         if (!this.ctx || !this.masterGain) return;

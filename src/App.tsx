@@ -11,6 +11,7 @@ import { ThemeManager, THEMES } from './game/ThemeManager';
 import { SaveManager } from './game/SaveManager';
 import { formatZodiacStats } from './game/StarSigns';
 import { STARTING_PACKS } from './game/content/packs/core_packs';
+import { PlanetRegistry } from './game/registries/PlanetRegistry';
 
 const TABS = ['CHARACTER', 'INVENTORY', 'EQUIPMENT', 'SPELLS', 'TALENTS', 'CRAFTING', 'DEITY', 'MOUNTS', 'COMPANIONS', 'JOURNAL', 'MAP', 'SETTINGS'];
 const CREATION_TABS = ['RACE', 'COLOR', 'HOMEWORLD', 'ZODIAC', 'STARTING PACK', 'PANTHEON'];
@@ -1458,34 +1459,38 @@ export default function App() {
                         </div>
                         
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[50vh] overflow-y-auto no-scrollbar pb-4 pr-2">
-                            {engineRef.current.player.inventory.filter(item => item && item.id?.startsWith('rune_key_')).length === 0 && (
-                                <div className="col-span-1 md:col-span-2 text-center text-red-400 py-8 italic border border-red-900/50 bg-[#0f0805]">
-                                    You have no Rune Keys in your inventory.
-                                </div>
-                            )}
-                            {engineRef.current.player.inventory.map((item, index) => {
-                                if (item && item.id?.startsWith('rune_key_')) {
-                                    const rawWorld = item.id.replace('rune_key_', '').toUpperCase();
-                                    const isCurrentWorld = rawWorld === engineRef.current!.world.activePlanet;
+                            {(() => {
+                                const keyIndex = engineRef.current!.player.inventory.findIndex(item => item && item.id === 'arcane_rune_key');
+                                const hasKey = keyIndex !== -1;
+                                
+                                return PlanetRegistry.getAll().map((planet) => {
+                                    const isCurrentWorld = planet.id === engineRef.current!.world.activePlanet;
                                     
                                     return (
                                         <div 
-                                            key={index} 
-                                            className={`p-4 border-2 transition-all cursor-pointer ${
+                                            key={planet.id} 
+                                            className={`p-4 border-2 transition-all ${
                                                 isCurrentWorld 
                                                 ? 'bg-[#0f0805] border-gray-700 opacity-50 cursor-not-allowed'
-                                                : 'bg-[#0f0805] border-indigo-800 hover:border-indigo-400 hover:bg-[#2a1744] hover:shadow-[0_0_15px_rgba(75,0,130,0.5)]'
+                                                : hasKey
+                                                    ? 'bg-[#0f0805] border-indigo-800 hover:border-indigo-400 hover:bg-[#2a1744] hover:shadow-[0_0_15px_rgba(75,0,130,0.5)] cursor-pointer'
+                                                    : 'bg-[#0f0805] border-gray-800 opacity-70 cursor-not-allowed'
                                             }`}
                                             onClick={() => {
-                                                if (!isCurrentWorld && engineRef.current) {
-                                                    const targetWorld = rawWorld;
+                                                if (!isCurrentWorld && hasKey && engineRef.current) {
+                                                    const targetWorld = planet.id;
                                                     engineRef.current.resetWorld(targetWorld);
                                                     engineRef.current.player.x = 0;
                                                     engineRef.current.player.y = 0;
                                                     engineRef.current.player.z = engineRef.current.world.getElevation(0, 0) + 1;
                                                     
-                                                    // Consume the key
-                                                    engineRef.current.player.inventory[index] = null;
+                                                    // Consume one key
+                                                    const keyItem = engineRef.current.player.inventory[keyIndex];
+                                                    if (keyItem && keyItem.quantity && keyItem.quantity > 1) {
+                                                        keyItem.quantity -= 1;
+                                                    } else {
+                                                        engineRef.current.player.inventory[keyIndex] = null;
+                                                    }
                                                     
                                                     setIsArcaneGateOpen(false);
                                                     setIsPaused(false);
@@ -1494,18 +1499,20 @@ export default function App() {
                                                     if (engineRef.current.player.onMessage) {
                                                         engineRef.current.player.onMessage(`Traveled to ${targetWorld}. Welcome.`);
                                                     }
+                                                } else if (!hasKey && !isCurrentWorld && engineRef.current) {
+                                                    engineRef.current.player.onMessage("You need an Arcane Rune Key.");
                                                 }
                                             }}
                                         >
-                                            <div className="font-bold text-indigo-300 text-lg">{item.name}</div>
-                                            <div className="text-gray-400 text-xs mt-1">{item.description}</div>
+                                            <div className="font-bold text-indigo-300 text-lg">{planet.name}</div>
+                                            <div className="text-gray-400 text-xs mt-1">{planet.description}</div>
                                             {isCurrentWorld && <div className="text-red-500 text-[10px] uppercase font-bold mt-2">You are already here</div>}
-                                            {!isCurrentWorld && <div className="text-indigo-500 text-[10px] uppercase font-bold mt-2 text-right">INSERT KEY</div>}
+                                            {!isCurrentWorld && hasKey && <div className="text-indigo-500 text-[10px] uppercase font-bold mt-2 text-right">INSERT KEY</div>}
+                                            {!isCurrentWorld && !hasKey && <div className="text-red-500 text-[10px] uppercase font-bold mt-2 text-right">KEY REQUIRED</div>}
                                         </div>
                                     );
-                                }
-                                return null;
-                            })}
+                                });
+                            })()}
                         </div>
                         
                         <div className="mt-8 flex justify-center">
@@ -2300,10 +2307,18 @@ export default function App() {
                                     </div>
                                 )}
 
-                                {activeTab !== 'CHARACTER' && activeTab !== 'INVENTORY' && activeTab !== 'EQUIPMENT' && activeTab !== 'SPELLS' && activeTab !== 'TALENTS' && activeTab !== 'CRAFTING' && activeTab !== 'DEITY' && activeTab !== 'MOUNTS' && activeTab !== 'JOURNAL' && activeTab !== 'SETTINGS' && (
+                                {activeTab === 'MAP' && (
+                                    <div className="flex flex-col items-center justify-center h-full bg-[#1a0f0a] border border-[#3a2214] p-8 shadow-[inset_0_4px_10px_rgba(0,0,0,0.8)]">
+                                        <div className="text-orange-500 font-bold text-3xl tracking-widest text-center" style={{ textShadow: '2px 2px 4px black' }}>
+                                            I FORGOT MY MAP
+                                        </div>
+                                    </div>
+                                )}
+
+                                {activeTab !== 'CHARACTER' && activeTab !== 'INVENTORY' && activeTab !== 'EQUIPMENT' && activeTab !== 'SPELLS' && activeTab !== 'TALENTS' && activeTab !== 'CRAFTING' && activeTab !== 'DEITY' && activeTab !== 'MOUNTS' && activeTab !== 'COMPANIONS' && activeTab !== 'JOURNAL' && activeTab !== 'SETTINGS' && activeTab !== 'MAP' && (
                                     <div className="grid grid-cols-5 md:grid-cols-10 gap-1 md:gap-2 bg-[#1a0f0a] p-1 md:p-2 border border-[#3a2214] shadow-inner">
                                         {/* Fallback empty grid for other tabs for now */}
-                                        {[...Array(40)].map((_, i) => (
+                                        {[...Array(80)].map((_, i) => (
                                             <div key={i} className="aspect-square bg-[#0f0805] border-2 border-[#4a2e1b] shadow-[inset_0_4px_10px_rgba(0,0,0,0.8)] relative">
                                                 <div className="absolute top-0.5 left-0.5 w-0.5 h-0.5 md:w-1 md:h-1 bg-[#5c3a21] rounded-full opacity-50"></div>
                                                 <div className="absolute top-0.5 right-0.5 w-0.5 h-0.5 md:w-1 md:h-1 bg-[#5c3a21] rounded-full opacity-50"></div>
@@ -2317,7 +2332,8 @@ export default function App() {
                         </div>
 
                         {/* Bottom Panel */}
-                        <div className="mt-1 md:mt-2 h-28 md:h-32 bg-[#1a0f0a] border-[4px] md:border-[8px] border-[#5c3a21] relative rounded-sm shrink-0">
+                        {['INVENTORY', 'EQUIPMENT', 'SPELLS'].includes(activeTab) && (
+                            <div className="mt-1 md:mt-2 h-28 md:h-32 bg-[#1a0f0a] border-[4px] md:border-[8px] border-[#5c3a21] relative rounded-sm shrink-0">
                             <div className="absolute inset-1 border-2 border-[#8b5a33] bg-[#2a1b14] shadow-[inset_0_4px_15px_rgba(0,0,0,0.9)] flex flex-col px-2 pt-2 pb-1 md:px-4 md:pt-4 md:pb-1.5 overflow-hidden">
                                 {(() => {
                                     let selectedItem: Item | null = null;
@@ -2465,6 +2481,7 @@ export default function App() {
                                 })()}
                             </div>
                         </div>
+                        )}
                     </div>
                 </div>
             )}

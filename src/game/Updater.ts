@@ -145,7 +145,11 @@ export class Updater {
             // Throw pot
             engine.player.carryingPot = false;
             const speed = 12;
-            audioEngine?.playShoot?.();
+                        if (engine.player.carriedBlockType === 14 || engine.player.carriedBlockType === 47 || engine.player.carriedBlockType === 48 || engine.player.carriedBlockType === 49 || engine.player.carriedBlockType === 50) {
+                (audioEngine as any)?.playThrowBush?.();
+            } else {
+                audioEngine?.playShoot?.();
+            }
 engine.projectiles.push({x: engine.player.x,
                 y: engine.player.y,
                 z: engine.player.z + 0.5,
@@ -154,7 +158,8 @@ engine.projectiles.push({x: engine.player.x,
                 damage: 20, // Pot damage
                 life: 1.0,
                 isPlayer: true,
-                isPot: true
+                isPot: true,
+                thrownBlockType: engine.player.carriedBlockType
             });
             playerAttacking = false; // Don't swing sword
             potThrown = true;

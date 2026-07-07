@@ -364,7 +364,7 @@ p.life -= dt;
                 }
 
                 if (p.isPot) {
-                    const drops = getLootForBlock(BlockType.POT);
+                    const drops = getLootForBlock(p.thrownBlockType ?? BlockType.POT);
                     for (const drop of drops) {
                         engine.droppedItems.push({
                             x: p.x + (Math.random() - 0.5) * 0.5,

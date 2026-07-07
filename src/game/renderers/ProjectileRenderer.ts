@@ -78,7 +78,7 @@ export function defineProjectileRenderers() {
             if (p.scale) ctx.ctx.scale(p.scale, p.scale);
             
             if (p.isPot) {
-                ctx.ctx.fillStyle = `rgb(${BLOCK_COLORS[BlockType.POT].r}, ${BLOCK_COLORS[BlockType.POT].g}, ${BLOCK_COLORS[BlockType.POT].b})`;
+                ctx.ctx.fillStyle = `rgb(${BLOCK_COLORS[p.thrownBlockType || BlockType.POT].r}, ${BLOCK_COLORS[p.thrownBlockType || BlockType.POT].g}, ${BLOCK_COLORS[p.thrownBlockType || BlockType.POT].b})`;
                 ctx.ctx.beginPath();
                 ctx.ctx.arc(0, 0, ctx.TILE_SIZE * 0.3, 0, Math.PI * 2);
                 ctx.ctx.fill();

@@ -37,8 +37,7 @@ export class StructureGenerator {
         chestInventory[0] = { ...ITEMS['sword_1'] };
         chestInventory[1] = { ...ITEMS['pickaxe_1'] };
         chestInventory[2] = { ...ITEMS['tent'] };
-        chestInventory[3] = { ...ITEMS['rune_key_threa'], quantity: 1 };
-        chestInventory[4] = { ...ITEMS['rune_key_areth'], quantity: 1 };
+        chestInventory[3] = { ...ITEMS['arcane_rune_key'], quantity: 5 };
         chestInventory[5] = { ...ITEMS['axe_1'] };
         chestInventory[6] = { ...ITEMS['red_berry_seed'], quantity: 5 };
         chestInventory[7] = { ...ITEMS['health_potion'], quantity: 5 };
@@ -47,11 +46,6 @@ export class StructureGenerator {
         chestInventory[9] = { ...ITEMS['masonry_table'] };
         chestInventory[10] = { ...ITEMS['stone'], quantity: 99 };
         chestInventory[11] = { ...ITEMS['wood'], quantity: 99 };
-        
-        const startingKey = `rune_key_${world.activePlanet.toLowerCase()}`;
-        if (ITEMS[startingKey]) {
-            chestInventory[14] = { ...ITEMS[startingKey] };
-        }
         
         world.setChest(-5, -2, spawnZ, chestInventory);
 
@@ -113,8 +107,7 @@ export class StructureGenerator {
         chestInventory[0] = { ...ITEMS['sword_1'] };
         chestInventory[1] = { ...ITEMS['pickaxe_1'] };
         chestInventory[2] = { ...ITEMS['tent'] };
-        chestInventory[3] = { ...ITEMS['rune_key_threa'], quantity: 1 };
-        chestInventory[4] = { ...ITEMS['rune_key_areth'], quantity: 1 };
+        chestInventory[3] = { ...ITEMS['arcane_rune_key'], quantity: 5 };
         chestInventory[5] = { ...ITEMS['axe_1'] };
         chestInventory[6] = { ...ITEMS['health_potion'], quantity: 5 };
         
@@ -124,11 +117,6 @@ export class StructureGenerator {
         chestInventory[11] = { ...ITEMS['anvil_recipe_scroll'] };
         chestInventory[12] = { ...ITEMS['stone'], quantity: 99 };
         chestInventory[13] = { ...ITEMS['wood'], quantity: 99 };
-        
-        const startingKey = `rune_key_${world.activePlanet.toLowerCase()}`;
-        if (ITEMS[startingKey]) {
-            chestInventory[14] = { ...ITEMS[startingKey] };
-        }
         
         world.setChest(-3, -2, spawnZ + 1, chestInventory);
 
@@ -225,9 +213,7 @@ export class StructureGenerator {
         chestInventory[0] = { ...ITEMS['sword_1'] };
         chestInventory[1] = { ...ITEMS['pickaxe_1'] };
         chestInventory[2] = { ...ITEMS['tent'] };
-        chestInventory[3] = { ...ITEMS['rune_key_threa'], quantity: 1 };
-        chestInventory[4] = { ...ITEMS['rune_key_areth'], quantity: 1 };
-        chestInventory[5] = { ...ITEMS['rune_key_heart'], quantity: 1 };
+        chestInventory[3] = { ...ITEMS['arcane_rune_key'], quantity: 5 };
         chestInventory[6] = { ...ITEMS['health_potion'], quantity: 5 };
         
         chestInventory[8] = { ...ITEMS['carpenters_bench'] };

@@ -96,8 +96,6 @@ export class ZeldaAI {
                 if (target === engine.player && engine.player.isSneaking) {
                     const sneakLevel = engine.player.talents['sneak'] || 0;
                     if (sneakLevel === 0) currentChaseDist *= 0.8;
-                    else if (sneakLevel === 1) currentChaseDist *= 0.5;
-                    else if (sneakLevel === 2) currentChaseDist *= 0.3;
                     else currentChaseDist *= 0.15;
                 }
 

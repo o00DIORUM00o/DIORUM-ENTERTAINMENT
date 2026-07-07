@@ -176,7 +176,7 @@ export const MERCHANT_TABLES: Record<string, MerchantLootTable> = {
             { itemToGive: { id: 'health_potion', quantity: 5, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 2 }] }, // Dragons love gold
             { itemToGive: { id: 'mana_potion', quantity: 5, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 2 }] },
             { itemToGive: { id: 'book_fire_bolt', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 50 }] },
-            { itemToGive: { id: 'rune_key_areth', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 100 }] },
+            { itemToGive: { id: 'arcane_rune_key', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 100 }] },
             { itemToGive: { id: 'dragon_egg_mount', quantity: 1 }, cost: [{ id: 'gold_piece', quantity: 5000 }] },
             { itemToGive: { id: 'companion_dragon_egg', quantity: 1 }, cost: [{ id: 'gold_piece', quantity: 500 }] },
             { itemToGive: { id: 'companion_arcane_crystal', quantity: 1 }, cost: [{ id: 'gold_piece', quantity: 600 }] },
@@ -193,7 +193,7 @@ export const MERCHANT_TABLES: Record<string, MerchantLootTable> = {
     },
     'SLUG_FOLK_MERCHANT': {
         guaranteed: [
-            { itemToGive: { id: 'rune_key_raeth', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 50 }] },
+            { itemToGive: { id: 'arcane_rune_key', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 50 }] },
             { itemToGive: { id: 'slime_ball', quantity: 10, stackable: true, maxStack: 99 }, cost: [{ id: 'silver_piece', quantity: 5 }] },
             { itemToGive: { id: 'health_potion', quantity: 5, stackable: true, maxStack: 99 }, cost: [{ id: 'silver_piece', quantity: 10 }] }
         ],
@@ -290,12 +290,7 @@ export const MERCHANT_TABLES: Record<string, MerchantLootTable> = {
     },
     'STALL_RUNE_KEYS': {
         guaranteed: [
-            { itemToGive: { id: 'rune_key_areth', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 20 }] },
-            { itemToGive: { id: 'rune_key_raeth', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 20 }] },
-            { itemToGive: { id: 'rune_key_thera', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 20 }] },
-            { itemToGive: { id: 'rune_key_threa', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 20 }] },
-            { itemToGive: { id: 'rune_key_ather', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 20 }] },
-            { itemToGive: { id: 'rune_key_north_heart', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 100 }] }
+            { itemToGive: { id: 'arcane_rune_key', quantity: 1, stackable: true, maxStack: 99 }, cost: [{ id: 'gold_piece', quantity: 20 }] }
         ],
         random: { pool: [], rolls: 0 }
     },

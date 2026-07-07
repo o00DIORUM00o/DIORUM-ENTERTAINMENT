@@ -59,9 +59,7 @@ export const ShopUI: React.FC<ShopUIProps> = ({ npc, player, onClose }) => {
         const tradingLevel = player.talents['trading'] || 0;
         if (tradingLevel === 0) return cost;
         let discount = 0;
-        if (tradingLevel === 1) discount = 0.10;
-        if (tradingLevel === 2) discount = 0.20;
-        if (tradingLevel === 3) discount = 0.30;
+        if (tradingLevel >= 1) discount = 0.30;
         return Math.max(1, Math.ceil(cost * (1 - discount)));
     };
 

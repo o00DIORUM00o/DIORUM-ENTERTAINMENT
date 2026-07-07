@@ -9,10 +9,8 @@ export const TALENTS: Record<string, TalentDef> = {
     'trading': {
         id: 'trading',
         name: 'Trading',
-        maxLevel: 3,
+        maxLevel: 1,
         descriptions: [
-            'Basic negotiation skills. Reduces the cost of all trades by 10%.',
-            'Advanced negotiation skills. Reduces the cost of all trades by 20%.',
             'Master merchant. Reduces the cost of all trades by 30%.'
         ]
     },
@@ -49,31 +47,25 @@ export const TALENTS: Record<string, TalentDef> = {
     'cooking': {
         id: 'cooking',
         name: 'Cooking',
-        maxLevel: 3,
+        maxLevel: 1,
         descriptions: [
-            'Learn to construct a Cooking Pot and craft basic restorative meals.',
-            'Unlocks advanced meals, increasing your health and mana regeneration buffs.',
-            'Master culinary arts! Unlocks grand feasts with powerful long-lasting stat buffs.'
+            'Learn to construct a Cooking Pot and craft restorative meals. Unlocks grand feasts with powerful buffs.'
         ]
     },
     'fishing': {
         id: 'fishing',
         name: 'Fishing',
-        maxLevel: 3,
+        maxLevel: 1,
         descriptions: [
-            'Allows you to use a Fishing Pole by casting it into the water.',
-            'Increases the chance of catching rare fish and reduces junk.',
-            'Dramatically reduces the time it takes to hook a catch, and unlocks legendary loot!'
+            'Allows you to use a Fishing Pole. Increases the chance of catching rare fish, reduces junk, and decreases hooking time.'
         ]
     },
     'carpentry': {
         id: 'carpentry',
         name: 'Carpentry',
-        maxLevel: 3,
+        maxLevel: 1,
         descriptions: [
-            'Unlock basic wooden recipes and the Carpenter\'s Workbench.',
-            'Unlock intermediate wooden recipes and furniture.',
-            'Unlock advanced wooden structures and tools.'
+            'Unlock the Carpenter\'s Workbench, furniture, and all wooden structures and tools.'
         ]
     },
     'reading': {
@@ -95,11 +87,9 @@ export const TALENTS: Record<string, TalentDef> = {
     'sneak': {
         id: 'sneak',
         name: 'Sneak',
-        maxLevel: 3,
+        maxLevel: 1,
         descriptions: [
-            'Unlock the ability to sneak by pressing the right stick. Stamina drains continuously.',
-            'Reduces the detection radius of enemies and the stamina drain of sneaking.',
-            'Master of shadows. Further reduces detection radius and stamina drain.'
+            'Unlock the ability to sneak by pressing the right stick. Reduces detection radius and stamina drain.'
         ]
     },
     'dash': {
@@ -124,11 +114,9 @@ export const TALENTS: Record<string, TalentDef> = {
     'masonry': {
         id: 'masonry',
         name: 'Masonry',
-        maxLevel: 3,
+        maxLevel: 1,
         descriptions: [
-            'Unlock basic masonry and the Masonry Table.',
-            'Unlock advanced stone structures and the Shrine.',
-            'Master masonry techniques.'
+            'Unlock the Masonry Table, Shrine, and all stone structures and techniques.'
         ]
     },
     'fabric_crafting': {
@@ -187,23 +175,17 @@ export const TALENTS: Record<string, TalentDef> = {
     'hunting': {
         id: 'hunting',
         name: 'Hunting',
-        maxLevel: 3,
+        maxLevel: 1,
         descriptions: [
-            'Increases damage dealt to wild animals.',
-            'Increases resource drops from animals.',
-            'Increases the frequency of rare wild animals.'
+            'Increases damage dealt to wild animals, resource drops from animals, and the frequency of rare wild animals.'
         ]
     },
 
     'riding': {
         id: 'riding',
         name: 'Riding',
-        maxLevel: 5,
+        maxLevel: 1,
         descriptions: [
-            'Increases riding movement speed by 10%.',
-            'Increases riding movement speed by 20%.',
-            'Increases riding movement speed by 30%.',
-            'Increases riding movement speed by 40%.',
             'Increases riding movement speed by 50%.'
         ]
     },
@@ -300,11 +282,9 @@ export const TALENTS: Record<string, TalentDef> = {
     'smithing': {
         id: 'smithing',
         name: 'Smithing',
-        maxLevel: 3,
+        maxLevel: 1,
         descriptions: [
-            'Unlock basic smithing and the Anvil.',
-            'Unlock intermediate metal weapons and armor.',
-            'Master smithing techniques.'
+            'Unlock all smithing techniques, weapons, and armor.'
         ]
     },
     'pick_pocket': {

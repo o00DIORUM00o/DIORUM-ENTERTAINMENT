@@ -78,7 +78,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Wooden Sword',
         description: 'Craft Wooden Sword',
         ingredients: [
-            { id: 'wood', quantity: 5 },
+            { id: 'wood', quantity: 2 },
         ],
         result: { id: 'wooden_sword', quantity: 1 },
         requiredStation: 'carpenters_bench',
@@ -113,7 +113,8 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Flame Blade',
         description: 'Craft Flame Blade',
         ingredients: [
-            { id: 'wood', quantity: 5 },
+            { id: 'wood', quantity: 1 },
+            { id: 'ruby', quantity: 3 },
         ],
         result: { id: 'flame_blade', quantity: 1 },
         requiredStation: 'carpenters_bench',
@@ -129,7 +130,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         ],
         result: { id: 'mithril_greatsword', quantity: 1 },
         requiredStation: 'anvil',
-        requiredTalent: { id: 'smithing', level: 4 }
+        requiredTalent: { id: 'smithing', level: 1 }
     },
     {
         id: 'recipe_sword_1',
@@ -165,14 +166,15 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         ],
         result: { id: 'obsidian_sword', quantity: 1 },
         requiredStation: 'anvil',
-        requiredTalent: { id: 'smithing', level: 3 }
+        requiredTalent: { id: 'smithing', level: 1 }
     },
     {
         id: 'recipe_dark_elf_blade',
         name: 'Dark Elf Blade',
         description: 'Craft Dark Elf Blade',
         ingredients: [
-            { id: 'wood', quantity: 5 },
+            { id: 'wood', quantity: 1 },
+            { id: 'obsidian', quantity: 2 },
         ],
         result: { id: 'dark_elf_blade', quantity: 1 },
         requiredStation: 'carpenters_bench',
@@ -183,7 +185,8 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Troll Tusk Sword',
         description: 'Craft Troll Tusk Sword',
         ingredients: [
-            { id: 'wood', quantity: 5 },
+            { id: 'wood', quantity: 1 },
+            { id: 'bone', quantity: 3 },
         ],
         result: { id: 'troll_tusk_sword', quantity: 1 },
         requiredStation: 'carpenters_bench',
@@ -194,7 +197,8 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Phantom Shadow Blade',
         description: 'Craft Phantom Shadow Blade',
         ingredients: [
-            { id: 'wood', quantity: 5 },
+            { id: 'obsidian', quantity: 3 },
+            { id: 'gold_ingot', quantity: 1 },
         ],
         result: { id: 'shadow_blade', quantity: 1 },
         requiredStation: 'carpenters_bench',
@@ -205,7 +209,8 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Astral Edge',
         description: 'Craft Astral Edge',
         ingredients: [
-            { id: 'wood', quantity: 5 },
+            { id: 'star_metal_ingot', quantity: 3 },
+            { id: 'diamond', quantity: 1 },
         ],
         result: { id: 'astral_edge', quantity: 1 },
         requiredStation: 'carpenters_bench',
@@ -216,7 +221,8 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Bloodletter',
         description: 'Craft Bloodletter',
         ingredients: [
-            { id: 'wood', quantity: 5 },
+            { id: 'iron_ingot', quantity: 3 },
+            { id: 'ruby', quantity: 1 },
         ],
         result: { id: 'bloodletter', quantity: 1 },
         requiredStation: 'carpenters_bench',
@@ -227,7 +233,8 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Sword of the Creator',
         description: 'Craft Sword of the Creator',
         ingredients: [
-            { id: 'wood', quantity: 5 },
+            { id: 'star_metal_ingot', quantity: 5 },
+            { id: 'magic_dust', quantity: 5 },
         ],
         result: { id: 'sword_of_creator', quantity: 1 },
         requiredStation: 'carpenters_bench',
@@ -238,7 +245,8 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Blightbringer',
         description: 'Craft Blightbringer',
         ingredients: [
-            { id: 'wood', quantity: 5 },
+            { id: 'iron_ingot', quantity: 3 },
+            { id: 'slime_ball', quantity: 2 },
         ],
         result: { id: 'blightbringer', quantity: 1 },
         requiredStation: 'carpenters_bench',
@@ -249,7 +257,8 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Tempest Render',
         description: 'Craft Tempest Render',
         ingredients: [
-            { id: 'wood', quantity: 5 },
+            { id: 'steel_ingot', quantity: 3 },
+            { id: 'emerald', quantity: 1 },
         ],
         result: { id: 'tempest_render', quantity: 1 },
         requiredStation: 'carpenters_bench',
@@ -260,7 +269,8 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Dragon Fang Blade',
         description: 'Craft Dragon Fang Blade',
         ingredients: [
-            { id: 'wood', quantity: 5 },
+            { id: 'bone', quantity: 2 },
+            { id: 'dragon_scale', quantity: 2 },
         ],
         result: { id: 'dragon_fang_sword', quantity: 1 },
         requiredStation: 'carpenters_bench',
@@ -276,7 +286,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         ],
         result: { id: 'star_metal_sword', quantity: 1 },
         requiredStation: 'anvil',
-        requiredTalent: { id: 'smithing', level: 4 }
+        requiredTalent: { id: 'smithing', level: 1 }
     },
     {
         id: 'recipe_star_metal_greatsword',
@@ -288,7 +298,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         ],
         result: { id: 'star_metal_greatsword', quantity: 1 },
         requiredStation: 'anvil',
-        requiredTalent: { id: 'smithing', level: 4 }
+        requiredTalent: { id: 'smithing', level: 1 }
     },
     {
         id: 'recipe_amber_sword',
@@ -300,19 +310,19 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         ],
         result: { id: 'amber_sword', quantity: 1 },
         requiredStation: 'anvil',
-        requiredTalent: { id: 'smithing', level: 3 }
+        requiredTalent: { id: 'smithing', level: 1 }
     },
     {
         id: 'recipe_amber_greatsword',
         name: 'Amber Greatsword',
         description: 'Craft Amber Greatsword',
         ingredients: [
-            { id: 'amber', quantity: 24 },
-            { id: 'tropical_wood', quantity: 5 },
+            { id: 'amber', quantity: 15 },
+            { id: 'tropical_wood', quantity: 2 },
         ],
         result: { id: 'amber_greatsword', quantity: 1 },
         requiredStation: 'anvil',
-        requiredTalent: { id: 'smithing', level: 3 }
+        requiredTalent: { id: 'smithing', level: 1 }
     },
     {
         id: 'recipe_dagger_1',
@@ -330,7 +340,8 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Kobold Dagger',
         description: 'Craft Kobold Dagger',
         ingredients: [
-            { id: 'wood', quantity: 5 },
+            { id: 'wood', quantity: 1 },
+            { id: 'copper_ingot', quantity: 1 },
         ],
         result: { id: 'kobold_dagger', quantity: 1 },
         requiredStation: 'carpenters_bench',
@@ -341,7 +352,8 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Kobold Spear',
         description: 'Craft Kobold Spear',
         ingredients: [
-            { id: 'wood', quantity: 5 },
+            { id: 'wood', quantity: 2 },
+            { id: 'copper_ingot', quantity: 1 },
         ],
         result: { id: 'kobold_spear', quantity: 1 },
         requiredStation: 'carpenters_bench',
@@ -352,7 +364,8 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Boar Tusk Spear',
         description: 'Craft Boar Tusk Spear',
         ingredients: [
-            { id: 'wood', quantity: 5 },
+            { id: 'wood', quantity: 2 },
+            { id: 'bone', quantity: 1 },
         ],
         result: { id: 'tusk_spear', quantity: 1 },
         requiredStation: 'carpenters_bench',
@@ -375,8 +388,8 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Wooden Shortbow',
         description: 'Craft Wooden Shortbow',
         ingredients: [
+            { id: 'wood', quantity: 2 },
             { id: 'string', quantity: 2 },
-            { id: 'wood', quantity: 5 },
         ],
         result: { id: 'shortbow_1', quantity: 1 },
         requiredStation: 'carpenters_bench',
@@ -423,7 +436,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Wooden Boomerang',
         description: 'Craft Wooden Boomerang',
         ingredients: [
-            { id: 'wood', quantity: 5 },
+            { id: 'wood', quantity: 3 },
         ],
         result: { id: 'wooden_boomerang', quantity: 1 },
         requiredStation: 'carpenters_bench',
@@ -438,7 +451,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         ],
         result: { id: 'green_metal_boomerang', quantity: 1 },
         requiredStation: 'anvil',
-        requiredTalent: { id: 'smithing', level: 2 }
+        requiredTalent: { id: 'smithing', level: 1 }
     },
     {
         id: 'recipe_red_metal_boomerang',
@@ -449,7 +462,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         ],
         result: { id: 'red_metal_boomerang', quantity: 1 },
         requiredStation: 'anvil',
-        requiredTalent: { id: 'smithing', level: 3 }
+        requiredTalent: { id: 'smithing', level: 1 }
     },
     {
         id: 'recipe_bone_boomerang',
@@ -493,7 +506,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         ],
         result: { id: 'mithril_boomerang', quantity: 1 },
         requiredStation: 'anvil',
-        requiredTalent: { id: 'smithing', level: 4 }
+        requiredTalent: { id: 'smithing', level: 1 }
     },
     {
         id: 'recipe_ice_boomerang',
@@ -505,7 +518,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         ],
         result: { id: 'ice_boomerang', quantity: 1 },
         requiredStation: 'anvil',
-        requiredTalent: { id: 'smithing', level: 2 }
+        requiredTalent: { id: 'smithing', level: 1 }
     },
     {
         id: 'recipe_magma_boomerang',
@@ -517,14 +530,14 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         ],
         result: { id: 'magma_boomerang', quantity: 1 },
         requiredStation: 'anvil',
-        requiredTalent: { id: 'smithing', level: 2 }
+        requiredTalent: { id: 'smithing', level: 1 }
     },
     {
         id: 'recipe_cactus_boomerang',
         name: 'Cactus Boomerang',
         description: 'Craft Cactus Boomerang',
         ingredients: [
-            { id: 'wood', quantity: 5 },
+            { id: 'cactus', quantity: 3 },
         ],
         result: { id: 'cactus_boomerang', quantity: 1 },
         requiredStation: 'carpenters_bench',
@@ -540,7 +553,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         ],
         result: { id: 'lightning_boomerang', quantity: 1 },
         requiredStation: 'anvil',
-        requiredTalent: { id: 'smithing', level: 3 }
+        requiredTalent: { id: 'smithing', level: 1 }
     },
     {
         id: 'recipe_crystal_boomerang',
@@ -551,7 +564,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         ],
         result: { id: 'crystal_boomerang', quantity: 1 },
         requiredStation: 'anvil',
-        requiredTalent: { id: 'smithing', level: 3 }
+        requiredTalent: { id: 'smithing', level: 1 }
     },
     {
         id: 'recipe_obsidian_boomerang',
@@ -562,7 +575,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         ],
         result: { id: 'obsidian_boomerang', quantity: 1 },
         requiredStation: 'anvil',
-        requiredTalent: { id: 'smithing', level: 4 }
+        requiredTalent: { id: 'smithing', level: 1 }
     },
     {
         id: 'recipe_splitting_boomerang',
@@ -574,7 +587,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         ],
         result: { id: 'splitting_boomerang', quantity: 1 },
         requiredStation: 'anvil',
-        requiredTalent: { id: 'smithing', level: 3 }
+        requiredTalent: { id: 'smithing', level: 1 }
     },
     {
         id: 'recipe_dragon_boomerang',
@@ -587,7 +600,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         ],
         result: { id: 'dragon_boomerang', quantity: 1 },
         requiredStation: 'anvil',
-        requiredTalent: { id: 'smithing', level: 4 }
+        requiredTalent: { id: 'smithing', level: 1 }
     },
     {
         id: 'recipe_blood_boomerang',
@@ -599,7 +612,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         ],
         result: { id: 'blood_boomerang', quantity: 1 },
         requiredStation: 'anvil',
-        requiredTalent: { id: 'smithing', level: 4 }
+        requiredTalent: { id: 'smithing', level: 1 }
     },
     {
         id: 'recipe_void_boomerang',
@@ -611,7 +624,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         ],
         result: { id: 'void_boomerang', quantity: 1 },
         requiredStation: 'anvil',
-        requiredTalent: { id: 'smithing', level: 4 }
+        requiredTalent: { id: 'smithing', level: 1 }
     },
     {
         id: 'recipe_dark_elf_bow',
@@ -647,7 +660,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         ],
         result: { id: 'star_metal_bow', quantity: 1 },
         requiredStation: 'anvil',
-        requiredTalent: { id: 'smithing', level: 4 }
+        requiredTalent: { id: 'smithing', level: 1 }
     },
     {
         id: 'recipe_star_metal_boomerang',
@@ -658,14 +671,15 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         ],
         result: { id: 'star_metal_boomerang', quantity: 1 },
         requiredStation: 'anvil',
-        requiredTalent: { id: 'smithing', level: 4 }
+        requiredTalent: { id: 'smithing', level: 1 }
     },
     {
         id: 'recipe_travelers_staff_acid',
         name: 'Traveler\'s Staff of Acid',
         description: 'Craft Traveler\'s Staff of Acid',
         ingredients: [
-            { id: 'wood', quantity: 5 },
+            { id: 'wood', quantity: 2 },
+            { id: 'slime_ball', quantity: 2 },
         ],
         result: { id: 'travelers_staff_acid', quantity: 1 },
         requiredStation: 'carpenters_bench',
@@ -676,7 +690,8 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Staff of Firebolts',
         description: 'Craft Staff of Firebolts',
         ingredients: [
-            { id: 'wood', quantity: 5 },
+            { id: 'wood', quantity: 2 },
+            { id: 'ruby', quantity: 1 },
         ],
         result: { id: 'staff_fire_ranged', quantity: 1 },
         requiredStation: 'carpenters_bench',
@@ -687,7 +702,8 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Staff of Frost Nova',
         description: 'Craft Staff of Frost Nova',
         ingredients: [
-            { id: 'wood', quantity: 5 },
+            { id: 'wood', quantity: 2 },
+            { id: 'emerald', quantity: 1 },
         ],
         result: { id: 'staff_ice_aoe', quantity: 1 },
         requiredStation: 'carpenters_bench',
@@ -710,7 +726,8 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Staff of Arcane Burst',
         description: 'Craft Staff of Arcane Burst',
         ingredients: [
-            { id: 'wood', quantity: 5 },
+            { id: 'wood', quantity: 2 },
+            { id: 'magic_dust', quantity: 2 },
         ],
         result: { id: 'staff_arcane_aoe', quantity: 1 },
         requiredStation: 'carpenters_bench',
@@ -721,7 +738,8 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Staff of the Inferno',
         description: 'Craft Staff of the Inferno',
         ingredients: [
-            { id: 'wood', quantity: 5 },
+            { id: 'wood', quantity: 2 },
+            { id: 'ruby', quantity: 2 },
         ],
         result: { id: 'staff_inferno', quantity: 1 },
         requiredStation: 'carpenters_bench',
@@ -732,7 +750,8 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Necromancer\'s Crook',
         description: 'Craft Necromancer\'s Crook',
         ingredients: [
-            { id: 'wood', quantity: 5 },
+            { id: 'wood', quantity: 2 },
+            { id: 'bone', quantity: 5 },
         ],
         result: { id: 'staff_necromancer', quantity: 1 },
         requiredStation: 'carpenters_bench',
@@ -745,7 +764,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         ingredients: [
             { id: 'amber', quantity: 10 },
             { id: 'fossil', quantity: 2 },
-            { id: 'tropical_wood', quantity: 5 },
+            { id: 'tropical_wood', quantity: 2 },
         ],
         result: { id: 'amber_staff_dino', quantity: 1 },
         requiredStation: 'carpenters_bench',
@@ -756,7 +775,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Staff of the Grove',
         description: 'Craft Staff of the Grove',
         ingredients: [
-            { id: 'wood', quantity: 5 },
+            { id: 'wood', quantity: 4 },
         ],
         result: { id: 'staff_grove', quantity: 1 },
         requiredStation: 'carpenters_bench',
@@ -767,7 +786,8 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Staff of the Heavens',
         description: 'Craft Staff of the Heavens',
         ingredients: [
-            { id: 'wood', quantity: 5 },
+            { id: 'wood', quantity: 2 },
+            { id: 'star_metal_ingot', quantity: 1 },
         ],
         result: { id: 'staff_heavens', quantity: 1 },
         requiredStation: 'carpenters_bench',
@@ -778,7 +798,8 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Magma Channeler',
         description: 'Craft Magma Channeler',
         ingredients: [
-            { id: 'wood', quantity: 5 },
+            { id: 'wood', quantity: 2 },
+            { id: 'obsidian', quantity: 2 },
         ],
         result: { id: 'staff_magma', quantity: 1 },
         requiredStation: 'carpenters_bench',
@@ -813,7 +834,8 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Staff of the Druid',
         description: 'Craft Staff of the Druid',
         ingredients: [
-            { id: 'wood', quantity: 5 },
+            { id: 'wood', quantity: 3 },
+            { id: 'red_berry', quantity: 5 },
         ],
         result: { id: 'staff_druid', quantity: 1 },
         requiredStation: 'carpenters_bench',
@@ -824,7 +846,8 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Time-Mender\'s Staff',
         description: 'Craft Time-Mender\'s Staff',
         ingredients: [
-            { id: 'wood', quantity: 5 },
+            { id: 'wood', quantity: 2 },
+            { id: 'diamond', quantity: 1 },
         ],
         result: { id: 'staff_time', quantity: 1 },
         requiredStation: 'carpenters_bench',
@@ -835,7 +858,8 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Staff of the Wind',
         description: 'Craft Staff of the Wind',
         ingredients: [
-            { id: 'wood', quantity: 5 },
+            { id: 'wood', quantity: 2 },
+            { id: 'string', quantity: 2 },
         ],
         result: { id: 'staff_wind', quantity: 1 },
         requiredStation: 'carpenters_bench',
@@ -846,7 +870,8 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Volcano Wand',
         description: 'Craft Volcano Wand',
         ingredients: [
-            { id: 'wood', quantity: 5 },
+            { id: 'wood', quantity: 1 },
+            { id: 'obsidian', quantity: 1 },
         ],
         result: { id: 'volcano_wand', quantity: 1 },
         requiredStation: 'carpenters_bench',
@@ -857,7 +882,8 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Dwarven Warhammer',
         description: 'Craft Dwarven Warhammer',
         ingredients: [
-            { id: 'wood', quantity: 5 },
+            { id: 'wood', quantity: 2 },
+            { id: 'steel_ingot', quantity: 3 },
         ],
         result: { id: 'dwarven_hammer', quantity: 1 },
         requiredStation: 'carpenters_bench',
@@ -880,6 +906,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         description: 'Craft Ogre Splinter Club',
         ingredients: [
             { id: 'wood', quantity: 5 },
+            { id: 'stone', quantity: 5 },
         ],
         result: { id: 'ogre_club', quantity: 1 },
         requiredStation: 'carpenters_bench',
@@ -890,7 +917,8 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Gargoyle Demolisher',
         description: 'Craft Gargoyle Demolisher',
         ingredients: [
-            { id: 'wood', quantity: 5 },
+            { id: 'wood', quantity: 2 },
+            { id: 'stone', quantity: 10 },
         ],
         result: { id: 'gargoyle_hammer', quantity: 1 },
         requiredStation: 'carpenters_bench',
@@ -961,7 +989,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         ],
         result: { id: 'dwarven_pickaxe', quantity: 1 },
         requiredStation: 'anvil',
-        requiredTalent: { id: 'smithing', level: 3 }
+        requiredTalent: { id: 'smithing', level: 1 }
     },
     {
         id: 'recipe_watering_can',
@@ -983,7 +1011,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         ],
         result: { id: 'golden_shovel', quantity: 1 },
         requiredStation: 'anvil',
-        requiredTalent: { id: 'smithing', level: 2 }
+        requiredTalent: { id: 'smithing', level: 1 }
     },
     {
         id: 'recipe_raptor_sickle',
@@ -1019,7 +1047,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         ],
         result: { id: 'star_metal_pickaxe', quantity: 1 },
         requiredStation: 'anvil',
-        requiredTalent: { id: 'smithing', level: 4 }
+        requiredTalent: { id: 'smithing', level: 1 }
     },
     {
         id: 'recipe_star_metal_axe',
@@ -1030,7 +1058,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         ],
         result: { id: 'star_metal_axe', quantity: 1 },
         requiredStation: 'anvil',
-        requiredTalent: { id: 'smithing', level: 4 }
+        requiredTalent: { id: 'smithing', level: 1 }
     },
     {
         id: 'recipe_iron_helmet',
@@ -1118,7 +1146,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Acorn Helmet',
         description: 'Craft Acorn Helmet',
         ingredients: [
-            { id: 'wood', quantity: 5 },
+            { id: 'acorn', quantity: 5 },
         ],
         result: { id: 'acorn_helmet', quantity: 1 },
         requiredStation: 'carpenters_bench',
@@ -1129,7 +1157,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Fungal Shield',
         description: 'Craft Fungal Shield',
         ingredients: [
-            { id: 'wood', quantity: 5 },
+            { id: 'wood', quantity: 2 },
         ],
         result: { id: 'fungal_shield', quantity: 1 },
         requiredStation: 'carpenters_bench',
@@ -1152,7 +1180,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Dragon Scale Armor',
         description: 'Craft Dragon Scale Armor',
         ingredients: [
-            { id: 'wood', quantity: 5 },
+            { id: 'dragon_scale', quantity: 5 },
         ],
         result: { id: 'dragon_scale_armor', quantity: 1 },
         requiredStation: 'carpenters_bench',
@@ -1163,7 +1191,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Wooden Shield',
         description: 'Craft Wooden Shield',
         ingredients: [
-            { id: 'wood', quantity: 5 },
+            { id: 'wood', quantity: 4 },
         ],
         result: { id: 'wooden_shield', quantity: 1 },
         requiredStation: 'carpenters_bench',
@@ -1178,7 +1206,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         ],
         result: { id: 'star_metal_armor', quantity: 1 },
         requiredStation: 'anvil',
-        requiredTalent: { id: 'smithing', level: 4 }
+        requiredTalent: { id: 'smithing', level: 1 }
     },
     {
         id: 'recipe_yeti_fur_coat',
@@ -1838,7 +1866,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         ],
         result: { id: 'green_metal_ingot', quantity: 1 },
         requiredStation: 'furnace',
-        requiredTalent: { id: 'smithing', level: 2 }
+        requiredTalent: { id: 'smithing', level: 1 }
     },
     {
         id: 'recipe_red_metal_ingot',
@@ -1850,7 +1878,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         ],
         result: { id: 'red_metal_ingot', quantity: 1 },
         requiredStation: 'furnace',
-        requiredTalent: { id: 'smithing', level: 3 }
+        requiredTalent: { id: 'smithing', level: 1 }
     },
     {
         id: 'recipe_mithril_ingot',
@@ -1862,7 +1890,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         ],
         result: { id: 'mithril_ingot', quantity: 1 },
         requiredStation: 'furnace',
-        requiredTalent: { id: 'smithing', level: 4 }
+        requiredTalent: { id: 'smithing', level: 1 }
     },
     {
         id: 'recipe_silver_ingot',
@@ -2149,7 +2177,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         ],
         result: { id: 'star_metal_ingot', quantity: 1 },
         requiredStation: 'furnace',
-        requiredTalent: { id: 'smithing', level: 4 }
+        requiredTalent: { id: 'smithing', level: 1 }
     },
     {
         id: 'recipe_arrow_1',
@@ -2345,7 +2373,8 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Grappling Hook',
         description: 'Craft Grappling Hook',
         ingredients: [
-            { id: 'wood', quantity: 5 },
+            { id: 'iron_ingot', quantity: 2 },
+            { id: 'string', quantity: 3 },
         ],
         result: { id: 'grappling_hook', quantity: 1 },
         requiredStation: 'carpenters_bench',
@@ -2356,7 +2385,8 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Fishing Pole',
         description: 'Craft Fishing Pole',
         ingredients: [
-            { id: 'wood', quantity: 5 },
+            { id: 'wood', quantity: 3 },
+            { id: 'string', quantity: 2 },
         ],
         result: { id: 'fishing_pole', quantity: 1 },
         requiredStation: 'carpenters_bench',
@@ -2367,7 +2397,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Small Key',
         description: 'Craft Small Key',
         ingredients: [
-            { id: 'wood', quantity: 5 },
+            { id: 'iron_ingot', quantity: 1 },
         ],
         result: { id: 'key_small', quantity: 1 },
         requiredStation: 'carpenters_bench',
@@ -2378,7 +2408,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Boss Key',
         description: 'Craft Boss Key',
         ingredients: [
-            { id: 'wood', quantity: 5 },
+            { id: 'gold_ingot', quantity: 2 },
         ],
         result: { id: 'key_boss', quantity: 1 },
         requiredStation: 'carpenters_bench',

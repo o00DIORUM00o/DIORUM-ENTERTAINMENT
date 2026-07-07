@@ -28,9 +28,9 @@ export class PlayerBlockInteraction {
                 let rand = Math.random();
                 let itemOutput: Item | null = null;
                 
-                if (fishingLevel >= 3 && Math.random() < 0.05) {
+                if (fishingLevel >= 1 && Math.random() < 0.05) {
                     itemOutput = { ...ITEMS['djinn_lamp'] };
-                } else if (fishingLevel >= 2 && Math.random() < 0.1) {
+                } else if (fishingLevel >= 1 && Math.random() < 0.1) {
                     itemOutput = { ...ITEMS['golden_fish'] };
                 } else if (rand < 0.3 + (fishingLevel * 0.15)) {
                     itemOutput = { ...ITEMS['raw_fish'] };
@@ -47,7 +47,7 @@ export class PlayerBlockInteraction {
                     if (ctx.onAoE) ctx.onAoE(bx, by, targetZ, 0.5, 0, 'WATER');
                 }
                 
-                const cooldownTime = fishingLevel >= 3 ? 1000 : 2000;
+                const cooldownTime = fishingLevel >= 1 ? 1000 : 2000;
                 setTimeout(() => { if(player) player.isFishing = false; }, cooldownTime);
             }
             return;

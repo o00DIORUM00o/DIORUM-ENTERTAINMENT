@@ -179,7 +179,7 @@ export class EventSpawnerSystem {
                                     let bearChance = 0.06;
                                     
                                     const huntingLevel = engine.player.talents['hunting'] || 0;
-                                    if (huntingLevel >= 3) {
+                                    if (huntingLevel >= 1) {
                                         unicornChance *= 3;
                                         bearChance *= 3; // Rare animals are more frequent
                                     }

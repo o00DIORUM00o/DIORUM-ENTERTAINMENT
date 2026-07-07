@@ -274,7 +274,7 @@ for (let i = engine.animals.length - 1; i >= 0; i--) {
                 engine.player.addXp(Math.floor(20 * ((animal.maxHealth || 30) / 30)));
                 const huntingLevel = engine.player.talents['hunting'] || 0;
                 let dropModifier = 1;
-                if (huntingLevel >= 2) dropModifier = 2;
+                if (huntingLevel >= 1) dropModifier = 2;
                 
                 const dropItemHelper = (itemType: any) => {
                     engine.dropItem(animal.x, animal.y, animal.z, { ...itemType, quantity: dropModifier });

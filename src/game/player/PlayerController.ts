@@ -14,9 +14,7 @@ export class PlayerController {
 
         const sneakTalentLevel = player.talents['sneak'] || 0;
         if (player.isSneaking && sneakTalentLevel > 0) {
-            let drainRate = 5;
-            if (sneakTalentLevel >= 2) drainRate = 3;
-            if (sneakTalentLevel >= 3) drainRate = 1;
+            let drainRate = 1;
             player.stamina -= drainRate * dt;
             staminaRegenBlocked = true;
             if (player.stamina <= 0) {
@@ -86,7 +84,7 @@ export class PlayerController {
         if (player.isMounted && player.activeMount) {
             const ridingTalentLevel = player.talents['riding'] || 0;
             if (ridingTalentLevel > 0) {
-                speed *= (1 + (ridingTalentLevel * 0.1));
+                speed *= 1.5;
             }
         }
         
@@ -95,10 +93,7 @@ export class PlayerController {
         if (player.isSneaking) {
             speed *= 0.5;
             const sneakLevel = player.talents['sneak'] || 0;
-            let staminaDrain = 10;
-            if (sneakLevel === 1) staminaDrain = 8;
-            if (sneakLevel === 2) staminaDrain = 5;
-            if (sneakLevel >= 3) staminaDrain = 2;
+            let staminaDrain = 2;
             
             if (dx !== 0 || dy !== 0) {
                 player.stamina -= staminaDrain * dt;

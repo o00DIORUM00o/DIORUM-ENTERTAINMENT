@@ -30,6 +30,7 @@ export interface Projectile {
     isPlayer?: boolean;
     color?: string;
     isPot?: boolean;
+    thrownBlockType?: number;
     isBoomerang?: boolean;
     returning?: boolean;
     grabbedItem?: DroppedItem | null;

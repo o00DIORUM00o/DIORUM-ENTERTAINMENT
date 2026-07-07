@@ -71,7 +71,7 @@ export class PlayerRenderer {
 
         // Draw carried pot
         if (player.carryingPot) {
-            ctx.fillStyle = `rgb(${BLOCK_COLORS[BlockType.POT].r}, ${BLOCK_COLORS[BlockType.POT].g}, ${BLOCK_COLORS[BlockType.POT].b})`;
+            ctx.fillStyle = `rgb(${BLOCK_COLORS[player.carriedBlockType || BlockType.POT].r}, ${BLOCK_COLORS[player.carriedBlockType || BlockType.POT].g}, ${BLOCK_COLORS[player.carriedBlockType || BlockType.POT].b})`;
             ctx.beginPath();
             // Draw it above the player
             ctx.arc(halfW, halfH - TILE_SIZE * 0.5, TILE_SIZE * 0.3, 0, Math.PI * 2);

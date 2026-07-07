@@ -26,9 +26,10 @@ export class PlayerInteractionSystem {
 
         if (!interactedWithNPC) {
             const block = engine.world.getBlock(interactX, interactY, pZ);
-            if (block === BlockType.POT) {
+            if (block === BlockType.POT || block === BlockType.BUSH || block === BlockType.RED_BERRY_BUSH || block === BlockType.BLUE_BERRY_BUSH || block === BlockType.BLACK_BERRY_BUSH || block === BlockType.YELLOW_BERRY_BUSH) {
                 engine.world.setBlock(interactX, interactY, pZ, BlockType.AIR);
                 engine.player.carryingPot = true;
+                engine.player.carriedBlockType = block;
             } else if (block === BlockType.DOOR_CLOSED) {
                 engine.world.setBlock(interactX, interactY, pZ, BlockType.DOOR_OPEN);
             } else if (block === BlockType.STONE_DOOR_CLOSED) {
@@ -88,7 +89,7 @@ export class PlayerInteractionSystem {
                 engine.onOpenChest?.(interactX, interactY, pZ);
             } else if (block === BlockType.SHRINE || block === BlockType.ALTAR_DIVINE || block === BlockType.ALTAR_CORRUPTED) {
                 engine.onOpenShrine?.(interactX, interactY, pZ);
-            } else if (block === BlockType.ARCANE_GATE || block === BlockType.RAETH_GATEWAY || block === BlockType.THERA_GATEWAY || block === BlockType.ATHER_GATEWAY) {
+            } else if (block === BlockType.ARCANE_GATE) {
                 engine.onOpenArcaneGate?.();
             } else if (block === BlockType.TENT) {
                 // Rest at tent

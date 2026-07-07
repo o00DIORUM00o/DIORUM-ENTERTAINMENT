@@ -43,7 +43,7 @@ function handleDeath(ctx: EntityBehaviorContext) {
         
         const huntingLevel = engine.player.talents['hunting'] || 0;
         let dropModifier = 1;
-        if (huntingLevel >= 2) dropModifier = 2;
+        if (huntingLevel >= 1) dropModifier = 2;
         
         const dropItemHelper = (itemType: any, qty: number = 1) => {
             engine.dropItem(entity.x, entity.y, entity.z, { ...itemType, quantity: qty * dropModifier });

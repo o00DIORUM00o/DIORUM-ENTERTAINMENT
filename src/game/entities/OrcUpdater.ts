@@ -61,32 +61,6 @@ export class OrcUpdater {
             
             ZeldaAI.update(orc, engine, dt);
 
-            // Bloodrage Mechanic for Terha Orcs
-            if ((orc.health / orc.maxHealth) <= 0.4 && !(orc as any).bloodrage) {
-                (orc as any).bloodrage = true;
-                orc.damage *= 1.5; // Permenantly increase damage once
-                engine.particles.push({x: orc.x, y: orc.y, z: orc.z + 1, text: 'BLOODRAGE!', color: '#ff0000', life: 1.5, maxLife: 1.5, vy: -1, vx: 0, vz: 0, speed: 0});
-            }
-
-            if ((orc as any).bloodrage) {
-                orc.vx *= 1.8; // 80% faster
-                orc.vy *= 1.8;
-                // Red glowing effect
-                if (Math.random() < 5 * dt) {
-                    engine.particles.push({
-                        x: orc.x + (Math.random() - 0.5),
-                        y: orc.y + (Math.random() - 0.5),
-                        z: orc.z + Math.random(),
-                        text: '',
-                        color: '#ff0000',
-                        life: 0.5,
-                        maxLife: 0.5,
-                        vx: 0, vy: 0, vz: 1,
-                        speed: 0
-                    });
-                }
-            }
-
             if (orc.state === 'ATTACK') {
                 if (orc.attackTimer === undefined || orc.attackTimer <= 0) {
                     if (orc.type === 'brute') {

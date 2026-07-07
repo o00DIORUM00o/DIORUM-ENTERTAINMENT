@@ -52,7 +52,7 @@ export class RecipeAndBlockAction {
                         }
                     }
                 } else if (item.id === 'shrine_recipe_scroll') {
-                    if ((player.talents['masonry'] || 0) >= 2) {
+                    if ((player.talents['masonry'] || 0) >= 1) {
                         if (!player.learnedRecipes.includes('shrine')) {
                             player.learnedRecipes.push('shrine');
                             
@@ -112,7 +112,7 @@ export class RecipeAndBlockAction {
                         }
                     }
                 } else if (item.id === 'dungeon_blocks_recipe_scroll') {
-                    if ((player.talents['masonry'] || 0) >= 2 && (player.talents['smithing'] || 0) >= 1) {
+                    if ((player.talents['masonry'] || 0) >= 1 && (player.talents['smithing'] || 0) >= 1) {
                         if (!player.learnedRecipes.includes('spike_floor')) {
                             player.learnedRecipes.push('spike_floor');
                             player.learnedRecipes.push('pressure_plate');

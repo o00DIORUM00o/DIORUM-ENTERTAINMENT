@@ -131,6 +131,7 @@ export class Player {
     isAttacking = false;
     hasHitThisSwing = false;
     carryingPot = false;
+    carriedBlockType: number = 0;
     attackTimer = 0;
     attackDuration = 0.25;
     attackReach = 1.0;
@@ -162,8 +163,8 @@ export class Player {
     dashCooldown = 0;
     dashSpeed = 25.0;
 
-    inventory: (Item | null)[] = new Array(80).fill(null);
-    inventoryCapacity: number = 40;
+    inventory: (Item | null)[] = new Array(160).fill(null);
+    inventoryCapacity: number = 80;
     mounts: any[] = [];
     activeMount: any = null;
     isMounted = false;
@@ -181,9 +182,7 @@ export class Player {
         if (!this.isSneaking) return 1.0;
         const sneakLevel = this.talents['sneak'] || 0;
         if (sneakLevel === 0) return 0.6;
-        if (sneakLevel === 1) return 0.4;
-        if (sneakLevel === 2) return 0.2;
-        return 0.1; // Level 3
+        return 0.1;
     }
 
     get effectiveMaxStamina(): number {
@@ -224,7 +223,7 @@ export class Player {
     }
 
     applyStartingPack(packName: string) {
-        this.inventory = new Array(80).fill(null);
+        this.inventory = new Array(160).fill(null);
         this.inventory[0] = { ...ITEMS['tent'] };
         this.inventory[1] = { ...ITEMS['dagger_1'] };
 

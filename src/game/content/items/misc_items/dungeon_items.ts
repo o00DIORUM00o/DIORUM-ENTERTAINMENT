@@ -24,13 +24,5 @@ export const DUNGEON_ITEMS_ITEMS: Record<string, Item> = {
         category: "MISC",
         maxStack: 1,
         quantity: 1
-    },
-    'rune_key_thera': {
-        id: "rune_key_thera",
-        name: "Rune Key: Thera",
-        description: "A mossy stone slab with a carving of a crescent canyon. Required to build the gateway to Thera.",
-        category: "MISC",
-        maxStack: 1,
-        quantity: 1
-    },
+    }
 };

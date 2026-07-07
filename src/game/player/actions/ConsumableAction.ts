@@ -39,8 +39,8 @@ export class ConsumableAction {
                         consumed = true;
                     }
                     if (item.id === 'bag_expansion') {
-                        if (player.inventoryCapacity < 80) {
-                            player.inventoryCapacity = Math.min(80, player.inventoryCapacity + 10);
+                        if (player.inventoryCapacity < 160) {
+                            player.inventoryCapacity = Math.min(160, player.inventoryCapacity + 10);
                             if (player.onMessage) player.onMessage('Inventory Expanded!');
                             consumed = true;
                         } else {

@@ -107,15 +107,91 @@ export class World {
             
             // Auto-populate random ruin loot since it's uninitialized
             const keys = Object.keys(ITEMS);
-            const numItems = Math.floor(Math.random() * 4) + 1; // 1 to 4 items
+            
+            // Build pools based on user suggestion
+            const commonKeys = ['fabric_gloves', 'leather_gloves', 'copper_piece', 'silver_piece', 'carrot', 'red_berry', 'health_potion', 'mana_potion', 'bone', 'leather', 'wood', 'stone', 'dirt'];
+            
+            const rareKeys = keys.filter(k => {
+                const item = ITEMS[k];
+                if (!item) return false;
+                if (commonKeys.includes(k)) return false;
+                
+                const cat = (item as any).category;
+                const isBlock = !!(item as any).ITEM_TO_BLOCK || cat === 'MATERIAL' || cat === 'MISC'; // Note: actual block check would import ITEM_TO_BLOCK but we approximate with MATERIAL/MISC
+                const isSpellbook = !!(item as any).spellId;
+                
+                if (cat === 'WEAPON' || cat === 'ARMOR' || isBlock || isSpellbook || cat === 'AMMO' || cat === 'CONSUMABLE') return true;
+                return false;
+            });
+            
+            const legendaryKeys = keys.filter(k => {
+                const item = ITEMS[k];
+                if (!item) return false;
+                const cat = (item as any).category;
+                const isSummon = (item as any).summonsMount || (item as any).summonsPet || (item as any).summonsCompanion;
+                
+                if (cat === 'TOOL' || isSummon || k.includes('saddle')) return true;
+                return false;
+            });
+            
+            const numItems = Math.floor(Math.random() * 4) + 2; // 2 to 5 items
             let slot = 0;
+            
             for (let i = 0; i < numItems; i++) {
-                const randomKey = keys[Math.floor(Math.random() * keys.length)];
-                const item = ITEMS[randomKey];
-                if (item && (item as any).category !== 'BLOCK' && item.id !== 'village_bell') {
-                    const quantity = item.maxStack && item.maxStack > 1 ? Math.floor(Math.random() * 5) + 1 : 1;
-                    newChest[slot] = { ...item, quantity };
-                    slot++;
+                const roll = Math.random();
+                let selectedKey;
+                let isStackOfBlocks = false;
+                
+                if (roll < 0.05 && legendaryKeys.length > 0) {
+                    // Legendary (5%)
+                    if (Math.random() < 0.3) {
+                        // Stack of blocks
+                        const blockKeys = keys.filter(k => {
+                            const it = ITEMS[k];
+                            const cat = (it as any)?.category;
+                            return (cat === 'MATERIAL' || cat === 'MISC') && it?.stackable;
+                        });
+                        if (blockKeys.length > 0) {
+                            selectedKey = blockKeys[Math.floor(Math.random() * blockKeys.length)];
+                            isStackOfBlocks = true;
+                        } else {
+                            selectedKey = legendaryKeys[Math.floor(Math.random() * legendaryKeys.length)];
+                        }
+                    } else {
+                        selectedKey = legendaryKeys[Math.floor(Math.random() * legendaryKeys.length)];
+                    }
+                } else if (roll < 0.30 && rareKeys.length > 0) {
+                    // Rare (25%)
+                    selectedKey = rareKeys[Math.floor(Math.random() * rareKeys.length)];
+                } else {
+                    // Common (70%)
+                    const availableCommon = commonKeys.filter(k => ITEMS[k]); // ensure item exists
+                    if (availableCommon.length > 0) {
+                        selectedKey = availableCommon[Math.floor(Math.random() * availableCommon.length)];
+                    } else {
+                        selectedKey = keys[Math.floor(Math.random() * keys.length)]; // fallback
+                    }
+                }
+                
+                if (selectedKey) {
+                    const item = ITEMS[selectedKey];
+                    let quantity = 1;
+                    if (isStackOfBlocks && item.maxStack) {
+                        quantity = Math.floor(Math.random() * 50) + 20; // Stack of 20-69
+                        if (quantity > item.maxStack) quantity = item.maxStack;
+                    } else if (item.stackable && item.maxStack && item.maxStack > 1) {
+                        if (roll >= 0.30) {
+                            quantity = Math.floor(Math.random() * 3) + 1;
+                        } else {
+                            quantity = 1;
+                        }
+                    }
+                    
+                    // Filter out bell
+                    if (item.id !== 'village_bell') {
+                        newChest[slot] = { ...item, quantity };
+                        slot++;
+                    }
                 }
             }
             // Add some gold pieces randomly
