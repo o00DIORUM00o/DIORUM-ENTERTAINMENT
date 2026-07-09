@@ -39,6 +39,7 @@ defineStarSigns(CORE_STAR_SIGNS);
 
 
 import { Player } from './Player';
+import { audioEngine } from './AudioEngine';
 import { InputManager } from './Input';
 import { TILE_SIZE, CHUNK_SIZE, BLOCK_COLORS, WORLD_HEIGHT } from './Constants';
 import { SPELLS, ITEMS, Item, MERCHANT_TABLES } from './Inventory';

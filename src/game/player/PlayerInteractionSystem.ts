@@ -1,6 +1,7 @@
 import { Player } from '../Player';
 import { World } from '../World';
 import { BlockType } from '../constants/BlockType';
+import { audioEngine } from '../AudioEngine';
 
 export class PlayerInteractionSystem {
     static handleInteraction(engine: any, interacting: boolean, potThrown: boolean) {
@@ -86,10 +87,12 @@ export class PlayerInteractionSystem {
                     vz: 0.5
                 });
             } else if (block === BlockType.CHEST) {
+                audioEngine.playChestOpen();
                 engine.onOpenChest?.(interactX, interactY, pZ);
             } else if (block === BlockType.SHRINE || block === BlockType.ALTAR_DIVINE || block === BlockType.ALTAR_CORRUPTED) {
                 engine.onOpenShrine?.(interactX, interactY, pZ);
             } else if (block === BlockType.ARCANE_GATE) {
+                audioEngine.playPortal();
                 engine.onOpenArcaneGate?.();
             } else if (block === BlockType.TENT) {
                 // Rest at tent

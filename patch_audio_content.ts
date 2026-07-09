@@ -290,22 +290,23 @@ export class AudioEngine {
         if (!this.ctx || !this.masterGain) return;
         const time = this.ctx.currentTime;
         this.playTone('C', 4, 'square', 0.2, 0.2, time);
-        this.playTone('E', 4, 'square', 0.2, 0.2, time + 0.15);
-        this.playTone('G', 4, 'square', 0.2, 0.2, time + 0.3);
-        this.playTone('C', 5, 'square', 0.6, 0.2, time + 0.45);
+        this.playTone('E', 4, 'square', 0.2, 0.2, time + 0.2);
+        this.playTone('G', 4, 'square', 0.2, 0.2, time + 0.4);
+        this.playTone('C', 5, 'square', 0.6, 0.2, time + 0.6);
     }
     
     playChestOpen() {
         if (!this.initialized) this.init();
         if (!this.ctx || !this.masterGain) return;
         const time = this.ctx.currentTime;
+        // Creak sound
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
         osc.type = 'sawtooth';
         osc.frequency.setValueAtTime(100, time);
-        osc.frequency.exponentialRampToValueAtTime(50, time + 0.5);
+        osc.frequency.linearRampToValueAtTime(50, time + 0.5);
         gain.gain.setValueAtTime(0.3, time);
-        gain.gain.exponentialRampToValueAtTime(0.01, time + 0.5);
+        gain.gain.linearRampToValueAtTime(0.01, time + 0.5);
         osc.connect(gain);
         gain.connect(this.masterGain);
         osc.start(time);
@@ -330,45 +331,7 @@ export class AudioEngine {
         osc.stop(time + 1.5);
     }
 
-    playSpellDamage() {
-        if (!this.initialized) this.init();
-        if (!this.ctx || !this.masterGain) return;
-        const time = this.ctx.currentTime;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(400, time);
-        osc.frequency.exponentialRampToValueAtTime(100, time + 0.2);
-        gain.gain.setValueAtTime(0.2, time);
-        gain.gain.exponentialRampToValueAtTime(0.01, time + 0.2);
-        osc.connect(gain);
-        gain.connect(this.masterGain);
-        osc.start(time);
-        osc.stop(time + 0.2);
-    }
-
-    currentTrackName: 'intro' | 'battle' | 'town' | 'none' = 'none';
-
-    playTrack(trackName: 'intro' | 'battle' | 'town' | 'none') {
-        if (this.currentTrackName === trackName && this.isPlaying) return;
-        this.stop();
-        this.currentTrackName = trackName;
-        if (trackName === 'none') return;
-        
-        if (!this.initialized) this.init();
-        if (this.ctx?.state === 'suspended') this.ctx.resume();
-        
-        this.isPlaying = true;
-        this.currentBeat = 0;
-        this.nextNoteTime = this.ctx!.currentTime + 0.1;
-        this.scheduler();
-    }
-
     startIntro() {
-        this.playTrack("intro");
-    }
-
-    startOldIntro() {
         if (!this.initialized) this.init();
         if (this.ctx?.state === 'suspended') this.ctx.resume();
         if (this.isPlaying) return;
@@ -399,11 +362,7 @@ export class AudioEngine {
     }
 
     private nextNote() {
-        
-        let bpm = 60;
-        if (this.currentTrackName === 'battle') bpm = 120;
-        if (this.currentTrackName === 'town') bpm = 80;
-
+        const bpm = 60; // Slow, cinematic tempo
         const secondsPerBeat = 60.0 / bpm;
         this.nextNoteTime += secondsPerBeat;
         this.currentBeat++;
@@ -439,80 +398,7 @@ export class AudioEngine {
         osc.stop(time + duration + 2); // Extra time for release tail
     }
 
-
     private playBeat(beat: number, time: number) {
-        if (this.currentTrackName === 'battle') {
-            this.playBattleBeat(beat, time);
-        } else if (this.currentTrackName === 'town') {
-            this.playTownBeat(beat, time);
-        } else {
-            this.playIntroBeat(beat, time);
-        }
-    }
-
-    private playBattleBeat(beat: number, time: number) {
-        const bar = Math.floor(beat / 4);
-        const beatInBar = beat % 4;
-        
-        const bassNotes = [
-            {n: 'E', o: 2}, {n: 'E', o: 2}, {n: 'C', o: 2}, {n: 'D', o: 2},
-            {n: 'E', o: 2}, {n: 'E', o: 2}, {n: 'C', o: 2}, {n: 'B', o: 1}
-        ];
-        
-        if (beatInBar === 0 || beatInBar === 2) {
-            const bass = bassNotes[bar];
-            this.playTone(bass.n, bass.o, 'sawtooth', 0.5, 0.4, time);
-        }
-        
-        const beatDuration = 60.0 / 120; // 120 BPM
-        
-        // Fast Arp
-        if (beat % 2 === 0) {
-             this.playTone('E', 4, 'square', 0.2, 0.1, time);
-             this.playTone('G', 4, 'square', 0.2, 0.1, time + beatDuration / 2);
-        } else {
-             this.playTone('B', 4, 'square', 0.2, 0.1, time);
-             this.playTone('E', 5, 'square', 0.2, 0.1, time + beatDuration / 2);
-        }
-    }
-
-    private playTownBeat(beat: number, time: number) {
-        const bar = Math.floor(beat / 4);
-        const beatInBar = beat % 4;
-        
-        const chords = [
-            ['C', 'E', 'G'], // C
-            ['A', 'C', 'E'], // Am
-            ['F', 'A', 'C'], // F
-            ['G', 'B', 'D']  // G
-        ];
-        
-        const chord = chords[bar % 4];
-        const beatDuration = 60.0 / 80;
-        
-        if (beatInBar === 0) {
-            this.playTone(chord[0], 2, 'triangle', 2.0, 0.5, time);
-        }
-        
-        this.playTone(chord[beatInBar % 3], 4, 'sine', 0.5, 0.1, time);
-        
-        const melody: Record<number, {n: string, o: number, d: number}> = {
-            0: {n: 'E', o: 5, d: 2},
-            2: {n: 'G', o: 5, d: 1},
-            3: {n: 'C', o: 5, d: 1},
-            4: {n: 'A', o: 4, d: 4},
-            8: {n: 'A', o: 5, d: 2},
-            10: {n: 'G', o: 5, d: 2},
-            12: {n: 'D', o: 5, d: 4},
-        };
-        
-        if (melody[beat]) {
-            const m = melody[beat];
-            this.playTone(m.n, m.o, 'square', m.d * beatDuration * 0.9, 0.1, time);
-        }
-    }
-
-    private playIntroBeat(beat: number, time: number) {
         const bar = Math.floor(beat / 4);
         const beatInBar = beat % 4;
 

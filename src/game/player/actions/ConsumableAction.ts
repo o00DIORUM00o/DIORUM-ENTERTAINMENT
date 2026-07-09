@@ -89,7 +89,7 @@ export class ConsumableAction {
                     if (item.id === 'swiftness_potion') { player.buffs.speed = 60.0; if(player.onMessage) player.onMessage('SPEED UP!'); consumed = true;}
 
                     if (consumed) {
-                        audioEngine.playHit(); // Play a nice sound (TODO: play eat sound)
+                        audioEngine.playHeal(); // Play heal sound instead of hit for eating
                         if (item.quantity && item.quantity > 1) {
                             item.quantity--;
                         } else {

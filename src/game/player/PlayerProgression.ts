@@ -1,6 +1,7 @@
 import { Player } from '../Player';
 import { ITEMS } from '../Inventory';
 import { TALENTS } from '../Talents';
+import { audioEngine } from '../AudioEngine';
 
 export class PlayerProgression {
     static learnSpell(player: Player, inventoryIndex: number): boolean {
@@ -60,6 +61,7 @@ export class PlayerProgression {
         while (player.xp >= player.xpToNextLevel) {
             player.xp -= player.xpToNextLevel;
             player.level++;
+            audioEngine.playLevelUp();
             player.skillPoints++;
             player.xpToNextLevel = Math.floor(player.xpToNextLevel * 1.5);
             player.maxHealth += 10;

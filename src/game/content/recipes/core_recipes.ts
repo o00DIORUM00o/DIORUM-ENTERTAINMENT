@@ -1838,7 +1838,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         description: 'Craft Copper Ingot',
         ingredients: [
             { id: 'copper_ore', quantity: 2 },
-            { id: 'coal_ore', quantity: 1 },
+            { id: 'coal', quantity: 1 },
         ],
         result: { id: 'copper_ingot', quantity: 1 },
         requiredStation: 'furnace',
@@ -1850,7 +1850,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         description: 'Craft Iron Ingot',
         ingredients: [
             { id: 'iron_ore', quantity: 2 },
-            { id: 'coal_ore', quantity: 1 },
+            { id: 'coal', quantity: 1 },
         ],
         result: { id: 'iron_ingot', quantity: 1 },
         requiredStation: 'furnace',
@@ -1862,7 +1862,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         description: 'Craft Green Metal Ingot',
         ingredients: [
             { id: 'green_metal_ore', quantity: 2 },
-            { id: 'coal_ore', quantity: 1 },
+            { id: 'coal', quantity: 1 },
         ],
         result: { id: 'green_metal_ingot', quantity: 1 },
         requiredStation: 'furnace',
@@ -1874,7 +1874,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         description: 'Craft Red Metal Ingot',
         ingredients: [
             { id: 'red_metal_ore', quantity: 2 },
-            { id: 'coal_ore', quantity: 1 },
+            { id: 'coal', quantity: 1 },
         ],
         result: { id: 'red_metal_ingot', quantity: 1 },
         requiredStation: 'furnace',
@@ -1886,7 +1886,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         description: 'Craft Mithril Ingot',
         ingredients: [
             { id: 'mithril_ore', quantity: 3 },
-            { id: 'coal_ore', quantity: 2 },
+            { id: 'coal', quantity: 2 },
         ],
         result: { id: 'mithril_ingot', quantity: 1 },
         requiredStation: 'furnace',
@@ -2173,7 +2173,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         description: 'Craft Star Metal Ingot',
         ingredients: [
             { id: 'star_metal_ore', quantity: 3 },
-            { id: 'coal_ore', quantity: 3 },
+            { id: 'coal', quantity: 3 },
         ],
         result: { id: 'star_metal_ingot', quantity: 1 },
         requiredStation: 'furnace',
