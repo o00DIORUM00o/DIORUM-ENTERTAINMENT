@@ -12,23 +12,28 @@ export type LootTableFunc = () => LootDrop[];
 export const BLOCK_LOOT_TABLES: Partial<Record<BlockType, LootTableFunc>> = {
     [BlockType.BUSH]: () => [
         { item: ITEMS['red_berry'], quantity: 2 },
-        { item: ITEMS['red_berry_seed'], quantity: 2 }
+        { item: ITEMS['red_berry_seed'], quantity: 2 },
+        { item: ITEMS['string'], quantity: 1 }
     ],
     [BlockType.RED_BERRY_BUSH]: () => [
         { item: ITEMS['red_berry'], quantity: 2 },
-        { item: ITEMS['red_berry_seed'], quantity: 2 }
+        { item: ITEMS['red_berry_seed'], quantity: 2 },
+        { item: ITEMS['string'], quantity: 1 }
     ],
     [BlockType.BLUE_BERRY_BUSH]: () => [
         { item: ITEMS['blue_berry'], quantity: 2 },
-        { item: ITEMS['blue_berry_seed'], quantity: 2 }
+        { item: ITEMS['blue_berry_seed'], quantity: 2 },
+        { item: ITEMS['string'], quantity: 1 }
     ],
     [BlockType.BLACK_BERRY_BUSH]: () => [
         { item: ITEMS['black_berry'], quantity: 2 },
-        { item: ITEMS['black_berry_seed'], quantity: 2 }
+        { item: ITEMS['black_berry_seed'], quantity: 2 },
+        { item: ITEMS['string'], quantity: 1 }
     ],
     [BlockType.YELLOW_BERRY_BUSH]: () => [
         { item: ITEMS['yellow_berry'], quantity: 2 },
-        { item: ITEMS['yellow_berry_seed'], quantity: 2 }
+        { item: ITEMS['yellow_berry_seed'], quantity: 2 },
+        { item: ITEMS['string'], quantity: 1 }
     ],
     [BlockType.TENT]: () => [{ item: ITEMS['tent'] }],
     [BlockType.GOBLIN_CAMP]: () => [{ item: ITEMS['tent'] }],

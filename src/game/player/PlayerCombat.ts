@@ -76,7 +76,7 @@ export class PlayerCombat {
                     }
                 }
                 
-                if (weapon?.id === 'staff_fire_ranged' || weapon?.id === 'staff_lightning_ranged') {
+                if (weapon?.type === 'MAGIC_RANGED') {
                     const boltCasterLevel = player.talents['bolt_caster'] || 0;
                     if (boltCasterLevel >= 2) player.attackDuration *= 0.8;
                     if (boltCasterLevel >= 3) player.attackDuration *= 0.75;
@@ -198,7 +198,7 @@ export class PlayerCombat {
             const weapon = player.equipment['MAIN_HAND'];
             let weaponDamage = weapon?.damage || 1;
             
-            if (weapon?.id === 'staff_fire_ranged' || weapon?.id === 'staff_lightning_ranged') {
+            if (weapon?.type === 'MAGIC_RANGED') {
                 const boltCasterLevel = player.talents['bolt_caster'] || 0;
                 let damageMult = 1.0;
                 if (boltCasterLevel >= 1) damageMult += 0.10;
@@ -227,7 +227,7 @@ export class PlayerCombat {
                 if (player.hasFavoredDeity('TELUM')) {
                     weaponDamage *= 1.25; // 25% deity bonus
                 }
-            } else if (weapon?.type === 'RANGED' || weapon?.id?.includes('staff_')) {
+            } else if (weapon?.type === 'RANGED' || weapon?.type?.startsWith('MAGIC_')) {
                 if (player.hasFavoredDeity('RIULIRI')) {
                     weaponDamage *= 1.25; // 25% deity bonus
                 }
@@ -332,7 +332,7 @@ export class PlayerCombat {
                         const vy = Math.sin(player.aimAngle) * speed;
                         
                         let reach = weapon.reach || 5.0; // Default range for bolt staves
-                        if (weapon?.id === 'staff_fire_ranged' || weapon?.id === 'staff_lightning_ranged') {
+                        if (weapon?.type === 'MAGIC_RANGED') {
                             const boltCasterLevel = player.talents['bolt_caster'] || 0;
                             if (boltCasterLevel >= 1) reach += 2;
                             if (boltCasterLevel >= 3) reach += 4;

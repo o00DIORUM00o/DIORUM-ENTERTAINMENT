@@ -1,6 +1,14 @@
 import type { Item } from '../../../registries/ItemRegistry';
 
 export const MISC_MATERIALS_ITEMS: Record<string, Item> = {
+    'string': {
+        id: "string",
+        name: "String",
+        description: "A length of sturdy string or twine.",
+        category: "MISC",
+        quantity: 1,
+        maxStack: 99
+    },
     'coal': {
         id: "coal",
         name: "Coal",
