@@ -86,6 +86,7 @@ export class PlayerCombat {
                     if (archeryLevel >= 3) player.attackDuration *= 0.75;
                 }
                 
+                if (player.hasFavoredDeity('UMBI')) player.attackDuration *= 0.8;
                 player.attackTimer = player.attackDuration;
                 player.stamina -= 5;
 

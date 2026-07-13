@@ -131,6 +131,7 @@ export const BLOCK_LOOT_TABLES: Partial<Record<BlockType, LootTableFunc>> = {
     [BlockType.TORCH]: () => [{ item: ITEMS['torch'] }],
     [BlockType.BEE_HIVE]: () => [{ item: ITEMS['bee_hive'] }],
     [BlockType.CHEST]: () => [{ item: ITEMS['storage_chest'] }],
+    [BlockType.GOLD_CHEST]: () => [{ item: ITEMS['storage_chest'] }],
     [BlockType.DIRT]: () => [{ item: ITEMS['dirt'] }],
     [BlockType.GRASS]: () => [{ item: ITEMS['dirt'] }],
     [BlockType.RED_DIRT]: () => [{ item: ITEMS['dirt'] }],

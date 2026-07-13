@@ -105,6 +105,9 @@ export class World {
         if (!this.chestData.has(key)) {
             const newChest = new Array(80).fill(null);
             
+            const blockType = this.getBlock(x, y, z);
+            const isGoldChest = blockType === BlockType.GOLD_CHEST;
+            
             // Auto-populate random ruin loot since it's uninitialized
             const keys = Object.keys(ITEMS);
             
@@ -134,7 +137,7 @@ export class World {
                 return false;
             });
             
-            const numItems = Math.floor(Math.random() * 4) + 2; // 2 to 5 items
+            const numItems = isGoldChest ? Math.floor(Math.random() * 6) + 4 : Math.floor(Math.random() * 4) + 2; // 2 to 5 items, gold 4 to 9
             let slot = 0;
             
             for (let i = 0; i < numItems; i++) {
@@ -142,8 +145,11 @@ export class World {
                 let selectedKey;
                 let isStackOfBlocks = false;
                 
-                if (roll < 0.05 && legendaryKeys.length > 0) {
-                    // Legendary (5%)
+                let legendaryChance = isGoldChest ? 0.30 : 0.05;
+                let rareChance = isGoldChest ? 0.70 : 0.30;
+                
+                if (roll < legendaryChance && legendaryKeys.length > 0) {
+                    // Legendary
                     if (Math.random() < 0.3) {
                         // Stack of blocks
                         const blockKeys = keys.filter(k => {
@@ -160,8 +166,8 @@ export class World {
                     } else {
                         selectedKey = legendaryKeys[Math.floor(Math.random() * legendaryKeys.length)];
                     }
-                } else if (roll < 0.30 && rareKeys.length > 0) {
-                    // Rare (25%)
+                } else if (roll < rareChance && rareKeys.length > 0) {
+                    // Rare
                     selectedKey = rareKeys[Math.floor(Math.random() * rareKeys.length)];
                 } else {
                     // Common (70%)

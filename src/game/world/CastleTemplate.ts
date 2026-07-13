@@ -76,7 +76,7 @@ export class CastleTemplate {
                     
                     // Chest
                     if (f === archetype.chestFloor && dx === 0 && dy === 0) {
-                        chunk.blocks[x + y * CHUNK_SIZE + (zFloor + 1) * CHUNK_SIZE * CHUNK_SIZE] = BlockType.CHEST;
+                        chunk.blocks[x + y * CHUNK_SIZE + (zFloor + 1) * CHUNK_SIZE * CHUNK_SIZE] = Math.random() < 0.01 ? BlockType.GOLD_CHEST : BlockType.CHEST;
                     }
                 }
             }

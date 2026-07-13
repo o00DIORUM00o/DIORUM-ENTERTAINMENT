@@ -144,7 +144,7 @@ export class DungeonTemplate {
                     if (!isWall && !isPillar) {
                         if (isTorchInfo) chunk.blocks[x + y * CHUNK_SIZE + fz * CHUNK_SIZE * CHUNK_SIZE] = BlockType.TORCH;
                         if (spawnerToPlace) chunk.blocks[x + y * CHUNK_SIZE + fz * CHUNK_SIZE * CHUNK_SIZE] = spawnerToPlace;
-                        if (isChest) chunk.blocks[x + y * CHUNK_SIZE + fz * CHUNK_SIZE * CHUNK_SIZE] = BlockType.CHEST;
+                        if (isChest) chunk.blocks[x + y * CHUNK_SIZE + fz * CHUNK_SIZE * CHUNK_SIZE] = Math.random() < 0.01 ? BlockType.GOLD_CHEST : BlockType.CHEST;
                     }
                 }
             }

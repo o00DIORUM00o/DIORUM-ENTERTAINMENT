@@ -55,7 +55,7 @@ export class AutomationSystem {
                                 targetBlock !== BlockType.CONVEYOR_BELT_W && 
                                 targetBlock !== BlockType.AUTO_MINER && 
                                 targetBlock !== BlockType.AUTO_DROPPER && 
-                                targetBlock !== BlockType.CHEST) {
+                                (targetBlock !== BlockType.CHEST && targetBlock !== BlockType.GOLD_CHEST)) {
                                 const key = `${x},${y},${targetZ}`;
                                 let hp = engine.world.blockHealth.get(key) ?? 50;
                                 hp -= 25; // 25 damage per second
@@ -78,7 +78,7 @@ export class AutomationSystem {
                                 const cx = x + adj.dx;
                                 const cy = y + adj.dy;
                                 const cz = z + adj.dz;
-                                if (engine.world.getBlock(cx, cy, cz) === BlockType.CHEST) {
+                                if ((engine.world.getBlock(cx, cy, cz) === BlockType.CHEST || engine.world.getBlock(cx, cy, cz) === BlockType.GOLD_CHEST)) {
                                     const chestInv = engine.world.getChest(cx, cy, cz);
                                     if (chestInv) {
                                         // Find first item
@@ -120,7 +120,7 @@ export class AutomationSystem {
                                 const cx = x + adj.dx;
                                 const cy = y + adj.dy;
                                 const cz = z + adj.dz;
-                                if (engine.world.getBlock(cx, cy, cz) === BlockType.CHEST) {
+                                if ((engine.world.getBlock(cx, cy, cz) === BlockType.CHEST || engine.world.getBlock(cx, cy, cz) === BlockType.GOLD_CHEST)) {
                                     const chestInv = engine.world.getChest(cx, cy, cz);
                                     if (chestInv) {
                                         let crafted = false;
@@ -207,7 +207,7 @@ export class AutomationSystem {
                                 const cx = x + adj.dx;
                                 const cy = y + adj.dy;
                                 const cz = z + adj.dz;
-                                if (engine.world.getBlock(cx, cy, cz) === BlockType.CHEST) {
+                                if ((engine.world.getBlock(cx, cy, cz) === BlockType.CHEST || engine.world.getBlock(cx, cy, cz) === BlockType.GOLD_CHEST)) {
                                     const chestInv = engine.world.getChest(cx, cy, cz);
                                     if (chestInv) {
                                         // Find dropped items within 3x3 radius

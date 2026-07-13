@@ -234,7 +234,7 @@ export class DungeonCarver {
                             const cy = r.y + Math.floor(r.h/2);
                             if (wx === cx && wy === cy) {
                                 if (Math.random() < 0.3) {
-                                    chunk.setBlock(x, y, 2, BlockType.CHEST);
+                                    chunk.setBlock(x, y, 2, Math.random() < 0.01 ? BlockType.GOLD_CHEST : BlockType.CHEST);
                                 } else if (Math.random() < 0.5) {
                                     chunk.setBlock(x, y, 2, BlockType.ABYSSAL_SPAWNER);
                                 }

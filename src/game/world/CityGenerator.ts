@@ -225,7 +225,7 @@ export class CityGenerator {
                  chunk.blocks[x + y * CHUNK_SIZE + (targetElev + 1) * CHUNK_SIZE * CHUNK_SIZE] = BlockType.LOYAL_ARCHER_TENT;
                  if (targetElev + 1 > chunk.heightMap[x + y * CHUNK_SIZE]) chunk.heightMap[x + y * CHUNK_SIZE] = targetElev + 1;
             } else if (Math.random() < 0.01) {
-                 chunk.blocks[x + y * CHUNK_SIZE + (targetElev + 1) * CHUNK_SIZE * CHUNK_SIZE] = BlockType.CHEST;
+                 chunk.blocks[x + y * CHUNK_SIZE + (targetElev + 1) * CHUNK_SIZE * CHUNK_SIZE] = Math.random() < 0.01 ? BlockType.GOLD_CHEST : BlockType.CHEST;
                  if (targetElev + 1 > chunk.heightMap[x + y * CHUNK_SIZE]) chunk.heightMap[x + y * CHUNK_SIZE] = targetElev + 1;
             }
         }
@@ -279,7 +279,7 @@ export class CityGenerator {
         } else if (Math.abs(localX - 16) === 2 && Math.abs(localY - 16) === 2) {
             chunk.blocks[x + y * CHUNK_SIZE + (targetElev + 1) * CHUNK_SIZE * CHUNK_SIZE] = BlockType.GOLD_BLOCK;
         } else if (localX % 4 === 0 && localY % 4 === 0 && Math.random() < 0.2) {
-            chunk.blocks[x + y * CHUNK_SIZE + (targetElev + 1) * CHUNK_SIZE * CHUNK_SIZE] = BlockType.CHEST;
+            chunk.blocks[x + y * CHUNK_SIZE + (targetElev + 1) * CHUNK_SIZE * CHUNK_SIZE] = Math.random() < 0.01 ? BlockType.GOLD_CHEST : BlockType.CHEST;
         }
         chunk.heightMap[x + y * CHUNK_SIZE] = Math.max(chunk.heightMap[x + y * CHUNK_SIZE], targetElev + 1);
     }
@@ -322,7 +322,7 @@ export class CityGenerator {
         } else if (localX === 16 && localY === 24) {
              chunk.blocks[x + y * CHUNK_SIZE + (targetElev + 1) * CHUNK_SIZE * CHUNK_SIZE] = BlockType.MERCHANT;
         } else if (Math.random() < 0.05) {
-             chunk.blocks[x + y * CHUNK_SIZE + (targetElev + 1) * CHUNK_SIZE * CHUNK_SIZE] = BlockType.CHEST;
+             chunk.blocks[x + y * CHUNK_SIZE + (targetElev + 1) * CHUNK_SIZE * CHUNK_SIZE] = Math.random() < 0.01 ? BlockType.GOLD_CHEST : BlockType.CHEST;
         }
         chunk.heightMap[x + y * CHUNK_SIZE] = Math.max(chunk.heightMap[x + y * CHUNK_SIZE], targetElev + 1);
     }
@@ -375,7 +375,7 @@ export class CityGenerator {
         } else if (localX === 16 && localY === 16) {
              chunk.blocks[x + y * CHUNK_SIZE + (targetElev + 1) * CHUNK_SIZE * CHUNK_SIZE] = BlockType.GUARD_MERCENARY;
         } else if (localX % 10 === 0 && localY % 10 === 0) {
-             chunk.blocks[x + y * CHUNK_SIZE + (targetElev + 1) * CHUNK_SIZE * CHUNK_SIZE] = BlockType.CHEST;
+             chunk.blocks[x + y * CHUNK_SIZE + (targetElev + 1) * CHUNK_SIZE * CHUNK_SIZE] = Math.random() < 0.01 ? BlockType.GOLD_CHEST : BlockType.CHEST;
         }
         chunk.heightMap[x + y * CHUNK_SIZE] = Math.max(chunk.heightMap[x + y * CHUNK_SIZE], targetElev + 1);
     }
@@ -476,7 +476,7 @@ export class CityGenerator {
     private static buildWarehouseDistrict(chunk: Chunk, x: number, y: number, localX: number, localY: number, targetElev: number) {
          chunk.blocks[x + y * CHUNK_SIZE + targetElev * CHUNK_SIZE * CHUNK_SIZE] = BlockType.WOOD_FLOOR;
          if (localX % 6 === 0 && localY % 6 !== 0) {
-             chunk.blocks[x + y * CHUNK_SIZE + (targetElev + 1) * CHUNK_SIZE * CHUNK_SIZE] = BlockType.CHEST;
+             chunk.blocks[x + y * CHUNK_SIZE + (targetElev + 1) * CHUNK_SIZE * CHUNK_SIZE] = Math.random() < 0.01 ? BlockType.GOLD_CHEST : BlockType.CHEST;
              chunk.heightMap[x + y * CHUNK_SIZE] = Math.max(chunk.heightMap[x + y * CHUNK_SIZE], targetElev + 1);
          } else if (localX === 16 && localY === 16) {
              chunk.blocks[x + y * CHUNK_SIZE + (targetElev + 1) * CHUNK_SIZE * CHUNK_SIZE] = BlockType.GUARD_MERCENARY;

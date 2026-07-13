@@ -296,7 +296,7 @@ export class MechanismUpdater {
 
                                 for (const d of surroundingDirs) {
                                     const bType = engine.world.getBlock(gx + d.dx, gy + d.dy, gz);
-                                    if (bType === BlockType.CHEST) {
+                                    if ((bType === BlockType.CHEST || bType === BlockType.GOLD_CHEST)) {
                                         chestPos = {x: gx + d.dx, y: gy + d.dy, z: gz};
                                     } else if (stationMap[bType]) {
                                         stationPos = {x: gx + d.dx, y: gy + d.dy, z: gz};
@@ -471,7 +471,7 @@ export class MechanismUpdater {
                             } else if (block === BlockType.AUTO_DROPPER) {
                                 // Drops items from an adjacent chest (z+1 usually)
                                 const chestPos = { x: wx + x, y: wy + y, z: z + 1 };
-                                if (engine.world.getBlock(chestPos.x, chestPos.y, chestPos.z) === BlockType.CHEST) {
+                                if ((engine.world.getBlock(chestPos.x, chestPos.y, chestPos.z) === BlockType.CHEST || engine.world.getBlock(chestPos.x, chestPos.y, chestPos.z) === BlockType.GOLD_CHEST)) {
                                     const chestKey = `${chestPos.x},${chestPos.y},${chestPos.z}`;
                                     const inv = engine.world.chestInventories.get(chestKey);
                                     if (inv) {

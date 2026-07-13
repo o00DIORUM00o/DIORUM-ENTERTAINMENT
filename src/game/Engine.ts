@@ -313,7 +313,7 @@ export class Engine {
         
         if (!dropLoot) return;
 
-        if (sourceBlock === BlockType.CHEST) {
+        if ((sourceBlock === BlockType.CHEST || sourceBlock === BlockType.GOLD_CHEST)) {
             const chestInv = this.world.getChest(bx, by, bz);
             this.dropItem(bx + 0.5, by + 0.5, bz + 0.5, { ...ITEMS['storage_chest'], chestInventory: chestInv });
             this.world.chestData.delete(this.world.getChestKey(bx, by, bz));

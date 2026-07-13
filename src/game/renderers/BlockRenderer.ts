@@ -446,7 +446,7 @@ export function defineBlockRenderers() {
                     ctx.fillRect(screenX + TILE_SIZE * 0.2, screenY + TILE_SIZE * 0.2, TILE_SIZE * 0.2, TILE_SIZE * 0.2);
                     ctx.fillRect(screenX + TILE_SIZE * 0.6, screenY + TILE_SIZE * 0.3, TILE_SIZE * 0.2, TILE_SIZE * 0.3);
                     ctx.fillRect(screenX + TILE_SIZE * 0.3, screenY + TILE_SIZE * 0.7, TILE_SIZE * 0.25, TILE_SIZE * 0.15);
-                } else if (block === BlockType.CHEST || block === BlockType.STORAGE_CHEST) {
+                } else if (block === BlockType.CHEST || block === BlockType.STORAGE_CHEST || block === BlockType.GOLD_CHEST) {
                     // Chest as a 2D Sprite
                     const chestColor = block === BlockType.STORAGE_CHEST ? (isDark ? `100,80,100` : `140,120,180`) : (isDark ? `80,50,30` : `139,69,19`);
                     ctx.fillStyle = `rgba(${chestColor}, ${shade})`;
@@ -520,7 +520,7 @@ export function defineBlockRenderers() {
                 // Wait, if it's gravestone/torch, we probably DONT want it to fall through and draw the 3D model!
                 if ([
                     BlockType.GRAVESTONE, BlockType.TORCH, BlockType.CAMPFIRE, BlockType.CROP_STAGE_3, 
-                    BlockType.CHEST, BlockType.STORAGE_CHEST, BlockType.FURNACE, BlockType.ANVIL, 
+                    BlockType.CHEST, BlockType.STORAGE_CHEST, BlockType.GOLD_CHEST, BlockType.FURNACE, BlockType.ANVIL, 
                     BlockType.CARPENTERS_BENCH, BlockType.MASONRY_TABLE, BlockType.FABRIC_STATION, 
                     BlockType.LEATHER_STATION, BlockType.ALCHEMY_TABLE, BlockType.BED,
                     BlockType.DOOR_CLOSED, BlockType.DOOR_OPEN, BlockType.STONE_DOOR_CLOSED, BlockType.STONE_DOOR_OPEN,

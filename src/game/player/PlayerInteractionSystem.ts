@@ -86,7 +86,7 @@ export class PlayerInteractionSystem {
                     vy: 0,
                     vz: 0.5
                 });
-            } else if (block === BlockType.CHEST) {
+            } else if ((block === BlockType.CHEST || block === BlockType.GOLD_CHEST)) {
                 audioEngine.playChestOpen();
                 engine.onOpenChest?.(interactX, interactY, pZ);
             } else if (block === BlockType.SHRINE || block === BlockType.ALTAR_DIVINE || block === BlockType.ALTAR_CORRUPTED) {

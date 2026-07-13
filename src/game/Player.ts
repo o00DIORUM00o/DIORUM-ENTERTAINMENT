@@ -190,11 +190,11 @@ export class Player {
     }
 
     get effectiveMaxHealth(): number {
-        return this.maxHealth + this.getEquipmentStats().bonusHealth + (this.buffs.maxHealth > 0 ? 50 : 0) + (this.hasFavoredDeity('PRIMORDIAL') ? 100 : 0);
+        return this.maxHealth + this.getEquipmentStats().bonusHealth + (this.buffs.maxHealth > 0 ? 50 : 0) + (this.hasFavoredDeity('PRIMORDIAL') ? 100 : 0) + (this.hasFavoredDeity('HALO') ? 50 : 0) + (this.hasFavoredDeity('DERGU') ? 50 : 0);
     }
 
     get effectiveMaxMana(): number {
-        return this.maxMana + this.getEquipmentStats().bonusMana + (this.buffs.maxMana > 0 ? 50 : 0) + (this.hasFavoredDeity('ARCANIS') ? 50 : 0);
+        return this.maxMana + this.getEquipmentStats().bonusMana + (this.buffs.maxMana > 0 ? 50 : 0) + (this.hasFavoredDeity('ARCANIS') ? 50 : 0) + (this.hasFavoredDeity('INANIS') ? 50 : 0);
     }
 
     get effectiveSpeed(): number {
@@ -282,7 +282,9 @@ export class Player {
     }
 
     getDefense(): number {
-        return this.getEquipmentStats().defense;
+        let def = this.getEquipmentStats().defense;
+        if (this.hasFavoredDeity('VERI')) def += 5;
+        return def;
     }
 
     takeDamage(amount: number) {

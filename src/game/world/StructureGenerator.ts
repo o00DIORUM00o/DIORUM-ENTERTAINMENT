@@ -32,7 +32,7 @@ export class StructureGenerator {
         world.setBlock(4, -2, spawnZ, BlockType.MERCHANT);
         
         // 5. Storage Chest
-        world.setBlock(-5, -2, spawnZ, BlockType.CHEST);
+        world.setBlock(-5, -2, spawnZ, Math.random() < 0.01 ? BlockType.GOLD_CHEST : BlockType.CHEST);
         const chestInventory = new Array(80).fill(null);
         chestInventory[0] = { ...ITEMS['sword_1'] };
         chestInventory[1] = { ...ITEMS['pickaxe_1'] };
@@ -102,7 +102,7 @@ export class StructureGenerator {
 
         world.setBlock(3, -2, spawnZ + 1, BlockType.DRACONIC_MERCHANT);
         
-        world.setBlock(-3, -2, spawnZ + 1, BlockType.CHEST);
+        world.setBlock(-3, -2, spawnZ + 1, Math.random() < 0.01 ? BlockType.GOLD_CHEST : BlockType.CHEST);
         const chestInventory = new Array(80).fill(null);
         chestInventory[0] = { ...ITEMS['sword_1'] };
         chestInventory[1] = { ...ITEMS['pickaxe_1'] };
@@ -208,7 +208,7 @@ export class StructureGenerator {
 
         world.setBlock(3, -2, spawnZ + 1, BlockType.MERCHANT);
         
-        world.setBlock(-3, -2, spawnZ + 1, BlockType.CHEST);
+        world.setBlock(-3, -2, spawnZ + 1, Math.random() < 0.01 ? BlockType.GOLD_CHEST : BlockType.CHEST);
         const chestInventory = new Array(80).fill(null);
         chestInventory[0] = { ...ITEMS['sword_1'] };
         chestInventory[1] = { ...ITEMS['pickaxe_1'] };

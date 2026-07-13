@@ -203,6 +203,16 @@ export default function App() {
         // Check favored status
         if (engineRef.current.player.deityStandings[shrineSelectedDeity].standing >= 50) {
             if (!engineRef.current.player.deityStandings[shrineSelectedDeity].favored) {
+                // Abandon all other gods
+                for (const key of Object.keys(engineRef.current.player.deityStandings)) {
+                    if (key !== shrineSelectedDeity && engineRef.current.player.deityStandings[key].favored) {
+                        engineRef.current.player.deityStandings[key].favored = false;
+                        if (engineRef.current.player.onMessage) {
+                            engineRef.current.player.onMessage(`You have abandoned the favor of ${key}.`);
+                        }
+                    }
+                }
+                
                 engineRef.current.player.deityStandings[shrineSelectedDeity].favored = true;
                 if (engineRef.current.player.onMessage) {
                     engineRef.current.player.onMessage(`You are now FAVORED by ${shrineSelectedDeity}!`);
@@ -232,7 +242,22 @@ export default function App() {
             }
             
             if (engineRef.current.player.deityStandings[shrineSelectedDeity].standing >= 50) {
-                engineRef.current.player.deityStandings[shrineSelectedDeity].favored = true;
+                if (!engineRef.current.player.deityStandings[shrineSelectedDeity].favored) {
+                    for (const key of Object.keys(engineRef.current.player.deityStandings)) {
+                        if (key !== shrineSelectedDeity && engineRef.current.player.deityStandings[key].favored) {
+                            engineRef.current.player.deityStandings[key].favored = false;
+                            if (engineRef.current.player.onMessage) {
+                                engineRef.current.player.onMessage(`You have abandoned the favor of ${key}.`);
+                            }
+                        }
+                    }
+                    engineRef.current.player.deityStandings[shrineSelectedDeity].favored = true;
+                    if (engineRef.current.player.onMessage) {
+                        engineRef.current.player.onMessage(`You are now FAVORED by ${shrineSelectedDeity}!`);
+                    }
+                }
+            } else {
+                engineRef.current.player.deityStandings[shrineSelectedDeity].favored = false;
             }
             
             setUpdateTrigger(prev => prev + 1);

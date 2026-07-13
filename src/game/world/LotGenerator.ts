@@ -412,7 +412,7 @@ export class LotGenerator {
                                     // Inside area
                                     if (dx === 2 && dy === 2) chunk.blocks[x + y * CHUNK_SIZE + (baseZ + 1) * CHUNK_SIZE * CHUNK_SIZE] = BlockType.DARK_KNIGHT_TENT;
                                     if (dx === -2 && dy === 2) chunk.blocks[x + y * CHUNK_SIZE + (baseZ + 1) * CHUNK_SIZE * CHUNK_SIZE] = BlockType.CAMPFIRE;
-                                    if (dx === 2 && dy === -2) chunk.blocks[x + y * CHUNK_SIZE + (baseZ + 1) * CHUNK_SIZE * CHUNK_SIZE] = BlockType.CHEST;
+                                    if (dx === 2 && dy === -2) chunk.blocks[x + y * CHUNK_SIZE + (baseZ + 1) * CHUNK_SIZE * CHUNK_SIZE] = Math.random() < 0.01 ? BlockType.GOLD_CHEST : BlockType.CHEST;
                                 }
                             } else if (lotTypeVal === 'RUINED_WAGON_AMBUSH') {
                                 if (Math.abs(dx) <= 4 && Math.abs(dy) <= 4) {
@@ -432,7 +432,7 @@ export class LotGenerator {
                                     
                                     // Scattered pots and a chest
                                     if (Math.random() < 0.1) chunk.blocks[x + y * CHUNK_SIZE + (baseZ + 1) * CHUNK_SIZE * CHUNK_SIZE] = BlockType.POT;
-                                    if (dx === 0 && dy === 0) chunk.blocks[x + y * CHUNK_SIZE + (baseZ + 1) * CHUNK_SIZE * CHUNK_SIZE] = BlockType.CHEST;
+                                    if (dx === 0 && dy === 0) chunk.blocks[x + y * CHUNK_SIZE + (baseZ + 1) * CHUNK_SIZE * CHUNK_SIZE] = Math.random() < 0.01 ? BlockType.GOLD_CHEST : BlockType.CHEST;
                                     
                                     // Hidden ambushers
                                     if (dx === -4 && dy === -4) chunk.blocks[x + y * CHUNK_SIZE + (baseZ + 1) * CHUNK_SIZE * CHUNK_SIZE] = BlockType.GOBLIN_TENT_ROCKHURLER;
@@ -485,8 +485,8 @@ export class LotGenerator {
                                     }
                                     
                                     // Random loot & supplies
-                                    if (dx === 10 && dy === 10) chunk.blocks[x + y * CHUNK_SIZE + (baseZ + 1) * CHUNK_SIZE * CHUNK_SIZE] = BlockType.CHEST;
-                                    if (dx === -10 && dy === 10) chunk.blocks[x + y * CHUNK_SIZE + (baseZ + 1) * CHUNK_SIZE * CHUNK_SIZE] = BlockType.CHEST;
+                                    if (dx === 10 && dy === 10) chunk.blocks[x + y * CHUNK_SIZE + (baseZ + 1) * CHUNK_SIZE * CHUNK_SIZE] = Math.random() < 0.01 ? BlockType.GOLD_CHEST : BlockType.CHEST;
+                                    if (dx === -10 && dy === 10) chunk.blocks[x + y * CHUNK_SIZE + (baseZ + 1) * CHUNK_SIZE * CHUNK_SIZE] = Math.random() < 0.01 ? BlockType.GOLD_CHEST : BlockType.CHEST;
                                     
                                     if ((Math.abs(dx) === 10 || Math.abs(dy) === 10) && Math.random() < 0.2) {
                                         chunk.blocks[x + y * CHUNK_SIZE + (baseZ + 1) * CHUNK_SIZE * CHUNK_SIZE] = BlockType.POT;
@@ -545,8 +545,8 @@ export class LotGenerator {
                                     }
 
                                     // Treasure/Chests
-                                    if (dx === 8 && dy === 3) chunk.blocks[x + y * CHUNK_SIZE + (baseZ + 1) * CHUNK_SIZE * CHUNK_SIZE] = BlockType.CHEST;
-                                    if (dx === -8 && dy === -3) chunk.blocks[x + y * CHUNK_SIZE + (baseZ + 1) * CHUNK_SIZE * CHUNK_SIZE] = BlockType.CHEST;
+                                    if (dx === 8 && dy === 3) chunk.blocks[x + y * CHUNK_SIZE + (baseZ + 1) * CHUNK_SIZE * CHUNK_SIZE] = Math.random() < 0.01 ? BlockType.GOLD_CHEST : BlockType.CHEST;
+                                    if (dx === -8 && dy === -3) chunk.blocks[x + y * CHUNK_SIZE + (baseZ + 1) * CHUNK_SIZE * CHUNK_SIZE] = Math.random() < 0.01 ? BlockType.GOLD_CHEST : BlockType.CHEST;
                                 }
                             } else if (lotTypeVal === 'NORTH_DUNGEON') {
                                 DungeonTemplate.carve(chunk, x, y, dx, dy, baseZ, {

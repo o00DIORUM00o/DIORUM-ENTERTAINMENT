@@ -60,6 +60,7 @@ export const ShopUI: React.FC<ShopUIProps> = ({ npc, player, onClose }) => {
         if (tradingLevel === 0) return cost;
         let discount = 0;
         if (tradingLevel >= 1) discount = 0.30;
+        if (player.hasFavoredDeity && player.hasFavoredDeity('RANA')) discount += 0.20;
         return Math.max(1, Math.ceil(cost * (1 - discount)));
     };
 

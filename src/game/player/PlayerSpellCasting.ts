@@ -60,6 +60,7 @@ export class PlayerSpellCasting {
                 player.hasHitThisCast = false;
                 
                 let cooldown = spell.cooldown;
+                if (player.hasFavoredDeity('UMBI')) cooldown *= 0.8;
                 let actualCastTime = spell.castTime;
                 
                 if (player.activeSpell?.endsWith('_bolt')) {

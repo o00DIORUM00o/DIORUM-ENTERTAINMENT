@@ -138,7 +138,7 @@ export class PlayerBlockInteraction {
                 }
             }
             if (block === BlockType.CARPENTERS_BENCH && weapon?.id === 'axe_1') appliedDamage *= 5;
-            if (block === BlockType.CHEST && weapon?.id === 'axe_1') appliedDamage *= 5;
+            if ((block === BlockType.CHEST || block === BlockType.GOLD_CHEST) && weapon?.id === 'axe_1') appliedDamage *= 5;
 
             hp -= appliedDamage;
             if (hp <= 0) {
@@ -184,7 +184,7 @@ export class PlayerBlockInteraction {
                 if (ctx.engine) QuestSystem.onBlockDestroyed(ctx.engine, block);
                 world.setBlock(bx, by, targetZ, BlockType.AIR);
                 audioEngine.playBreakBlock();
-                if (block === BlockType.CHEST) {
+                if ((block === BlockType.CHEST || block === BlockType.GOLD_CHEST)) {
                     const chestInv = world.getChest(bx, by, targetZ);
                     if (onDropItem) onDropItem(bx, by, targetZ, { ...ITEMS['storage_chest'], chestInventory: chestInv });
                     world.chestData.delete(world.getChestKey(bx, by, targetZ));
