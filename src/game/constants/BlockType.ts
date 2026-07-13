@@ -445,5 +445,5 @@ export enum BlockType {
     BAG_MERCHANT_STALL = 437,
     BERRY_FARMER_SHED = 438,
     DUNGEON_STAIRS = 439,
-    GOLD_CHEST = 440,
+    GOLD_CHEST = 443,
 }

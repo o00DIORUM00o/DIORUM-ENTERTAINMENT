@@ -18,6 +18,33 @@ const CREATION_TABS = ['RACE', 'COLOR', 'HOMEWORLD', 'ZODIAC', 'STARTING PACK', 
 
 import { HOMEWORLDS, RACES, RACE_COLORS, DEITIES } from './game/constants/CharacterCreation';
 
+
+const DEITY_BLESSINGS: Record<string, string> = {
+    'PRIMORDIAL': '+100 Max Health',
+    'HALO': '+50 Max Health',
+    'DERGU': '+50 Max Health',
+    'ARCANIS': '+50 Max Mana',
+    'INANIS': '+50 Max Mana',
+    'VERI': '+5 Defense',
+    'DORIM': '+50 Max Stamina',
+    'DI': '+25% Movement Speed',
+    'SYLVARI': 'Fast Health Regen',
+    'FUNGAL WARPED': 'Fast Health Regen',
+    'UMBRIX': 'Brief Invisibility on Dash',
+    'RAGI': 'Storm Strikes Around You',
+    'OBITU': 'Immune to Poison/Bleed',
+    'INMORI': 'Revive on Death',
+    'ERUDI': '1.5x XP Gain',
+    'TERRENUS': '10% Chance to Not Consume Items',
+    'FIDIRI': '20% Chance for Double Ore Drops',
+    'ANIMA': '10% Heal from Damage Dealt & 5% Chance to Heal on Hit',
+    'RUINA': '25% Chance to Apply Random Status on Hit',
+    'UMBI': '20% Reduced Attack/Cast Cooldown',
+    'TELUM': '+25% Melee Damage',
+    'RIULIRI': '+25% Ranged/Magic Damage',
+    'RANA': '+20% Shop Discount'
+};
+
 export default function App() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const engineRef = useRef<Engine | null>(null);
@@ -2040,12 +2067,10 @@ export default function App() {
                                                         {/* Status & Blessings */}
                                                         <div className="flex justify-between items-end mt-1">
                                                             <div className="flex gap-1 flex-wrap">
-                                                                {standingData.blessings.length > 0 ? (
-                                                                    standingData.blessings.map((blessing, idx) => (
-                                                                        <span key={idx} className="text-[8px] md:text-[10px] px-1 py-0.5 bg-yellow-900/30 text-yellow-200 border border-yellow-700/50 rounded-sm">
-                                                                            {blessing}
-                                                                        </span>
-                                                                    ))
+                                                                {standingData.favored ? (
+                                                                    <span className="text-[8px] md:text-[10px] px-1 py-0.5 bg-yellow-900/30 text-yellow-200 border border-yellow-700/50 rounded-sm">
+                                                                        {DEITY_BLESSINGS[deity.name] || 'Passive Blessing Active'}
+                                                                    </span>
                                                                 ) : (
                                                                     <span className="text-[8px] md:text-[10px] text-gray-600 italic">No active blessings</span>
                                                                 )}
