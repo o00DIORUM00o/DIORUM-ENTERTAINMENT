@@ -2185,10 +2185,9 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         description: 'Craft Wooden Arrow',
         ingredients: [
             { id: 'wood', quantity: 1 },
-            { id: 'stone', quantity: 1 },
         ],
-        result: { id: 'arrow_1', quantity: 10 },
-        requiredStation: 'carpenters_bench',
+        result: { id: 'arrow_1', quantity: 99 },
+        requiredStation: undefined,
         requiredTalent: undefined
     },
     {
