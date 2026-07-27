@@ -77,7 +77,55 @@ export class ConsumableAction {
                     }
                     
                     // Specific overrides for old hardcoded behaviors
-                    if (item.id === 'red_berry') { player.health = Math.min(player.effectiveMaxHealth, player.health + 10); consumed = true; }
+                    
+                    if (item.summonsBoss) {
+                        if (ctx.engine) {
+                            const newBoss = {
+                                id: `boss_${Date.now()}`,
+                                type: item.summonsBoss,
+                                name: item.name,
+                                x: player.x,
+                                y: player.y + 2,
+                                z: player.z,
+                                vx: 0, vy: 0, vz: 0,
+                                maxHealth: 2000,
+                                health: 2000,
+                                damage: 40,
+                                speed: 2,
+                                state: 'WANDER'
+                            };
+                            if (!ctx.engine.metalGolems) ctx.engine.metalGolems = [];
+                            ctx.engine.metalGolems.push(newBoss);
+                            if (player.onMessage) player.onMessage(`Summoned ${item.name}!`);
+                            consumed = true;
+                        }
+                    }
+                    if (item.summonsNPC) {
+                        if (ctx.engine) {
+                            const newNPC = {
+                                id: `npc_${Date.now()}`,
+                                type: item.summonsNPC,
+                                name: item.name,
+                                x: player.x,
+                                y: player.y + 2,
+                                z: player.z,
+                                vx: 0, vy: 0, vz: 0,
+                                maxHealth: 1000,
+                                health: 1000,
+                                damage: 0,
+                                speed: 1,
+                                isMerchant: true,
+                                tradeInventory: [],
+                                state: 'WANDER'
+                            };
+                            if (!ctx.engine.npcs) ctx.engine.npcs = [];
+                            ctx.engine.npcs.push(newNPC);
+                            if (player.onMessage) player.onMessage(`Summoned ${item.name}!`);
+                            consumed = true;
+                        }
+                    }
+                    if (item.id === 'red_berry') {
+ player.health = Math.min(player.effectiveMaxHealth, player.health + 10); consumed = true; }
                     if (item.id === 'blue_berry') { player.mana = Math.min(player.effectiveMaxMana, player.mana + 10); consumed = true; }
                     if (item.id === 'black_berry') { player.stamina = Math.min(player.maxStamina, player.stamina + 10); consumed = true; }
                     if (item.id === 'yellow_berry') { 

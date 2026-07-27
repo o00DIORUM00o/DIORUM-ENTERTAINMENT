@@ -1,17 +1,55 @@
 import { AbilityRegistry } from "../../registries/AbilityRegistry";
 import { BlockType } from "../../constants/BlockType";
-import { EntityRegistry } from "../../registries/EntityRegistry";
+
+function getSummonDuration(caster: any): number {
+    let duration = 10;
+    const conj = caster.talents?.['conjure_caster']?.level || 0;
+    const necro = caster.talents?.['necromancy']?.level || 0;
+    if (conj > 0) duration += 15;
+    if (conj > 2) duration += 30;
+    if (necro > 0) duration += 10;
+    return duration;
+}
+
+function enforceSummonCap(engine: any, caster: any) {
+    const conj = caster.talents?.['conjure_caster']?.level || 0;
+    const necro = caster.talents?.['necromancy']?.level || 0;
+    const cap = 1 + Math.floor(conj / 2) + Math.floor(necro / 2);
+
+    const summons: any[] = [];
+    if (engine.forEachEntity) {
+        engine.forEachEntity((ent: any) => {
+            if (ent.isFriendly && ent.owner === caster) {
+                summons.push(ent);
+            }
+        });
+    }
+
+    if (summons.length >= cap) {
+        summons.sort((a, b) => (a.expirationTimer || 0) - (b.expirationTimer || 0));
+        while (summons.length >= cap) {
+            const oldest = summons.shift();
+            if (oldest) {
+                if (oldest.hp !== undefined) oldest.hp = -999;
+                if (oldest.health !== undefined) oldest.health = -999;
+            }
+        }
+    }
+}
 
 export function defineSummonAbilities() {
   AbilityRegistry.register(
     "SUMMON_SKELETON",
     ({ engine: e, x: o, y: a, z: s, caster: i }) => {
+      enforceSummonCap(e, i);
       e.skeletons.push({
+        expirationTimer: getSummonDuration(i),
         x: o + (Math.random() - 0.5) * 2,
         y: a + (Math.random() - 0.5) * 2,
         z: s,
-        hp: 150,
-        maxHp: 150,
+        health: 150,
+        maxHealth: 150,
+        damage: 10,
         vx: 0,
         vy: 0,
         state: "WANDER",
@@ -27,12 +65,15 @@ export function defineSummonAbilities() {
     "SUMMON_ZOMBIE",
     ({ engine: e, x: o, y: a, z: s, caster: i }) => {
       // Zombies use the skeletal renderer for now in terms of array, wait! They are undead so probably skeletons array, since it renders zombies too (in undead.ts). Or use `entities`
+      enforceSummonCap(e, i);
       e.skeletons.push({
+        expirationTimer: getSummonDuration(i),
         x: o + (Math.random() - 0.5) * 2,
         y: a + (Math.random() - 0.5) * 2,
         z: s,
-        hp: 300,
-        maxHp: 300,
+        health: 300,
+        maxHealth: 300,
+        damage: 20,
         vx: 0,
         vy: 0,
         state: "WANDER",
@@ -47,8 +88,10 @@ export function defineSummonAbilities() {
   AbilityRegistry.register(
     "SUMMON_RAT",
     ({ engine: e, x: o, y: a, z: s, caster: i }) => {
-      for (let c = 0; c < 3; c++)
+      enforceSummonCap(e, i);
+      for (let c = 0; c < 1; c++)
         e.rats.push({
+          expirationTimer: getSummonDuration(i),
           id: "rat_summon_" + Math.random(),
           x: o + (Math.random() - 0.5) * 2,
           y: a + (Math.random() - 0.5) * 2,
@@ -108,12 +151,15 @@ export function defineSummonAbilities() {
   AbilityRegistry.register(
     "SUMMON_WOLF",
     ({ engine: e, x: i, y: o, z: a, caster: s }) => {
+      enforceSummonCap(e, s);
       e.animals.push({
+        expirationTimer: getSummonDuration(s),
         x: i + (Math.random() - 0.5) * 2,
         y: o + (Math.random() - 0.5) * 2,
         z: a,
-        hp: 200,
-        maxHp: 200,
+        health: 200,
+        maxHealth: 200,
+        damage: 15,
         vx: 0,
         vy: 0,
         state: "CHASE",
@@ -129,12 +175,15 @@ export function defineSummonAbilities() {
   AbilityRegistry.register(
     "SUMMON_BEAR",
     ({ engine: e, x: i, y: o, z: a, caster: s }) => {
+      enforceSummonCap(e, s);
       e.animals.push({
+        expirationTimer: getSummonDuration(s),
         x: i + (Math.random() - 0.5) * 2,
         y: o + (Math.random() - 0.5) * 2,
         z: a,
-        hp: 600,
-        maxHp: 600,
+        health: 600,
+        maxHealth: 600,
+        damage: 25,
         vx: 0,
         vy: 0,
         state: "CHASE",
@@ -150,12 +199,15 @@ export function defineSummonAbilities() {
   AbilityRegistry.register(
     "SUMMON_WYRMLING",
     ({ engine: e, x: i, y: o, z: a, caster: s }) => {
+      enforceSummonCap(e, s);
       e.drakes.push({
+        expirationTimer: getSummonDuration(s),
         x: i + (Math.random() - 0.5) * 2,
         y: o + (Math.random() - 0.5) * 2,
         z: a,
         health: 400,
         maxHealth: 400,
+        damage: 35,
         vx: 0,
         vy: 0,
         state: "CHASE",

@@ -21,6 +21,7 @@ import { DrakeUpdater } from "./entities/DrakeUpdater";
 import { KoboldUpdater } from "./entities/KoboldUpdater";
 import { FrostCasterUpdater } from "./entities/FrostCasterUpdater";
 import { LavaGolemUpdater } from "./entities/LavaGolemUpdater";
+import { MetalGolemUpdater } from "./entities/MetalGolemUpdater";
 import { BeeUpdater } from "./entities/BeeUpdater";
 import { FireDragonBossUpdater } from "./entities/FireDragonBossUpdater";
 import { RatheEntitiesUpdater } from "./entities/RatheEntitiesUpdater";
@@ -72,6 +73,19 @@ export class Updater {
         // --- DIVINE WRATH SYSTEM ---
         DivineWrathSystem.update(engine, dt);
         // -----------------------------
+        
+        // --- SUMMON EXPIRATION SYSTEM ---
+        if (engine.forEachEntity) {
+            engine.forEachEntity((e: any) => {
+                if (e.isFriendly && e.owner && e.expirationTimer !== undefined) {
+                    e.expirationTimer -= dt;
+                    if (e.expirationTimer <= 0) {
+                        if (e.hp !== undefined) e.hp = -999;
+                        if (e.health !== undefined) e.health = -999;
+                    }
+                }
+            });
+        }
 
         EnvironmentalParticleSystem.update(engine, dt);
 
@@ -187,7 +201,8 @@ engine.projectiles.push({x: engine.player.x,
         EventSpawnerSystem.update(engine, dt);
 
         // Update Lava Golems
-        if (!(engine as any).timeStopTimer || (engine as any).timeStopTimer <= 0) { LavaGolemUpdater.updateAll(engine, dt); }
+        if (!(engine as any).timeStopTimer || (engine as any).timeStopTimer <= 0) { LavaGolemUpdater.updateAll(engine, dt);
+        MetalGolemUpdater.updateAll(engine, dt); }
 
         // Update Rats
         if (!(engine as any).timeStopTimer || (engine as any).timeStopTimer <= 0) { RatUpdater.updateAll(engine, dt); }

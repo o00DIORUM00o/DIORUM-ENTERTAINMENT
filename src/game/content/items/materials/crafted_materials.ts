@@ -17,6 +17,14 @@ export const CRAFTED_MATERIALS_ITEMS: Record<string, Item> = {
         maxStack: 99,
         quantity: 1
     },
+    'paper': {
+        id: "paper",
+        name: "Paper",
+        description: "A sheet of paper, useful for scribing.",
+        category: "MATERIAL",
+        maxStack: 99,
+        quantity: 1
+    },
     'gold_ingot': {
         id: "gold_ingot",
         name: "Gold Ingot",

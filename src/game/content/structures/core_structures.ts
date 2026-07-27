@@ -3,6 +3,298 @@ import { SchematicDef } from '../../registries/StructureRegistry';
 
 export const CORE_STRUCTURES: SchematicDef[] = [
     {
+        id: 'TRADERS_CAMP',
+        anchorX: 4,
+        anchorY: 4,
+        anchorZ: 0,
+        palette: {
+            ' ': { block: BlockType.AIR },
+            '_': { block: BlockType.AIR },
+            'T': { block: BlockType.MERCHANT_TENT },
+            'M': { block: BlockType.MERCHANT },
+            'C': { block: BlockType.CAMPFIRE },
+            'B': { block: BlockType.BAG_MERCHANT_STALL },
+            'P': { block: BlockType.STALL_POTIONS },
+            'S': { block: BlockType.STALL_SWORDS },
+            'W': { block: BlockType.WOOD_TILE }
+        },
+        layers: [
+            [
+                " WWWWWWW ",
+                "WWWWWWWWW",
+                "WWWWTWWWW",
+                "WWWWMWWWW",
+                "WWWWCWWWW",
+                "WWBW PW W",
+                "WWWWSWWWW",
+                "WWWWWWWWW",
+                " WWWWWWW "
+            ]
+        ]
+    },
+    {
+        id: 'MINE_SHAFT',
+        anchorX: 4,
+        anchorY: 4,
+        anchorZ: 4,
+        palette: {
+            ' ': { block: BlockType.AIR },
+            'W': { block: BlockType.MINE_SHAFT_WOOD },
+            'S': { block: BlockType.STONE_STAIRCASE },
+            'L': { block: BlockType.LANTERN_BLOCK },
+            'O': { block: BlockType.COAL_ORE },
+            '_': { block: BlockType.AIR }
+        },
+        layers: [
+            // Z = -4 (deepest)
+            [
+                "         ",
+                "  WWWWW  ",
+                "  W___W  ",
+                "  W_O_W  ",
+                "  W___W  ",
+                "  WWWWW  ",
+                "         ",
+                "         ",
+                "         "
+            ],
+            // Z = -3
+            [
+                "         ",
+                "  WWWWW  ",
+                "  W___W  ",
+                "  W_O_W  ",
+                "  W___W  ",
+                "  WWWWW  ",
+                "         ",
+                "         ",
+                "         "
+            ],
+            // Z = -2
+            [
+                "         ",
+                "  WWWWW  ",
+                "  W___W  ",
+                "  W_S_W  ",
+                "  W___W  ",
+                "  WWWWW  ",
+                "         ",
+                "         ",
+                "         "
+            ],
+            // Z = -1
+            [
+                "         ",
+                "  WWWWW  ",
+                "  W___W  ",
+                "  W_S_W  ",
+                "  W___W  ",
+                "  WWWWW  ",
+                "         ",
+                "         ",
+                "         "
+            ],
+            // Z = 0 (ground)
+            [
+                "         ",
+                "  WWWWW  ",
+                "  W___W  ",
+                "  W_S_W  ",
+                "  WL__W  ",
+                "  WWWWW  ",
+                "         ",
+                "         ",
+                "         "
+            ]
+        ]
+    },
+    {
+        id: 'BERRY_FIELD',
+        anchorX: 4,
+        anchorY: 4,
+        anchorZ: 0,
+        palette: {
+            ' ': { block: BlockType.AIR },
+            'F': { block: BlockType.WOOD_WALL },
+            'R': { block: BlockType.RED_BERRY_BUSH },
+            'B': { block: BlockType.BLUE_BERRY_BUSH },
+            'S': { block: BlockType.BERRY_FARMER_SHED },
+            '_': { block: BlockType.AIR }
+        },
+        layers: [
+            [
+                "FFFFFFFFF",
+                "FR_R_R_RF",
+                "F_______F",
+                "FB_B_B_BF",
+                "F_______F",
+                "FR_R_R_RF",
+                "F_______F",
+                "FS______F",
+                "FFFF_FFFF"
+            ]
+        ]
+    },
+    {
+        id: 'CARROT_FIELD',
+        anchorX: 4,
+        anchorY: 4,
+        anchorZ: 1,
+        palette: {
+            ' ': { block: BlockType.AIR },
+            'F': { block: BlockType.WOOD_WALL },
+            'S': { block: BlockType.TILLED_SOIL_WET },
+            'C': { block: BlockType.CROP_STAGE_3 },
+            'W': { block: BlockType.WATER },
+            '_': { block: BlockType.AIR }
+        },
+        layers: [
+            // Z = 0 (soil)
+            [
+                "         ",
+                " SSSSSSS ",
+                " SSSSSSS ",
+                " SSSSSSS ",
+                " SSSWSSS ",
+                " SSSSSSS ",
+                " SSSSSSS ",
+                " SSSSSSS ",
+                "         "
+            ],
+            // Z = 1 (crop)
+            [
+                "FFFFFFFFF",
+                "FCCCCCCCF",
+                "F_______F",
+                "FCCCCCCCF",
+                "F___W___F",
+                "FCCCCCCCF",
+                "F_______F",
+                "FCCCCCCCF",
+                "FFFF_FFFF"
+            ]
+        ]
+    },
+
+    {
+        id: 'sky_castle',
+        anchorX: 4,
+        anchorY: 4,
+        anchorZ: 0,
+        palette: {
+            ' ': { block: BlockType.AIR }, 
+            '_': { block: BlockType.AIR },
+            'M': { block: BlockType.WHITE_MARBLE },
+            'F': { block: BlockType.RUNED_MARBLE },
+            'P': { block: BlockType.MITHRIL_BLOCK },
+            'S': { block: BlockType.STONE_STAIRCASE },
+            'D': { block: BlockType.DOOR_CLOSED },
+            'T': { block: BlockType.TORCH },
+            'G': { block: BlockType.GLASS },
+            'W': { block: BlockType.WATER },
+            'C': { block: BlockType.GOLD_CHEST }
+        },
+        layers: [
+            // Z = -2 (Foundation bottom)
+            [
+                "   MMM   ",
+                "  MMMMM  ",
+                " MMMMMMM ",
+                " MMMMMMM ",
+                " MMMMMMM ",
+                "  MMMMM  ",
+                "   MMM   ",
+                "         ",
+                "         "
+            ],
+            // Z = -1 (Foundation middle)
+            [
+                "  MMMMM  ",
+                " MMMMMMM ",
+                "MMMMMMMMM",
+                "MMMMMMMMM",
+                "MMMMMMMMM",
+                " MMMMMMM ",
+                "  MMMMM  ",
+                "         ",
+                "         "
+            ],
+            // Z = 0 (Floor)
+            [
+                "MMMMMMMMM",
+                "MFFFFFFFM",
+                "MFFFFFFFM",
+                "MFFWWWFFM",
+                "MFFWWWFFM",
+                "MFFFFFFFM",
+                "MFFFFFFFM",
+                "MMMMMMMMM",
+                "   MSM   "
+            ],
+            // Z = 1 (Wall 1)
+            [
+                "MMMMMMMMM",
+                "M       M",
+                "M       M",
+                "M   C   M",
+                "G       G",
+                "M       M",
+                "M       M",
+                "MMMMDMMMM",
+                "   _S_   "
+            ],
+            // Z = 2 (Wall 2)
+            [
+                "MMMMMMMMM",
+                "M       M",
+                "M       M",
+                "G       G",
+                "M       M",
+                "M       M",
+                "M       M",
+                "MMMM_MMMM",
+                "   ___   "
+            ],
+            // Z = 3 (Wall 3 + Torches)
+            [
+                "MMMMMMMMM",
+                "MT     TM",
+                "M       M",
+                "M       M",
+                "M       M",
+                "M       M",
+                "MT     TM",
+                "MMMMMMMMM",
+                "   ___   "
+            ],
+            // Z = 4 (Roof base)
+            [
+                "PPPPPPPPP",
+                "PPPPPPPPP",
+                "PPPPPPPPP",
+                "PPPPPPPPP",
+                "PPPPPPPPP",
+                "PPPPPPPPP",
+                "PPPPPPPPP",
+                "PPPPPPPPP",
+                "         "
+            ],
+            // Z = 5 (Roof top)
+            [
+                " PPPPPPP ",
+                "PPPPPPPPP",
+                "PPPPPPPPP",
+                "PPPPPPPPP",
+                "PPPPPPPPP",
+                "PPPPPPPPP",
+                " PPPPPPP ",
+                "         ",
+                "         "
+            ]
+        ]
+    },
+
+    {
         id: 'DUNGEON_ENTRANCE',
         anchorX: 2,
         anchorY: 2,

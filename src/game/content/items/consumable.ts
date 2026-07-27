@@ -6,6 +6,7 @@ import { RUNES_ITEMS } from './consumables/runes';
 import { SPELLBOOKS_ITEMS } from './consumables/spellbooks';
 import { SUMMONS_ITEMS } from './consumables/summons';
 import { STRUCTURE_SPAWNERS_ITEMS } from './consumables/structure_spawners';
+import { COLOR_METAL_GOLEM_SPAWNERS } from './misc_items/color_metal_golem_spawners';
 import { SEEDS_AND_HERBS_ITEMS } from './consumables/seeds_and_herbs';
 import { MISC_ITEMS } from './consumables/misc';
 
@@ -17,6 +18,7 @@ export const CONSUMABLE_ITEMS: Record<string, Item> = {
     ...SPELLBOOKS_ITEMS,
     ...SUMMONS_ITEMS,
     ...STRUCTURE_SPAWNERS_ITEMS,
+    ...COLOR_METAL_GOLEM_SPAWNERS,
     ...SEEDS_AND_HERBS_ITEMS,
     ...MISC_ITEMS,
 };

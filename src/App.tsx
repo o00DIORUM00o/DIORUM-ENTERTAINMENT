@@ -1430,7 +1430,7 @@ export default function App() {
                                     if (engineRef.current) {
                                         // Set homeworld
                                         const homeworldId = selectedHomeworld || 'HERAT';
-                                        engineRef.current.resetWorld(homeworldId);
+                                        engineRef.current.resetWorld('THREA');
                                         
                                         // Re-apply player settings after reset
                                         engineRef.current.player.color = selectedColor || '#ffffff';

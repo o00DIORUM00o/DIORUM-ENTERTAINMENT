@@ -81,7 +81,12 @@ export class CompanionUpdater {
                     if (ent.type === 'FAIRY' && engine.player.health < engine.player.maxHealth) {
                         engine.player.health = Math.min(engine.player.maxHealth, engine.player.health + 2);
                         engine.particles.push({x: engine.player.x, y: engine.player.y, z: engine.player.z + 1, text: '+2', color: '#00ff00', life: 1, maxLife: 1, vx: 0, vy: 0, vz: 1});
-                    } else if (ent.type === 'ARCANE_CRYSTAL' && engine.player.mana < engine.player.maxMana) {
+                    
+                    } else if (ent.type === 'SILVER_GOLEM' && engine.player.health < engine.player.maxHealth) {
+                        engine.player.health = Math.min(engine.player.maxHealth, engine.player.health + 10);
+                        engine.particles.push({x: engine.player.x, y: engine.player.y, z: engine.player.z + 1, text: '+10 HP', color: '#00ff00', life: 1, maxLife: 1, vx: 0, vy: 0, vz: 1});
+                    } else if (ent.type === 'ARCANE_CRYSTAL'
+ && engine.player.mana < engine.player.maxMana) {
                         engine.player.mana = Math.min(engine.player.maxMana, engine.player.mana + 5);
                         engine.particles.push({x: engine.player.x, y: engine.player.y, z: engine.player.z + 1, text: '+5 Mana', color: '#0000ff', life: 1, maxLife: 1, vx: 0, vy: 0, vz: 1});
                     } else if (ent.type === 'BABY_TREANT') {

@@ -236,136 +236,136 @@ let e = noise2D(wx * 0.003, wy * 0.003); // Elevation
                 const cavernCeilBase = Math.floor(10 + cavBaseNoise * 4);
                 const isPillar = noise2D(wx * 0.05 + 300, wy * 0.05 + 300) > 0.6;
 
-                // Generate blocks vertically
-                for (let z = 0; z <= highest; z++) {
+                // ----------------------------------------------------
+                // DEEP CREATIVE WORLD GENERATION UPDATE!
+                // ----------------------------------------------------
+                let maxZ = WORLD_HEIGHT - 1; 
+
+                // Generate blocks vertically from bedrock to sky
+                for (let z = 0; z <= maxZ; z++) {
                     let type = BlockType.AIR;
-                    if (planetDef.id === 'TARHE') {
-                        type = ACT_STONE;
-                        if (z === 0) type = BlockType.CASTLE_STONE;
-                    } else {
-                        if (z < elevation - 3) {
+                    
+                    // --- TERRAIN LAYER ---
+                    if (z <= highest) {
+                        if (planetDef.id === 'TARHE') {
                             type = ACT_STONE;
-                        } else if (z < elevation) {
-                            if ((isRoad || isLot) && z >= origElevation && origElevation < PL_WATER_LEVEL) {
-                                // Bridge pillars
-                                type = ACT_STONE;
-                            } else {
-                                type = ACT_DIRT;
-                            }
-                        } else if (z === elevation) {
-                            if (isRoad || isLot) {
-                                if (origElevation < PL_WATER_LEVEL) {
-                                    type = BlockType.STONE; // Stone bridge
-                                } else {
-                                    if (planetDef.id === 'ARETH') type = BlockType.OBSIDIAN;
-                                    else if (planetDef.id === 'RAETH') type = BlockType.SLIME_PUDDLE;
-                                    else if (planetDef.id === 'THERA') type = BlockType.WOOD_FLOOR;
-                                    else if (planetDef.id === 'HERAT') type = BlockType.COBBLESTONE_ROAD;
-                                    else type = BlockType.PAVED_ROAD;
-                                }
-                            } else {
-                                type = elevation < PL_WATER_LEVEL ? ACT_DIRT : ACT_SURFACE;
-                            }
-                        } else if (z <= PL_WATER_LEVEL && !(isRoad || isLot)) {
-                            type = ACT_WATER;
-                        }
-                    }
-
-                    // Cavern carving (only in stone, below surface)
-                    let isCarved = false;
-                    if (z > 0 && z < highest - 2) {
-                        const scale3D = 0.04;
-                        const n1 = noise3D(wx * scale3D, wy * scale3D, z * scale3D);
-                        
-                        // 1. Sprawling Swiss Cheese Caves
-                        if (n1 > 0.35) {
-                            isCarved = true;
+                            if (z === 0) type = BlockType.CASTLE_STONE;
                         } else {
-                            // 2. Intersecting Worm Tunnels
-                            const n2 = noise3D(wx * scale3D * 1.5 + 4321, wy * scale3D * 1.5 + 4321, z * scale3D * 1.5 + 4321);
-                            if (Math.abs(n1) < 0.06 && Math.abs(n2) < 0.06) {
-                                isCarved = true;
+                            if (z < elevation - 3) {
+                                type = ACT_STONE;
+                            } else if (z < elevation) {
+                                if ((isRoad || isLot) && z >= origElevation && origElevation < PL_WATER_LEVEL) {
+                                    // Bridge pillars
+                                    type = ACT_STONE;
+                                } else {
+                                    type = ACT_DIRT;
+                                }
+                            } else if (z === elevation) {
+                                if (isLot) {
+                                    type = BlockType.WOOD_TILE;
+                                } else if (isRoad) {
+                                    type = BlockType.COBBLESTONE_ROAD;
+                                } else if (elevation < PL_WATER_LEVEL) {
+                                    type = ACT_WATER;
+                                } else if (elevation === PL_WATER_LEVEL) {
+                                    type = BlockType.SAND; // Beaches
+                                } else {
+                                    type = ACT_SURFACE;
+                                }
                             }
                         }
-
-                        // 3. Giant Caverns (Legacy style, adds wide open rooms)
-                        if (cavBaseNoise > 0.3 && z >= cavernFloorBase && z <= cavernCeilBase && !isPillar) {
-                            isCarved = true;
-                        }
-
-                        if (isCarved) {
-                            if (z <= 2) {
-                                const heatNoise = noise2D(wx * 0.01 + 500, wy * 0.01 + 500);
-                                if (heatNoise > 0.3) {
-                                    type = BlockType.LAVA; // Underground lava lake
-                                } else {
-                                    type = ACT_WATER; // Underground lake
+                    }
+                    
+                    // --- FLOATING ISLANDS IN THE SKY (Sky Realms) ---
+                    if (planetDef.id !== 'TARHE' && z >= highest + 18 && z <= WORLD_HEIGHT - 10 && !isRoad && !isLot) {
+                        const skyIslandDensity = noise3D(wx * 0.03, wy * 0.03, z * 0.04);
+                        if (skyIslandDensity > 0.75) {
+                            // Core of the island is stone
+                            type = ACT_STONE;
+                        } else if (skyIslandDensity > 0.65) {
+                            // Outer dirt shell
+                            type = ACT_DIRT;
+                            
+                            // Check if it's the top surface of the island
+                            const topCheck = noise3D(wx * 0.03, wy * 0.03, (z + 1) * 0.04);
+                            if (topCheck <= 0.65) {
+                                type = ACT_SURFACE; // Grass on top
+                                // 2% chance to spawn an ancient tree or glowing crystal on the sky islands
+                                if (Math.random() < 0.02) {
+                                    chunk.blocks[x + y * CHUNK_SIZE + (z + 1) * CHUNK_SIZE * CHUNK_SIZE] = (Math.random() > 0.5) ? BlockType.ANCIENT_WOOD : BlockType.MOONSTONE;
                                 }
                             } else {
-                                type = BlockType.AIR; // Open cavern
+                                // Check if it's the bottom of the island
+                                const bottomCheck = noise3D(wx * 0.03, wy * 0.03, (z - 1) * 0.04);
+                                if (bottomCheck <= 0.65 && Math.random() < 0.1) {
+                                    type = BlockType.GLOWING_MUSHROOM_BLOCK; // Glowing roots/crystals underneath
+                                }
                             }
                         }
                     }
 
-                    // Add crystals to cavern walls/floor (dynamically placed)
-                    if (type === ACT_STONE && z > 0 && z < highest - 2) {
-                        // Sparse crystal clumps along the rock walls
-                        const crystalNoise = noise3D(wx * 0.1 + 800, wy * 0.1 + 800, z * 0.1 + 800);
-                        if (crystalNoise > 0.82) {
-                            type = BlockType.CRYSTAL;
-                        }
-                    }
-
-                    // Marble Generation
-                    if (type === ACT_STONE) {
-                        const marbleNoise = noise2D(wx * 0.03 + 1234, wy * 0.03 + 1234);
-                        if (marbleNoise > 0.6) {
-                            const marbleTypeNoise = noise2D(wx * 0.05 + 5678, wy * 0.05 + 5678);
-                            if (marbleTypeNoise > 0.5) type = BlockType.GREEN_MARBLE;
-                            else if (marbleTypeNoise < -0.5) type = BlockType.BLACK_MARBLE;
-                            else type = BlockType.MARBLE;
-                        }
-                    }
-
-                    // Obsidian and Lava Rock near lava
-                    if (type === ACT_STONE && z <= 5) {
-                        const heatNoise = noise2D(wx * 0.01 + 500, wy * 0.01 + 500);
-                        if (heatNoise > 0.2) {
-                            if (Math.random() < 0.3) type = BlockType.OBSIDIAN;
-                            else type = BlockType.LAVA_ROCK;
-                        }
-                    }
-
-                    // Ore Vein Generation
-                    if (type === ACT_STONE) {
-                        // 3D noise for vein structures
-                        const oreNoise = noise3D(wx * 0.15, wy * 0.15, z * 0.15);
-                        if (oreNoise > 0.65) { 
-                            // Determine ore type based on smooth 3D noise so veins are consistent types
-                            const randNoise = noise3D(wx * 0.05 + 111, wy * 0.05 + 111, z * 0.05 + 111);
-                            const rand = (randNoise + 1) / 2; // 0 to 1
+                    // --- CAVE SYSTEM CARVING ---
+                    if (z > 1 && z < highest - 2 && type !== BlockType.AIR) {
+                        let isCave = false;
+                        if (planetDef.id === 'TARHE') {
+                            const caveNoise = noise3D(wx * 0.05, wy * 0.05, z * 0.05);
+                            if (caveNoise > 0.3) isCave = true;
                             
-                            if (z >= 25) {
-                                if (rand < 0.5) type = BlockType.COAL_ORE;
-                                else type = BlockType.COPPER_ORE;
-                            } else if (z >= 15) {
-                                if (rand < 0.3) type = BlockType.COAL_ORE;
-                                else if (rand < 0.6) type = BlockType.COPPER_ORE;
-                                else if (rand < 0.9) type = BlockType.IRON_ORE;
-                                else type = BlockType.SILVER_ORE;
-                            } else if (z >= 5) {
+                            const megaCave = noise3D(wx * 0.015, wy * 0.015, z * 0.015);
+                            if (megaCave > 0.4) isCave = true;
+                        } else {
+                            const caveNoise = noise3D(wx * 0.04, wy * 0.04, z * 0.04);
+                            // Thicken caves deeper down
+                            const depthThickener = (highest - z) * 0.005; 
+                            if (caveNoise > (0.4 - depthThickener) && z < elevation - 5) {
+                                isCave = true;
+                            }
+                            
+                            // Massive underworld geodes!
+                            const geodeNoise = noise3D(wx * 0.02, wy * 0.02, z * 0.02);
+                            if (geodeNoise > 0.55 && z < 15) {
+                                isCave = true;
+                                if (geodeNoise < 0.58) {
+                                    // Geode outer shell
+                                    type = BlockType.OBSIDIAN;
+                                    isCave = false;
+                                } else if (geodeNoise < 0.6) {
+                                    // Geode inner crystal lining
+                                    type = BlockType.PURPLE_CRYSTAL;
+                                    isCave = false;
+                                }
+                            }
+                        }
+                        if (isCave) type = BlockType.AIR;
+                    }
+                    
+                    // --- MASSIVE 2D NOISE CAVERNS ---
+                    if (z > cavernFloorBase && z < cavernCeilBase && !isPillar && type !== BlockType.AIR) {
+                        if (planetDef.id !== 'TARHE' || (planetDef.id === 'TARHE' && z < 25)) {
+                            type = BlockType.AIR;
+                        }
+                    }
+
+                    // --- UNDERWORLD LAVA / BEDROCK ---
+                    if (z === 0) {
+                        if (planetDef.id === 'TARHE') {
+                            type = BlockType.CASTLE_STONE; // Unbreakable floor
+                        } else {
+                            type = BlockType.LAVA;
+                        }
+                    } else if (z === 1 && planetDef.id !== 'TARHE' && type === BlockType.AIR) {
+                        if (noise2D(wx * 0.1, wy * 0.1) > 0) {
+                            type = BlockType.LAVA;
+                        }
+                    }
+
+                    // --- ORES AND MINERALS ---
+                    if (type === ACT_STONE) {
+                        if (Math.random() < (0.02 * PL_ORE_MULT)) { // Base 2% chance for ore per stone block
+                            const rand = Math.random();
+                            if (planetDef.id === 'TARHE') {
                                 if (rand < 0.2) type = BlockType.COAL_ORE;
-                                else if (rand < 0.4) type = BlockType.COPPER_ORE;
-                                else if (rand < 0.6) type = BlockType.IRON_ORE;
-                                else if (rand < 0.7) type = BlockType.SILVER_ORE;
-                                else if (rand < 0.8) type = BlockType.GOLD_ORE;
-                                else if (rand < 0.9) type = BlockType.PLATINUM_ORE;
-                                else type = BlockType.GREEN_METAL_ORE;
-                            } else {
-                                if (rand < 0.1) type = BlockType.COAL_ORE;
-                                else if (rand < 0.2) type = BlockType.COPPER_ORE;
-                                else if (rand < 0.3) type = BlockType.IRON_ORE;
-                                else if (rand < 0.4) type = BlockType.SILVER_ORE;
+                                else if (rand < 0.4) type = BlockType.IRON_ORE;
                                 else if (rand < 0.5) type = BlockType.GOLD_ORE;
                                 else if (rand < 0.55) type = BlockType.PLATINUM_ORE;
                                 else if (rand < 0.6) type = BlockType.GREEN_METAL_ORE;
@@ -380,6 +380,12 @@ let e = noise2D(wx * 0.003, wy * 0.003); // Elevation
                                 else if (rand < 0.95) type = BlockType.YELLOW_METAL_ORE;
                                 else if (rand < 0.98) type = BlockType.PLUTONIUM_ORE;
                                 else type = BlockType.RUBY;
+                            } else {
+                                if (rand < 0.4) type = BlockType.COAL_ORE;
+                                else if (rand < 0.7) type = BlockType.COPPER_ORE;
+                                else if (rand < 0.9) type = BlockType.IRON_ORE;
+                                else if (rand < 0.95) type = BlockType.SILVER_ORE;
+                                else type = BlockType.MITHRIL_ORE;
                             }
                             
                             // RAETH VOIDSIGHT ORE OVERRIDE
@@ -407,9 +413,12 @@ let e = noise2D(wx * 0.003, wy * 0.003); // Elevation
 
                     if (type !== BlockType.AIR) {
                         chunk.blocks[x + y * CHUNK_SIZE + z * CHUNK_SIZE * CHUNK_SIZE] = type;
+                        if (z > chunk.heightMap[x + y * CHUNK_SIZE]) {
+                            chunk.heightMap[x + y * CHUNK_SIZE] = z;
+                        }
                     }
                 }
-
+                
                 // Phase 2 Decorations (Trees, Bushes, Rocks)
                 // Only place if above water and on the surface grass
                 if (elevation > PL_WATER_LEVEL && elevation === highest && !isNearRoad && !isLot) {

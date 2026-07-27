@@ -41,13 +41,27 @@ for (let i = engine.rats.length - 1; i >= 0; i--) {
             // AI
             let closestEnemy: any = null;
             let closestDist = 8; // Aggro radius
-            const enemies = [...engine.goblins, ...engine.orcs, ...engine.skeletons, ...engine.lavaGolems, ...engine.bees, ...engine.ants];
             
-            for (const e of enemies) {
-                const dist = Math.hypot(e.x - rat.x, e.y - rat.y);
-                if (dist < closestDist && Math.abs(e.z - rat.z) < 1.0) {
-                    closestDist = dist;
-                    closestEnemy = e;
+            if (rat.isFriendly) {
+                const enemies = [...engine.goblins, ...engine.orcs, ...engine.skeletons, ...engine.lavaGolems, ...engine.bees, ...engine.ants, ...engine.drakes, ...engine.archers, ...engine.darkKnights, ...engine.abyssalKnights, ...engine.frostCasters, ...engine.phantomWizards, ...engine.shadowWizards, ...engine.sphinxs, ...engine.sandTerrors, ...engine.voidLords, ...engine.fireDragonBosses];
+                for (const e of enemies) {
+                    if (e.isFriendly) continue;
+                    const dist = Math.hypot(e.x - rat.x, e.y - rat.y);
+                    if (dist < closestDist && Math.abs(e.z - rat.z) < 1.0) {
+                        closestDist = dist;
+                        closestEnemy = e;
+                    }
+                }
+            } else {
+                const enemies = [...engine.goblins, ...engine.orcs, ...engine.skeletons, ...engine.lavaGolems, ...engine.bees, ...engine.ants, engine.player];
+                for (const e of enemies) {
+                    if (e === engine.player || e.isFriendly) {
+                        const dist = Math.hypot(e.x - rat.x, e.y - rat.y);
+                        if (dist < closestDist && Math.abs(e.z - rat.z) < 1.0) {
+                            closestDist = dist;
+                            closestEnemy = e;
+                        }
+                    }
                 }
             }
 

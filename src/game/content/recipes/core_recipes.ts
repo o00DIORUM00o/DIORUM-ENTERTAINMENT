@@ -2,6 +2,570 @@ import { CraftingRecipe } from '../../registries/RecipeRegistry';
 
 export const CORE_RECIPES: CraftingRecipe[] = [
     {
+        id: 'recipe_red_metal_golem',
+        name: 'Red Metal Golem',
+        description: 'Craft Red Metal Golem',
+        ingredients: [
+            { id: 'red_metal_block', quantity: 5 },
+        ],
+        result: { id: 'red_metal_golem_spawner', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_green_metal_golem',
+        name: 'Green Metal Golem',
+        description: 'Craft Green Metal Golem',
+        ingredients: [
+            { id: 'green_metal_block', quantity: 5 },
+        ],
+        result: { id: 'green_metal_golem_spawner', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_blue_metal_golem',
+        name: 'Blue Metal Golem',
+        description: 'Craft Blue Metal Golem',
+        ingredients: [
+            { id: 'blue_metal_block', quantity: 5 },
+        ],
+        result: { id: 'blue_metal_golem_spawner', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_yellow_metal_golem',
+        name: 'Yellow Metal Golem',
+        description: 'Craft Yellow Metal Golem',
+        ingredients: [
+            { id: 'yellow_metal_block', quantity: 5 },
+        ],
+        result: { id: 'yellow_metal_golem_spawner', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_orange_metal_golem',
+        name: 'Orange Metal Golem',
+        description: 'Craft Orange Metal Golem',
+        ingredients: [
+            { id: 'orange_metal_block', quantity: 5 },
+        ],
+        result: { id: 'orange_metal_golem_spawner', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_purple_metal_golem',
+        name: 'Purple Metal Golem',
+        description: 'Craft Purple Metal Golem',
+        ingredients: [
+            { id: 'purple_metal_block', quantity: 5 },
+        ],
+        result: { id: 'purple_metal_golem_spawner', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_black_metal_golem',
+        name: 'Black Metal Golem',
+        description: 'Craft Black Metal Golem',
+        ingredients: [
+            { id: 'black_metal_block', quantity: 5 },
+        ],
+        result: { id: 'black_metal_golem_spawner', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_copper_golem',
+        name: 'Copper Golem',
+        description: 'Craft Copper Golem',
+        ingredients: [
+            { id: 'copper_block', quantity: 5 },
+        ],
+        result: { id: 'copper_golem_spawner', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_gold_golem',
+        name: 'Gold Golem',
+        description: 'Craft Gold Golem',
+        ingredients: [
+            { id: 'gold_block', quantity: 5 },
+        ],
+        result: { id: 'gold_golem_spawner', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_silver_golem',
+        name: 'Silver Golem',
+        description: 'Craft Silver Golem',
+        ingredients: [
+            { id: 'silver_block', quantity: 5 },
+        ],
+        result: { id: 'silver_golem_spawner', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_green_metal_dagger',
+        name: 'Green Metal Dagger',
+        description: 'Craft Green Metal Dagger',
+        ingredients: [
+            { id: 'green_metal_ingot', quantity: 3 },
+            { id: 'wood', quantity: 1 }
+        ],
+        result: { id: 'green_metal_dagger', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_green_metal_staff',
+        name: 'Green Metal Staff',
+        description: 'Craft Green Metal Staff',
+        ingredients: [
+            { id: 'green_metal_ingot', quantity: 5 },
+            { id: 'wood', quantity: 2 }
+        ],
+        result: { id: 'green_metal_staff', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_green_metal_helmet',
+        name: 'Green Metal Helmet',
+        description: 'Craft Green Metal Helmet',
+        ingredients: [
+            { id: 'green_metal_ingot', quantity: 5 },
+        ],
+        result: { id: 'green_metal_helmet', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_green_metal_chestplate',
+        name: 'Green Metal Chestplate',
+        description: 'Craft Green Metal Chestplate',
+        ingredients: [
+            { id: 'green_metal_ingot', quantity: 8 },
+        ],
+        result: { id: 'green_metal_chestplate', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_green_metal_greaves',
+        name: 'Green Metal Greaves',
+        description: 'Craft Green Metal Greaves',
+        ingredients: [
+            { id: 'green_metal_ingot', quantity: 6 },
+        ],
+        result: { id: 'green_metal_greaves', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_red_metal_dagger',
+        name: 'Red Metal Dagger',
+        description: 'Craft Red Metal Dagger',
+        ingredients: [
+            { id: 'red_metal_ingot', quantity: 3 },
+            { id: 'wood', quantity: 1 }
+        ],
+        result: { id: 'red_metal_dagger', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_red_metal_staff',
+        name: 'Red Metal Staff',
+        description: 'Craft Red Metal Staff',
+        ingredients: [
+            { id: 'red_metal_ingot', quantity: 5 },
+            { id: 'wood', quantity: 2 }
+        ],
+        result: { id: 'red_metal_staff', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_red_metal_helmet',
+        name: 'Red Metal Helmet',
+        description: 'Craft Red Metal Helmet',
+        ingredients: [
+            { id: 'red_metal_ingot', quantity: 5 },
+        ],
+        result: { id: 'red_metal_helmet', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_red_metal_chestplate',
+        name: 'Red Metal Chestplate',
+        description: 'Craft Red Metal Chestplate',
+        ingredients: [
+            { id: 'red_metal_ingot', quantity: 8 },
+        ],
+        result: { id: 'red_metal_chestplate', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_red_metal_greaves',
+        name: 'Red Metal Greaves',
+        description: 'Craft Red Metal Greaves',
+        ingredients: [
+            { id: 'red_metal_ingot', quantity: 6 },
+        ],
+        result: { id: 'red_metal_greaves', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_blue_metal_boomerang',
+        name: 'Blue Metal Boomerang',
+        description: 'Craft Blue Metal Boomerang',
+        ingredients: [
+            { id: 'blue_metal_ingot', quantity: 5 },
+        ],
+        result: { id: 'blue_metal_boomerang', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_blue_metal_dagger',
+        name: 'Blue Metal Dagger',
+        description: 'Craft Blue Metal Dagger',
+        ingredients: [
+            { id: 'blue_metal_ingot', quantity: 3 },
+            { id: 'wood', quantity: 1 }
+        ],
+        result: { id: 'blue_metal_dagger', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_blue_metal_staff',
+        name: 'Blue Metal Staff',
+        description: 'Craft Blue Metal Staff',
+        ingredients: [
+            { id: 'blue_metal_ingot', quantity: 5 },
+            { id: 'wood', quantity: 2 }
+        ],
+        result: { id: 'blue_metal_staff', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_blue_metal_helmet',
+        name: 'Blue Metal Helmet',
+        description: 'Craft Blue Metal Helmet',
+        ingredients: [
+            { id: 'blue_metal_ingot', quantity: 5 },
+        ],
+        result: { id: 'blue_metal_helmet', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_blue_metal_chestplate',
+        name: 'Blue Metal Chestplate',
+        description: 'Craft Blue Metal Chestplate',
+        ingredients: [
+            { id: 'blue_metal_ingot', quantity: 8 },
+        ],
+        result: { id: 'blue_metal_chestplate', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_blue_metal_greaves',
+        name: 'Blue Metal Greaves',
+        description: 'Craft Blue Metal Greaves',
+        ingredients: [
+            { id: 'blue_metal_ingot', quantity: 6 },
+        ],
+        result: { id: 'blue_metal_greaves', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_yellow_metal_boomerang',
+        name: 'Yellow Metal Boomerang',
+        description: 'Craft Yellow Metal Boomerang',
+        ingredients: [
+            { id: 'yellow_metal_ingot', quantity: 5 },
+        ],
+        result: { id: 'yellow_metal_boomerang', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_yellow_metal_dagger',
+        name: 'Yellow Metal Dagger',
+        description: 'Craft Yellow Metal Dagger',
+        ingredients: [
+            { id: 'yellow_metal_ingot', quantity: 3 },
+            { id: 'wood', quantity: 1 }
+        ],
+        result: { id: 'yellow_metal_dagger', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_yellow_metal_staff',
+        name: 'Yellow Metal Staff',
+        description: 'Craft Yellow Metal Staff',
+        ingredients: [
+            { id: 'yellow_metal_ingot', quantity: 5 },
+            { id: 'wood', quantity: 2 }
+        ],
+        result: { id: 'yellow_metal_staff', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_yellow_metal_helmet',
+        name: 'Yellow Metal Helmet',
+        description: 'Craft Yellow Metal Helmet',
+        ingredients: [
+            { id: 'yellow_metal_ingot', quantity: 5 },
+        ],
+        result: { id: 'yellow_metal_helmet', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_yellow_metal_chestplate',
+        name: 'Yellow Metal Chestplate',
+        description: 'Craft Yellow Metal Chestplate',
+        ingredients: [
+            { id: 'yellow_metal_ingot', quantity: 8 },
+        ],
+        result: { id: 'yellow_metal_chestplate', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_yellow_metal_greaves',
+        name: 'Yellow Metal Greaves',
+        description: 'Craft Yellow Metal Greaves',
+        ingredients: [
+            { id: 'yellow_metal_ingot', quantity: 6 },
+        ],
+        result: { id: 'yellow_metal_greaves', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_orange_metal_boomerang',
+        name: 'Orange Metal Boomerang',
+        description: 'Craft Orange Metal Boomerang',
+        ingredients: [
+            { id: 'orange_metal_ingot', quantity: 5 },
+        ],
+        result: { id: 'orange_metal_boomerang', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_orange_metal_dagger',
+        name: 'Orange Metal Dagger',
+        description: 'Craft Orange Metal Dagger',
+        ingredients: [
+            { id: 'orange_metal_ingot', quantity: 3 },
+            { id: 'wood', quantity: 1 }
+        ],
+        result: { id: 'orange_metal_dagger', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_orange_metal_staff',
+        name: 'Orange Metal Staff',
+        description: 'Craft Orange Metal Staff',
+        ingredients: [
+            { id: 'orange_metal_ingot', quantity: 5 },
+            { id: 'wood', quantity: 2 }
+        ],
+        result: { id: 'orange_metal_staff', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_orange_metal_helmet',
+        name: 'Orange Metal Helmet',
+        description: 'Craft Orange Metal Helmet',
+        ingredients: [
+            { id: 'orange_metal_ingot', quantity: 5 },
+        ],
+        result: { id: 'orange_metal_helmet', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_orange_metal_chestplate',
+        name: 'Orange Metal Chestplate',
+        description: 'Craft Orange Metal Chestplate',
+        ingredients: [
+            { id: 'orange_metal_ingot', quantity: 8 },
+        ],
+        result: { id: 'orange_metal_chestplate', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_orange_metal_greaves',
+        name: 'Orange Metal Greaves',
+        description: 'Craft Orange Metal Greaves',
+        ingredients: [
+            { id: 'orange_metal_ingot', quantity: 6 },
+        ],
+        result: { id: 'orange_metal_greaves', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_purple_metal_boomerang',
+        name: 'Purple Metal Boomerang',
+        description: 'Craft Purple Metal Boomerang',
+        ingredients: [
+            { id: 'purple_metal_ingot', quantity: 5 },
+        ],
+        result: { id: 'purple_metal_boomerang', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_purple_metal_dagger',
+        name: 'Purple Metal Dagger',
+        description: 'Craft Purple Metal Dagger',
+        ingredients: [
+            { id: 'purple_metal_ingot', quantity: 3 },
+            { id: 'wood', quantity: 1 }
+        ],
+        result: { id: 'purple_metal_dagger', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_purple_metal_staff',
+        name: 'Purple Metal Staff',
+        description: 'Craft Purple Metal Staff',
+        ingredients: [
+            { id: 'purple_metal_ingot', quantity: 5 },
+            { id: 'wood', quantity: 2 }
+        ],
+        result: { id: 'purple_metal_staff', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_purple_metal_helmet',
+        name: 'Purple Metal Helmet',
+        description: 'Craft Purple Metal Helmet',
+        ingredients: [
+            { id: 'purple_metal_ingot', quantity: 5 },
+        ],
+        result: { id: 'purple_metal_helmet', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_purple_metal_chestplate',
+        name: 'Purple Metal Chestplate',
+        description: 'Craft Purple Metal Chestplate',
+        ingredients: [
+            { id: 'purple_metal_ingot', quantity: 8 },
+        ],
+        result: { id: 'purple_metal_chestplate', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_purple_metal_greaves',
+        name: 'Purple Metal Greaves',
+        description: 'Craft Purple Metal Greaves',
+        ingredients: [
+            { id: 'purple_metal_ingot', quantity: 6 },
+        ],
+        result: { id: 'purple_metal_greaves', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_black_metal_boomerang',
+        name: 'Black Metal Boomerang',
+        description: 'Craft Black Metal Boomerang',
+        ingredients: [
+            { id: 'black_metal_ingot', quantity: 5 },
+        ],
+        result: { id: 'black_metal_boomerang', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_black_metal_dagger',
+        name: 'Black Metal Dagger',
+        description: 'Craft Black Metal Dagger',
+        ingredients: [
+            { id: 'black_metal_ingot', quantity: 3 },
+            { id: 'wood', quantity: 1 }
+        ],
+        result: { id: 'black_metal_dagger', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_black_metal_staff',
+        name: 'Black Metal Staff',
+        description: 'Craft Black Metal Staff',
+        ingredients: [
+            { id: 'black_metal_ingot', quantity: 5 },
+            { id: 'wood', quantity: 2 }
+        ],
+        result: { id: 'black_metal_staff', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_black_metal_helmet',
+        name: 'Black Metal Helmet',
+        description: 'Craft Black Metal Helmet',
+        ingredients: [
+            { id: 'black_metal_ingot', quantity: 5 },
+        ],
+        result: { id: 'black_metal_helmet', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_black_metal_chestplate',
+        name: 'Black Metal Chestplate',
+        description: 'Craft Black Metal Chestplate',
+        ingredients: [
+            { id: 'black_metal_ingot', quantity: 8 },
+        ],
+        result: { id: 'black_metal_chestplate', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_black_metal_greaves',
+        name: 'Black Metal Greaves',
+        description: 'Craft Black Metal Greaves',
+        ingredients: [
+            { id: 'black_metal_ingot', quantity: 6 },
+        ],
+        result: { id: 'black_metal_greaves', quantity: 1 },
+        requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    {
         id: 'recipe_infernal_sword',
         name: 'Infernal Greatsword',
         description: 'Craft Infernal Greatsword',
@@ -1369,17 +1933,6 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         requiredTalent: undefined
     },
     {
-        id: 'recipe_book_magic_block',
-        name: 'Spell Book: Magic Block',
-        description: 'Craft Spell Book: Magic Block',
-        ingredients: [
-            { id: 'wood', quantity: 10 },
-        ],
-        result: { id: 'book_magic_block', quantity: 1 },
-        requiredStation: 'carpenters_bench',
-        requiredTalent: undefined
-    },
-    {
         id: 'recipe_kobold_tent',
         name: 'Kobold Worker Tent',
         description: 'Craft Kobold Worker Tent',
@@ -1837,7 +2390,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Copper Ingot',
         description: 'Craft Copper Ingot',
         ingredients: [
-            { id: 'copper_ore', quantity: 2 },
+            { id: 'copper_ore', quantity: 1 },
             { id: 'coal', quantity: 1 },
         ],
         result: { id: 'copper_ingot', quantity: 1 },
@@ -1849,7 +2402,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Iron Ingot',
         description: 'Craft Iron Ingot',
         ingredients: [
-            { id: 'iron_ore', quantity: 2 },
+            { id: 'iron_ore', quantity: 1 },
             { id: 'coal', quantity: 1 },
         ],
         result: { id: 'iron_ingot', quantity: 1 },
@@ -1861,7 +2414,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Green Metal Ingot',
         description: 'Craft Green Metal Ingot',
         ingredients: [
-            { id: 'green_metal_ore', quantity: 2 },
+            { id: 'green_metal_ore', quantity: 1 },
             { id: 'coal', quantity: 1 },
         ],
         result: { id: 'green_metal_ingot', quantity: 1 },
@@ -1873,7 +2426,7 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Red Metal Ingot',
         description: 'Craft Red Metal Ingot',
         ingredients: [
-            { id: 'red_metal_ore', quantity: 2 },
+            { id: 'red_metal_ore', quantity: 1 },
             { id: 'coal', quantity: 1 },
         ],
         result: { id: 'red_metal_ingot', quantity: 1 },
@@ -1885,8 +2438,8 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Mithril Ingot',
         description: 'Craft Mithril Ingot',
         ingredients: [
-            { id: 'mithril_ore', quantity: 3 },
-            { id: 'coal', quantity: 2 },
+            { id: 'mithril_ore', quantity: 1 },
+            { id: 'coal', quantity: 1 },
         ],
         result: { id: 'mithril_ingot', quantity: 1 },
         requiredStation: 'furnace',
@@ -1897,7 +2450,8 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Silver Ingot',
         description: 'Craft Silver Ingot',
         ingredients: [
-            { id: 'stone', quantity: 2 },
+            { id: 'silver_ore', quantity: 1 },
+            { id: 'coal', quantity: 1 },
         ],
         result: { id: 'silver_ingot', quantity: 1 },
         requiredStation: 'furnace',
@@ -1908,7 +2462,8 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Platinum Ingot',
         description: 'Craft Platinum Ingot',
         ingredients: [
-            { id: 'stone', quantity: 2 },
+            { id: 'platinum_ore', quantity: 1 },
+            { id: 'coal', quantity: 1 },
         ],
         result: { id: 'platinum_ingot', quantity: 1 },
         requiredStation: 'furnace',
@@ -1919,7 +2474,8 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Adamantium Ingot',
         description: 'Craft Adamantium Ingot',
         ingredients: [
-            { id: 'stone', quantity: 2 },
+            { id: 'adamantium_ore', quantity: 1 },
+            { id: 'coal', quantity: 1 },
         ],
         result: { id: 'adamantium_ingot', quantity: 1 },
         requiredStation: 'furnace',
@@ -1930,7 +2486,8 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Eternium Ingot',
         description: 'Craft Eternium Ingot',
         ingredients: [
-            { id: 'stone', quantity: 2 },
+            { id: 'eternium_ore', quantity: 1 },
+            { id: 'coal', quantity: 1 },
         ],
         result: { id: 'eternium_ingot', quantity: 1 },
         requiredStation: 'furnace',
@@ -1941,7 +2498,8 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Black Metal Ingot',
         description: 'Craft Black Metal Ingot',
         ingredients: [
-            { id: 'stone', quantity: 2 },
+            { id: 'black_metal_ore', quantity: 1 },
+            { id: 'coal', quantity: 1 },
         ],
         result: { id: 'black_metal_ingot', quantity: 1 },
         requiredStation: 'furnace',
@@ -1952,7 +2510,8 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Blue Metal Ingot',
         description: 'Craft Blue Metal Ingot',
         ingredients: [
-            { id: 'stone', quantity: 2 },
+            { id: 'blue_metal_ore', quantity: 1 },
+            { id: 'coal', quantity: 1 },
         ],
         result: { id: 'blue_metal_ingot', quantity: 1 },
         requiredStation: 'furnace',
@@ -1963,7 +2522,8 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Orange Metal Ingot',
         description: 'Craft Orange Metal Ingot',
         ingredients: [
-            { id: 'stone', quantity: 2 },
+            { id: 'orange_metal_ore', quantity: 1 },
+            { id: 'coal', quantity: 1 },
         ],
         result: { id: 'orange_metal_ingot', quantity: 1 },
         requiredStation: 'furnace',
@@ -1974,7 +2534,8 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Purple Metal Ingot',
         description: 'Craft Purple Metal Ingot',
         ingredients: [
-            { id: 'stone', quantity: 2 },
+            { id: 'purple_metal_ore', quantity: 1 },
+            { id: 'coal', quantity: 1 },
         ],
         result: { id: 'purple_metal_ingot', quantity: 1 },
         requiredStation: 'furnace',
@@ -1985,7 +2546,8 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Yellow Metal Ingot',
         description: 'Craft Yellow Metal Ingot',
         ingredients: [
-            { id: 'stone', quantity: 2 },
+            { id: 'yellow_metal_ore', quantity: 1 },
+            { id: 'coal', quantity: 1 },
         ],
         result: { id: 'yellow_metal_ingot', quantity: 1 },
         requiredStation: 'furnace',
@@ -1996,7 +2558,8 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Plutonium Ingot',
         description: 'Craft Plutonium Ingot',
         ingredients: [
-            { id: 'stone', quantity: 2 },
+            { id: 'plUTONIUM_ore', quantity: 1 },
+            { id: 'coal', quantity: 1 },
         ],
         result: { id: 'plUTONIUM_ingot', quantity: 1 },
         requiredStation: 'furnace',
@@ -2172,8 +2735,8 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Star Metal Ingot',
         description: 'Craft Star Metal Ingot',
         ingredients: [
-            { id: 'star_metal_ore', quantity: 3 },
-            { id: 'coal', quantity: 3 },
+            { id: 'star_metal_ore', quantity: 1 },
+            { id: 'coal', quantity: 1 },
         ],
         result: { id: 'star_metal_ingot', quantity: 1 },
         requiredStation: 'furnace',
@@ -2361,7 +2924,8 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         name: 'Gold Ingot',
         description: 'Craft Gold Ingot',
         ingredients: [
-            { id: 'stone', quantity: 2 },
+            { id: 'gold_ore', quantity: 1 },
+            { id: 'coal', quantity: 1 },
         ],
         result: { id: 'gold_ingot', quantity: 1 },
         requiredStation: 'furnace',
@@ -2531,6 +3095,630 @@ export const CORE_RECIPES: CraftingRecipe[] = [
         ],
         result: { id: 'platinum_sword', quantity: 1 },
         requiredStation: 'anvil',
+        requiredTalent: undefined
+    },
+    // --- PAPER RECIPE ---
+    {
+        id: 'recipe_paper',
+        name: 'Paper',
+        description: 'Craft Paper',
+        ingredients: [
+            { id: 'wood', quantity: 1 }
+        ],
+        result: { id: 'paper', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_blink',
+        name: 'Spell Book: Blink',
+        description: 'Craft Spell Book: Blink',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_blink', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_levitate',
+        name: 'Spell Book: Levitate',
+        description: 'Craft Spell Book: Levitate',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_levitate', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_speed',
+        name: 'Spell Book: Speed',
+        description: 'Craft Spell Book: Speed',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_speed', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_heal',
+        name: 'Spell Book: Heal',
+        description: 'Craft Spell Book: Heal',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_heal', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_major_heal',
+        name: 'Spell Book: Major Heal',
+        description: 'Craft Spell Book: Major Heal',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_major_heal', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_summon_wolf',
+        name: 'Spell Book: Summon Wolf',
+        description: 'Craft Spell Book: Summon Wolf',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_summon_wolf', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_summon_bear',
+        name: 'Spell Book: Summon Bear',
+        description: 'Craft Spell Book: Summon Bear',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_summon_bear', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_magic_block',
+        name: 'Spell Book: Magic Block',
+        description: 'Craft Spell Book: Magic Block',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_magic_block', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_invisibility',
+        name: 'Spell Book: Invisibility',
+        description: 'Craft Spell Book: Invisibility',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_invisibility', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_fear',
+        name: 'Spell Book: Fear',
+        description: 'Craft Spell Book: Fear',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_fear', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_arcane_light',
+        name: 'Spell Book: Arcane Light',
+        description: 'Craft Spell Book: Arcane Light',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_arcane_light', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_exploding_rune',
+        name: 'Spell Book: Exploding Rune',
+        description: 'Craft Spell Book: Exploding Rune',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_exploding_rune', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_summon_wyrmling',
+        name: 'Spell Book: Summon Wyrmling',
+        description: 'Craft Spell Book: Summon Wyrmling',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_summon_wyrmling', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_summon_skeleton',
+        name: 'Spell Book: Summon Skeleton',
+        description: 'Craft Spell Book: Summon Skeleton',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_summon_skeleton', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_summon_zombie',
+        name: 'Spell Book: Summon Zombie',
+        description: 'Craft Spell Book: Summon Zombie',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_summon_zombie', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_summon_bone_pile',
+        name: 'Spell Book: Summon Bone Pile',
+        description: 'Craft Spell Book: Summon Bone Pile',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_summon_bone_pile', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_animate_stone',
+        name: 'Spell Book: Animate Stone',
+        description: 'Craft Spell Book: Animate Stone',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_animate_stone', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_mark_return',
+        name: 'Spell Book: Mark and Return',
+        description: 'Craft Spell Book: Mark and Return',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_mark_return', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_color_portals',
+        name: 'Spell Book of Color Portals',
+        description: 'Craft Spell Book of Color Portals',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_color_portals', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_burning_hands',
+        name: 'Spell Book: Burning Hands',
+        description: 'Craft Spell Book: Burning Hands',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_burning_hands', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_fire_bolt',
+        name: 'Spell Book: Fire Bolt',
+        description: 'Craft Spell Book: Fire Bolt',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_fire_bolt', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_summon_rat',
+        name: 'Spell Book: Summon Rat',
+        description: 'Craft Spell Book: Summon Rat',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_summon_rat', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_ice_bolt',
+        name: 'Spell Book: Ice Bolt',
+        description: 'Craft Spell Book: Ice Bolt',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_ice_bolt', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_lightning_bolt',
+        name: 'Spell Book: Lightning Bolt',
+        description: 'Craft Spell Book: Lightning Bolt',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_lightning_bolt', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_arcane_bolt',
+        name: 'Spell Book: Arcane Bolt',
+        description: 'Craft Spell Book: Arcane Bolt',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_arcane_bolt', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_acid_bolt',
+        name: 'Spell Book: Acid Bolt',
+        description: 'Craft Spell Book: Acid Bolt',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_acid_bolt', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_force_bolt',
+        name: 'Spell Book: Force Bolt',
+        description: 'Craft Spell Book: Force Bolt',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_force_bolt', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_fire_ball',
+        name: 'Spell Book: Fire Ball',
+        description: 'Craft Spell Book: Fire Ball',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_fire_ball', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_ice_ball',
+        name: 'Spell Book: Ice Ball',
+        description: 'Craft Spell Book: Ice Ball',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_ice_ball', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_lightning_ball',
+        name: 'Spell Book: Lightning Ball',
+        description: 'Craft Spell Book: Lightning Ball',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_lightning_ball', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_arcane_ball',
+        name: 'Spell Book: Arcane Ball',
+        description: 'Craft Spell Book: Arcane Ball',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_arcane_ball', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_acid_ball',
+        name: 'Spell Book: Acid Ball',
+        description: 'Craft Spell Book: Acid Ball',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_acid_ball', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_force_ball',
+        name: 'Spell Book: Force Ball',
+        description: 'Craft Spell Book: Force Ball',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_force_ball', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_black_hole',
+        name: 'Spell Book: Black Hole',
+        description: 'Craft Spell Book: Black Hole',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_black_hole', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_chain_lightning',
+        name: 'Spell Book: Chain Lightning',
+        description: 'Craft Spell Book: Chain Lightning',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_chain_lightning', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_vampiric_bolt',
+        name: 'Spell Book: Vampiric Bolt',
+        description: 'Craft Spell Book: Vampiric Bolt',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_vampiric_bolt', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_vampiric_ball',
+        name: 'Spell Book: Vampiric Ball',
+        description: 'Craft Spell Book: Vampiric Ball',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_vampiric_ball', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_mist_form',
+        name: 'Spell Book: Mist Form',
+        description: 'Craft Spell Book: Mist Form',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_mist_form', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_eye',
+        name: 'Spell Book: Eye',
+        description: 'Craft Spell Book: Eye',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_eye', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_dig_bolt',
+        name: 'Spell Book: Dig Bolt',
+        description: 'Craft Spell Book: Dig Bolt',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_dig_bolt', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_meteor_shower',
+        name: 'Spell Book: Meteor Shower',
+        description: 'Craft Spell Book: Meteor Shower',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_meteor_shower', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_rune_of_destruction',
+        name: 'Spell Book: Rune of Destruction',
+        description: 'Craft Spell Book: Rune of Destruction',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_rune_of_destruction', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_rune_of_gravity',
+        name: 'Spell Book: Rune of Gravity',
+        description: 'Craft Spell Book: Rune of Gravity',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_rune_of_gravity', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_rune_of_fire',
+        name: 'Spell Book: Rune of Fire',
+        description: 'Craft Spell Book: Rune of Fire',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_rune_of_fire', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_rune_of_ice',
+        name: 'Spell Book: Rune of Ice',
+        description: 'Craft Spell Book: Rune of Ice',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_rune_of_ice', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_rune_of_lightning',
+        name: 'Spell Book: Rune of Lightning',
+        description: 'Craft Spell Book: Rune of Lightning',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_rune_of_lightning', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_rune_of_acid',
+        name: 'Spell Book: Rune of Acid',
+        description: 'Craft Spell Book: Rune of Acid',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_rune_of_acid', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_rune_of_life',
+        name: 'Spell Book: Rune of Life',
+        description: 'Craft Spell Book: Rune of Life',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_rune_of_life', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_rune_of_arcane',
+        name: 'Spell Book: Rune of Arcane',
+        description: 'Craft Spell Book: Rune of Arcane',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_rune_of_arcane', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_rune_of_holy',
+        name: 'Spell Book: Rune of Holy',
+        description: 'Craft Spell Book: Rune of Holy',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_rune_of_holy', quantity: 1 },
+        requiredStation: 'carpenters_bench',
+        requiredTalent: undefined
+    },
+    {
+        id: 'recipe_book_rune_of_void',
+        name: 'Spell Book: Rune of Void',
+        description: 'Craft Spell Book: Rune of Void',
+        ingredients: [
+            { id: 'paper', quantity: 99 },
+            { id: 'leather', quantity: 2 }
+        ],
+        result: { id: 'book_rune_of_void', quantity: 1 },
+        requiredStation: 'carpenters_bench',
         requiredTalent: undefined
     },
 ];

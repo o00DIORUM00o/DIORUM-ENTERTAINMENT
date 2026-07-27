@@ -23,17 +23,53 @@ export class DrakeUpdater {
                 drake.vy = 0;
             } else {
                 // AI Logic - Drakes are aggressive and fast
-                const dx = engine.player.x - drake.x;
-                const dy = engine.player.y - drake.y;
-                const dz = engine.player.z - drake.z;
-                const distToPlayer = Math.sqrt(dx*dx + dy*dy + dz*dz);
+                let target = engine.player;
+                if (drake.isFriendly) {
+                    let closestEnemy = null;
+                    let closestDist = 15;
+                    const allEnemies = [
+                        ...engine.goblins, ...engine.orcs, ...engine.skeletons, ...engine.ants, ...engine.rats, ...engine.drakes, ...engine.archers, ...engine.darkKnights, ...engine.abyssalKnights, ...engine.lavaGolems, ...engine.frostCasters, ...engine.phantomWizards, ...engine.shadowWizards, ...engine.sphinxs, ...engine.sandTerrors, ...engine.voidLords, ...engine.fireDragonBosses
+                    ];
+                    for (const enemy of allEnemies) {
+                        if (enemy.isFriendly) continue;
+                        const edist = Math.sqrt((enemy.x - drake.x)**2 + (enemy.y - drake.y)**2 + (enemy.z - drake.z)**2);
+                        if (edist < closestDist) {
+                            closestDist = edist;
+                            closestEnemy = enemy;
+                        }
+                    }
+                    if (closestEnemy) {
+                        target = closestEnemy;
+                    }
+                }
+                
+                const dx = target.x - drake.x;
+                const dy = target.y - drake.y;
+                const dz = target.z - drake.z;
+                const distToTarget = Math.sqrt(dx*dx + dy*dy + dz*dz);
                 const dist2D = Math.sqrt(dx*dx + dy*dy);
                 
                 if (drake.state !== 'ATTACK') {
-                    if (distToPlayer < 40 * engine.player.getVisibilityMult()) {
-                        drake.state = 'CHASE';
-                    } else if (distToPlayer > 60 * engine.player.getVisibilityMult()) {
-                        drake.state = 'WANDER';
+                    if (!drake.isFriendly) {
+                        if (distToTarget < 40 * engine.player.getVisibilityMult()) {
+                            drake.state = 'CHASE';
+                        } else if (distToTarget > 60 * engine.player.getVisibilityMult()) {
+                            drake.state = 'WANDER';
+                        }
+                    } else {
+                        if (target !== engine.player) {
+                            drake.state = 'CHASE';
+                        } else {
+                            // Follow player
+                            if (distToTarget > 15) {
+                                drake.x = target.x + (Math.random() - 0.5) * 2;
+                                drake.y = target.y + (Math.random() - 0.5) * 2;
+                            } else if (distToTarget > 4) {
+                                drake.state = 'CHASE';
+                            } else {
+                                drake.state = 'WANDER';
+                            }
+                        }
                     }
                 }
                 
@@ -65,17 +101,19 @@ export class DrakeUpdater {
                     if (drake.attackTimer <= 0) {
                         // Deal damage
                         if (dist2D < 1.5 && Math.abs(dz) < 1.0) {
-                            engine.player.takeDamage(drake.damage);
-                            engine.particles.push({
-                                x: engine.player.x,
-                                y: engine.player.y,
-                                z: engine.player.z + 1,
-                                text: `-${drake.damage}`,
-                                color: '#ef4444',
-                                life: 1.0,
-                                maxLife: 1.0,
-                                vy: -2
-                            });
+                            if (target === engine.player) {
+                                engine.player.takeDamage(drake.damage);
+                                engine.particles.push({
+                                    x: engine.player.x, y: engine.player.y, z: engine.player.z + 1,
+                                    text: `-${drake.damage}`, color: '#ef4444', life: 1.0, maxLife: 1.0, vy: -2
+                                });
+                            } else {
+                                target.health -= drake.damage;
+                                engine.particles.push({
+                                    x: target.x, y: target.y, z: target.z + 1,
+                                    text: `-${drake.damage}`, color: '#ef4444', life: 1.0, maxLife: 1.0, vy: -2
+                                });
+                            }
                         }
                         drake.state = 'CHASE';
                     }

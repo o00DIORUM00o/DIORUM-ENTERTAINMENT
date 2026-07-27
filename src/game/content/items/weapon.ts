@@ -5,6 +5,7 @@ import { BOWS_AND_RANGED_ITEMS } from './weapons/bows_and_ranged';
 import { STAVES_ITEMS } from './weapons/staves';
 import { CLUBS_AND_HAMMERS_ITEMS } from './weapons/clubs_and_hammers';
 import { TOOLS_ITEMS } from './weapons/tools';
+import { COLOR_METAL_WEAPONS } from './weapons/color_metals';
 
 export const WEAPON_ITEMS: Record<string, Item> = {
     ...SWORDS_ITEMS,
@@ -13,4 +14,5 @@ export const WEAPON_ITEMS: Record<string, Item> = {
     ...STAVES_ITEMS,
     ...CLUBS_AND_HAMMERS_ITEMS,
     ...TOOLS_ITEMS,
+    ...COLOR_METAL_WEAPONS,
 };

@@ -142,7 +142,10 @@ export const SWORDS_ITEMS: Record<string, Item> = {
         damage: 18,
         reach: 1.5,
         cooldown: 0.5,
-        spread: 1
+        spread: 1,
+        secondaryAbility: 'SPIN_POISON_WAVE',
+        chargeTime: 1.0,
+        chargeManaCost: 20
     },
     'mithril_greatsword': {
         id: "mithril_greatsword",
@@ -397,7 +400,10 @@ export const SWORDS_ITEMS: Record<string, Item> = {
         damage: 18,
         reach: 1.5,
         cooldown: 0.5,
-        spread: 1
+        spread: 1,
+        secondaryAbility: 'SPIN_THUNDER_STRIKE',
+        chargeTime: 1.0,
+        chargeManaCost: 20
     },
     'blue_metal_sword': {
         id: "blue_metal_sword",
@@ -409,7 +415,10 @@ export const SWORDS_ITEMS: Record<string, Item> = {
         damage: 18,
         reach: 1.5,
         cooldown: 0.5,
-        spread: 1
+        spread: 1,
+        secondaryAbility: 'SPIN_LIGHT_BURST',
+        chargeTime: 1.0,
+        chargeManaCost: 20
     },
     'red_metal_sword': {
         id: "red_metal_sword",
@@ -421,7 +430,10 @@ export const SWORDS_ITEMS: Record<string, Item> = {
         damage: 18,
         reach: 1.5,
         cooldown: 0.5,
-        spread: 1
+        spread: 1,
+        secondaryAbility: 'SPIN_DRAGON_BREATH',
+        chargeTime: 1.0,
+        chargeManaCost: 25
     },
     'black_metal_sword': {
         id: "black_metal_sword",
@@ -433,7 +445,10 @@ export const SWORDS_ITEMS: Record<string, Item> = {
         damage: 18,
         reach: 1.5,
         cooldown: 0.5,
-        spread: 1
+        spread: 1,
+        secondaryAbility: 'SPIN_BLOOD_THIRST',
+        chargeTime: 1.0,
+        chargeManaCost: 25
     },
     'purple_metal_sword': {
         id: "purple_metal_sword",
@@ -445,7 +460,10 @@ export const SWORDS_ITEMS: Record<string, Item> = {
         damage: 18,
         reach: 1.5,
         cooldown: 0.5,
-        spread: 1
+        spread: 1,
+        secondaryAbility: 'SPIN_TELEPORT_STRIKE',
+        chargeTime: 1.0,
+        chargeManaCost: 25
     },
     'orange_metal_sword': {
         id: "orange_metal_sword",
@@ -457,7 +475,10 @@ export const SWORDS_ITEMS: Record<string, Item> = {
         damage: 18,
         reach: 1.5,
         cooldown: 0.5,
-        spread: 1
+        spread: 1,
+        secondaryAbility: 'SPIN_EARTHQUAKE',
+        chargeTime: 1.0,
+        chargeManaCost: 25
     },
     'gold_sword': {
         id: "gold_sword",

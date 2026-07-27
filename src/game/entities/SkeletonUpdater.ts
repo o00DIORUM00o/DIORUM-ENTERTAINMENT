@@ -90,14 +90,21 @@ export class SkeletonUpdater {
                 
                 if (skel.attackTimer <= 0) {
                     // Execute Attack
+                    const target = skel.target || engine.player;
                     if (isArcher) {
-                        // Shoot bone projectile
                         const pSpeed = 10;
-                        const distToP = Math.sqrt(Math.pow(engine.player.x - skel.x, 2) + Math.pow(engine.player.y - skel.y, 2));
+                        const distToP = Math.sqrt(Math.pow(target.x - skel.x, 2) + Math.pow(target.y - skel.y, 2));
                         const timeToHit = distToP / pSpeed;
-                        const inputObj = engine.input.getMovement();
-                        const pDx = engine.player.x + (inputObj.dx * 5.0 * timeToHit) - skel.x;
-                        const pDy = engine.player.y + (inputObj.dy * 5.0 * timeToHit) - skel.y;
+                        let pDx = target.x - skel.x;
+                        let pDy = target.y - skel.y;
+                        if (target === engine.player) {
+                            const inputObj = engine.input.getMovement();
+                            pDx += (inputObj.dx * 5.0 * timeToHit);
+                            pDy += (inputObj.dy * 5.0 * timeToHit);
+                        } else {
+                            pDx += (target.vx || 0) * timeToHit;
+                            pDy += (target.vy || 0) * timeToHit;
+                        }
                         const predictiveAimAngle = Math.atan2(pDy, pDx);
 
                         engine.projectiles.push({
@@ -107,16 +114,23 @@ export class SkeletonUpdater {
                             vz: 0,
                             damage: skel.damage,
                             life: 2.0, maxLife: 2.0,
-                            isPlayer: false, color: '#e2e8f0'
+                            isPlayer: skel.isFriendly, color: '#e2e8f0'
                         });
                     } else {
-                        // SWORDSMAN Melee Hit
-                        if (dist2D < 2.0 && Math.abs(engine.player.z - skel.z) < 1.0) {
-                            engine.player.takeDamage(skel.damage);
-                            engine.particles.push({
-                                x: engine.player.x, y: engine.player.y, z: engine.player.z + 1,
-                                text: `-${skel.damage}`, color: '#ef4444', life: 1.0, maxLife: 1.0, vy: -2
-                            });
+                        if (dist2D < 2.0 && Math.abs(target.z - skel.z) < 1.0) {
+                            if (target === engine.player) {
+                                engine.player.takeDamage(skel.damage);
+                                engine.particles.push({
+                                    x: engine.player.x, y: engine.player.y, z: engine.player.z + 1,
+                                    text: `-${skel.damage}`, color: '#ef4444', life: 1.0, maxLife: 1.0, vy: -2
+                                });
+                            } else {
+                                target.health -= skel.damage;
+                                engine.particles.push({
+                                    x: target.x, y: target.y, z: target.z + 1,
+                                    text: `-${skel.damage}`, color: '#ef4444', life: 1.0, maxLife: 1.0, vy: -2
+                                });
+                            }
                         }
                     }
                 }

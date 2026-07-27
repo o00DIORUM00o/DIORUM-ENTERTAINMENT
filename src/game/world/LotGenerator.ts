@@ -37,6 +37,8 @@ export class LotGenerator {
                     lotTypeVal = 'SPAWN_CAMP';
                 } else if (ix === 0 && iy === -128 && (!planetDef.id || planetDef.id === 'THREA' || !['ARETH','THAER','TERHA','TARHE'].includes(planetDef.id))) {
                     lotTypeVal = 'NORTH_DUNGEON';
+                } else if (ix === 128 && iy === 128 && (!planetDef.id || planetDef.id === 'THREA')) {
+                    lotTypeVal = 'SKY_CASTLE_ANCHOR';
                 } else if (ix === -128 && iy === 0 && (!planetDef.id || planetDef.id === 'THREA' || !['ARETH','THAER','TERHA','TARHE'].includes(planetDef.id))) {
                     lotTypeVal = 'WEST_CASTLE';
                 } else if (planetDef.id === 'ARETH') {
@@ -68,7 +70,11 @@ export class LotGenerator {
                     else if (hash < 0.26) lotTypeVal = 'SUNKEN_ZIGGURAT_DUNGEON';
                     else if (hash < 0.28) lotTypeVal = 'VILLAGE';
                     else if (hash < 0.32) lotTypeVal = 'HALFLING_VILLAGE';
-                    else if (hash < 0.38) lotTypeVal = 'FARM';
+                    else if (hash < 0.35) lotTypeVal = 'FARM';
+                    else if (hash < 0.37) lotTypeVal = 'TRADERS_CAMP';
+                    else if (hash < 0.39) lotTypeVal = 'MINE_SHAFT';
+                    else if (hash < 0.41) lotTypeVal = 'BERRY_FIELD';
+                    else if (hash < 0.43) lotTypeVal = 'CARROT_FIELD';
                     else if (hash < 0.44) lotTypeVal = 'POND';
                     else if (hash < 0.48) lotTypeVal = 'RUINS';
                     else if (hash < 0.52) lotTypeVal = 'GRAVEYARD';
@@ -87,7 +93,11 @@ export class LotGenerator {
                     else if (hash < 0.10) lotTypeVal = 'HALFLING_VILLAGE';
                     else if (hash < 0.15) lotTypeVal = 'RUINS';
                     else if (hash < 0.20) lotTypeVal = 'GRAVEYARD';
-                    else if (hash < 0.25) lotTypeVal = 'FARM';
+                    else if (hash < 0.23) lotTypeVal = 'FARM';
+                    else if (hash < 0.25) lotTypeVal = 'TRADERS_CAMP';
+                    else if (hash < 0.27) lotTypeVal = 'MINE_SHAFT';
+                    else if (hash < 0.29) lotTypeVal = 'BERRY_FIELD';
+                    else if (hash < 0.31) lotTypeVal = 'CARROT_FIELD';
                     else if (hash < 0.30) lotTypeVal = 'POND';
                     else if (hash < 0.35) lotTypeVal = 'POMERANIAN_CARAVAN_CAMP';
                     else if (hash < 0.40) lotTypeVal = 'WOLF_FOLK_CAMP';
@@ -725,7 +735,11 @@ export class LotGenerator {
                 }
                 
                 // Add structures via local space
-                if (lotTypeVal === 'WIZARD_TOWER') TerrainGenerator.buildStructureLocal(chunk, 'wizard_tower', ix, iy, baseZ + 1);
+                if (lotTypeVal === 'WIZARD_TOWER') TerrainGenerator.buildStructureLocal(chunk, 'WIZARD_TOWER', ix, iy, baseZ + 1);
+                else if (lotTypeVal === 'TRADERS_CAMP') TerrainGenerator.buildStructureLocal(chunk, 'TRADERS_CAMP', ix, iy, baseZ + 1);
+                else if (lotTypeVal === 'MINE_SHAFT') TerrainGenerator.buildStructureLocal(chunk, 'MINE_SHAFT', ix, iy, baseZ + 1);
+                else if (lotTypeVal === 'BERRY_FIELD') TerrainGenerator.buildStructureLocal(chunk, 'BERRY_FIELD', ix, iy, baseZ + 1);
+                else if (lotTypeVal === 'CARROT_FIELD') TerrainGenerator.buildStructureLocal(chunk, 'CARROT_FIELD', ix, iy, baseZ + 1);
                 else if (lotTypeVal === 'RUINS') TerrainGenerator.buildStructureLocal(chunk, 'ruins', ix, iy, baseZ + 1);
                 else if (lotTypeVal === 'VILLAGE') TerrainGenerator.buildStructureLocal(chunk, 'village', ix, iy, baseZ + 1);
                 else if (lotTypeVal === 'HALFLING_VILLAGE') TerrainGenerator.buildStructureLocal(chunk, 'halfling_village', ix, iy, baseZ + 1);
@@ -740,9 +754,10 @@ export class LotGenerator {
                 else if (lotTypeVal === 'SQUIRREL_FOLK_VILLAGE') TerrainGenerator.buildStructureLocal(chunk, 'squirrel_folk_village', ix, iy, baseZ + 1);
                 else if (lotTypeVal === 'BEAST_TAMER_OUTPOST') TerrainGenerator.buildStructureLocal(chunk, 'beast_tamer_outpost', ix, iy, baseZ + 1);
                 else if (lotTypeVal === 'PRIMAL_BEAST_DEN') TerrainGenerator.buildStructureLocal(chunk, 'primal_beast_den', ix, iy, baseZ + 1);
+                else if (lotTypeVal === 'SKY_CASTLE_ANCHOR') TerrainGenerator.buildStructureLocal(chunk, 'sky_castle', ix, iy, WORLD_HEIGHT - 35);
                 
                 // Always recompute heightmap inside the lot if we did structure overlay
-                if (['WEST_CASTLE', 'NORTH_DUNGEON', 'MARBLE_DUNGEON', 'GREEN_STONE_DUNGEON', 'OBSIDIAN_DUNGEON', 'ICE_DUNGEON', 'BLOOD_STONE_DUNGEON', 'FOREST_RUINS_DUNGEON', 'ROYAL_TOMB_DUNGEON', 'CRYSTAL_CAVERN_DUNGEON', 'LAVA_FORGE_DUNGEON', 'DESERT_CRYPT_DUNGEON', 'NIGHTMARE_DUNGEON', 'MAGIC_ACADEMY_DUNGEON', 'SUNKEN_ZIGGURAT_DUNGEON', 'SPAWN_CAMP', 'DRACONIC_ROOST', 'ORC_WAR_CAMP', 'PILGRIMS_REST', 'BANDIT_TOLL_GATE', 'RUINED_WAGON_AMBUSH', 'CASTLE', 'DEEP_DUNGEON', 'TEMPLE', 'VILLAGE', 'CAMP', 'WIZARD_TOWER', 'FARM', 'ARENA', 'ARENA_WORM', 'ARENA_WIZARD', 'HALFLING_VILLAGE', 'POMERANIAN_CARAVAN_CAMP', 'WOLF_FOLK_CAMP', 'TERRIER_OUTPOST', 'PIT_BULL_OUTPOST', 'HUMAN_CASTLE', 'HUMAN_OUTPOST', 'SQUIRREL_FOLK_VILLAGE', 'BEAST_TAMER_OUTPOST', 'PRIMAL_BEAST_DEN'].includes(lotTypeVal)) {
+                if (['WEST_CASTLE', 'NORTH_DUNGEON', 'MARBLE_DUNGEON', 'GREEN_STONE_DUNGEON', 'OBSIDIAN_DUNGEON', 'ICE_DUNGEON', 'BLOOD_STONE_DUNGEON', 'FOREST_RUINS_DUNGEON', 'ROYAL_TOMB_DUNGEON', 'CRYSTAL_CAVERN_DUNGEON', 'LAVA_FORGE_DUNGEON', 'DESERT_CRYPT_DUNGEON', 'NIGHTMARE_DUNGEON', 'MAGIC_ACADEMY_DUNGEON', 'SUNKEN_ZIGGURAT_DUNGEON', 'SPAWN_CAMP', 'DRACONIC_ROOST', 'ORC_WAR_CAMP', 'PILGRIMS_REST', 'BANDIT_TOLL_GATE', 'RUINED_WAGON_AMBUSH', 'CASTLE', 'DEEP_DUNGEON', 'TEMPLE', 'VILLAGE', 'CAMP', 'WIZARD_TOWER', 'FARM', 'ARENA', 'ARENA_WORM', 'ARENA_WIZARD', 'HALFLING_VILLAGE', 'TRADERS_CAMP', 'MINE_SHAFT', 'BERRY_FIELD', 'CARROT_FIELD', 'WIZARD_TOWER', 'POMERANIAN_CARAVAN_CAMP', 'WOLF_FOLK_CAMP', 'TERRIER_OUTPOST', 'PIT_BULL_OUTPOST', 'HUMAN_CASTLE', 'HUMAN_OUTPOST', 'SQUIRREL_FOLK_VILLAGE', 'BEAST_TAMER_OUTPOST', 'PRIMAL_BEAST_DEN'].includes(lotTypeVal)) {
                     for (let x = 0; x < CHUNK_SIZE; x++) {
                         for (let y = 0; y < CHUNK_SIZE; y++) {
                             const wx = minWx + x;

@@ -86,6 +86,7 @@ export class Engine {
     rats: Rat[] = [];
     abyssalKnights: AbyssalKnight[] = [];
     lavaGolems: LavaGolem[] = [];
+    metalGolems: any[] = [];
     rockGolems: any[] = [];
     skeletons: Skeleton[] = [];
     skeletonRemains: SkeletonRemains[] = [];
@@ -182,6 +183,7 @@ export class Engine {
         this.npcs = [];
         this.rats = [];
         this.lavaGolems = [];
+        this.metalGolems = [];
         this.rockGolems = [];
         this.skeletons = [];
         this.skeletonRemains = [];

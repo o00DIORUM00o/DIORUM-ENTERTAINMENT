@@ -78,28 +78,49 @@ for (let i = engine.animals.length - 1; i >= 0; i--) {
                     animal.attackCooldown = 0;
                 }
                 
-                // Find closest passive animal
                 let closestPrey: any = null;
                 let closestPreyDist = 15;
-                for (const prey of engine.animals) {
-                    if (prey.behavior === 'PASSIVE') {
-                        const ddx = prey.x - animal.x;
-                        const ddy = prey.y - animal.y;
-                        const ddz = prey.z - animal.z;
+                
+                if (animal.isFriendly) {
+                    const allEnemies = [
+                        ...engine.goblins, ...engine.orcs, ...engine.skeletons, ...engine.ants, ...engine.rats, ...engine.drakes, ...engine.archers, ...engine.darkKnights, ...engine.abyssalKnights, ...engine.lavaGolems, ...engine.frostCasters, ...engine.phantomWizards, ...engine.shadowWizards, ...engine.sphinxs, ...engine.sandTerrors, ...engine.voidLords, ...engine.fireDragonBosses
+                    ];
+                    for (const enemy of allEnemies) {
+                        if (enemy.isFriendly) continue;
+                        const ddx = enemy.x - animal.x;
+                        const ddy = enemy.y - animal.y;
+                        const ddz = enemy.z - animal.z;
                         const ddist = Math.sqrt(ddx*ddx + ddy*ddy + ddz*ddz);
                         if (ddist < closestPreyDist) {
                             closestPreyDist = ddist;
-                            closestPrey = prey;
+                            closestPrey = enemy;
+                        }
+                    }
+                } else {
+                    for (const prey of engine.animals) {
+                        if (prey.behavior === 'PASSIVE' && !prey.isFriendly) {
+                            const ddx = prey.x - animal.x;
+                            const ddy = prey.y - animal.y;
+                            const ddz = prey.z - animal.z;
+                            const ddist = Math.sqrt(ddx*ddx + ddy*ddy + ddz*ddz);
+                            if (ddist < closestPreyDist) {
+                                closestPreyDist = ddist;
+                                closestPrey = prey;
+                            }
                         }
                     }
                 }
                 
-                if (distToPlayer < 6) {
-                    animal.target = engine.player;
-                } else if (closestPrey) {
-                    animal.target = closestPrey;
+                if (animal.isFriendly) {
+                    animal.target = closestPrey || undefined;
                 } else {
-                    animal.target = undefined;
+                    if (distToPlayer < 6) {
+                        animal.target = engine.player;
+                    } else if (closestPrey) {
+                        animal.target = closestPrey;
+                    } else {
+                        animal.target = undefined;
+                    }
                 }
 
                 animal.moveSpeed = animal.type === 'WOLF' ? 3.0 : (animal.type === 'BEAR' ? 2.0 : 2.5);

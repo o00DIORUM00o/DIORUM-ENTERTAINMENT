@@ -263,6 +263,8 @@ export class Renderer {
         Renderer.drawEntityList(ctx, engine.projectiles, player, playerZ, world, halfW, halfH, 'PROJECTILE');
         Renderer.drawEntityList(ctx, engine.abyssalKnights, player, playerZ, world, halfW, halfH, 'ABYSSAL_KNIGHT');
         Renderer.drawEntityList(ctx, engine.lavaGolems, player, playerZ, world, halfW, halfH, 'LAVA_GOLEM');
+        Renderer.drawEntityList(ctx, engine.metalGolems, player, playerZ, world, halfW, halfH);
+        if (player.companions) Renderer.drawEntityList(ctx, player.companions, player, playerZ, world, halfW, halfH);
         Renderer.drawEntityList(ctx, engine.kobolds, player, playerZ, world, halfW, halfH, 'KOBOLD');
         Renderer.drawEntityList(ctx, engine.gargoyles, player, playerZ, world, halfW, halfH, 'GARGOYLE');
         Renderer.drawEntityList(ctx, engine.djinns, player, playerZ, world, halfW, halfH, 'DJINN');
