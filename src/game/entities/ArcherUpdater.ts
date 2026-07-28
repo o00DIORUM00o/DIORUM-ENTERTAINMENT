@@ -46,6 +46,7 @@ export class ArcherUpdater {
                     const shootVy = (dy / len) * 15;
                     
                     engine.projectiles.push({
+                            isPlayer: false,
                         x: archer.x,
                         y: archer.y,
                         z: archer.z + 1.0,

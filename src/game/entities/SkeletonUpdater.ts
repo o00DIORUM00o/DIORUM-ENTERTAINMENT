@@ -114,7 +114,7 @@ export class SkeletonUpdater {
                             vz: 0,
                             damage: skel.damage,
                             life: 2.0, maxLife: 2.0,
-                            isPlayer: skel.isFriendly, color: '#e2e8f0'
+                            isPlayer: !!skel.isFriendly, color: '#e2e8f0'
                         });
                     } else {
                         if (dist2D < 2.0 && Math.abs(target.z - skel.z) < 1.0) {

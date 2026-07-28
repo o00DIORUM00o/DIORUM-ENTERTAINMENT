@@ -91,6 +91,7 @@ export class PhantomWizardUpdater {
                         for (let a = -1; a <= 1; a++) {
                             const pAngle = wiz.aimAngle + a * 0.3;
                             engine.projectiles.push({
+                            isPlayer: false,
                                 x: wiz.x, y: wiz.y, z: wiz.z + 1,
                                 vx: Math.cos(pAngle) * 12.0, vy: Math.sin(pAngle) * 12.0, vz: 0,
                                 life: 3.0, damage: 20, type: 'magic_missile'
@@ -99,6 +100,7 @@ export class PhantomWizardUpdater {
                     } else if (attackRoll < 0.8) {
                         // Fast single projectile
                         engine.projectiles.push({
+                            isPlayer: false,
                             x: wiz.x, y: wiz.y, z: wiz.z + 1,
                             vx: Math.cos(wiz.aimAngle) * 20.0, vy: Math.sin(wiz.aimAngle) * 20.0, vz: 0,
                             life: 3.0, damage: 30, type: 'magic_missile'

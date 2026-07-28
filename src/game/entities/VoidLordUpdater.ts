@@ -107,12 +107,14 @@ export class VoidLordUpdater {
                     for (let a = 0; a < 8; a++) {
                         const pAngle = (a / 8) * Math.PI * 2;
                         engine.projectiles.push({
+                            isPlayer: false,
                             x: lord.x, y: lord.y, z: lord.z + 1,
                             vx: Math.cos(pAngle) * 15.0, vy: Math.sin(pAngle) * 15.0, vz: 0,
                             life: 2.0, damage: 30, type: 'magic_missile'
                         });
                     }
                     engine.projectiles.push({
+                            isPlayer: false,
                         x: lord.x, y: lord.y, z: lord.z + 1,
                         vx: Math.cos(lord.aimAngle) * 25.0, vy: Math.sin(lord.aimAngle) * 25.0, vz: 0,
                         life: 3.0, damage: 50, type: 'magic_missile'

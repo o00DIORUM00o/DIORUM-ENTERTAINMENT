@@ -1,5 +1,6 @@
-import { GoogleGenAI } from '@google/genai';
-import React, { useState, useEffect, useRef } from 'react';
+const fs = require('fs');
+
+const originalTop = `import React, { useState, useEffect, useRef } from 'react';
 import { NPC } from '../game/Engine';
 import { ITEMS } from '../game/Inventory';
 import { QuestSystem } from '../game/systems/QuestSystem';
@@ -121,6 +122,7 @@ export const NPCChat: React.FC<NPCChatProps> = ({ npc, engine, onClose, playerIn
         }
         
         const initialOptions = [];
+        
         initialOptions.push("TALK");
         
         if (onTrade && (
@@ -155,15 +157,15 @@ export const NPCChat: React.FC<NPCChatProps> = ({ npc, engine, onClose, playerIn
         const activeQuests = QuestSystem.getActiveQuestsForGiver(engine.player, npc.type);
         for (const q of activeQuests) {
             if (q.state === 'COMPLETED') {
-                initialOptions.push(`QUEST (Turn in): ${q.title}`);
+                initialOptions.push(\`QUEST (Turn in): \${q.title}\`);
             } else {
-                initialOptions.push(`QUEST (Active): ${q.title}`);
+                initialOptions.push(\`QUEST (Active): \${q.title}\`);
             }
         }
         
         const availableQuests = QuestSystem.getAvailableQuests(engine.player, npc.type);
         for (const q of availableQuests) {
-            initialOptions.push(`QUEST (Accept): ${q.title}`);
+            initialOptions.push(\`QUEST (Accept): \${q.title}\`);
         }
         
         if (npc.type === 'VILLAGER' && ['VILLAGER_GUARD', 'VILLAGER_GLADIATOR', 'VILLAGER_KNIGHT', 'VILLAGER_WIZARD', 'VILLAGER_SMITH', 'VILLAGER_FARMER'].includes((npc as any).profession)) {
@@ -238,9 +240,9 @@ export const NPCChat: React.FC<NPCChatProps> = ({ npc, engine, onClose, playerIn
                 if (engine.player.removeItem('silver_piece', 10)) {
                     const companionNameBase = ['Fang', 'Scout', 'Rex', 'Shadow', 'Ghost', 'Brutus', 'Ash'][Math.floor(Math.random()*7)];
                     const newCompanion = { 
-                        id: `comp_${Date.now()}`,
+                        id: \`comp_\${Date.now()}\`,
                         type: 'WOLF', 
-                        name: `Dire Wolf ${companionNameBase}`,
+                        name: \`Dire Wolf \${companionNameBase}\`,
                         damage: 15,
                         health: 300,
                         maxHealth: 300,
@@ -248,7 +250,7 @@ export const NPCChat: React.FC<NPCChatProps> = ({ npc, engine, onClose, playerIn
                     };
                     if (!engine.player.companions) engine.player.companions = [];
                     engine.player.companions.push(newCompanion);
-                    setGreeting(`Treat ${newCompanion.name} well. They'll fight to the death for you.`);
+                    setGreeting(\`Treat \${newCompanion.name} well. They'll fight to the death for you.\`);
                     const newOptions = options.filter(o => o !== 'TRADE (Adopt Companion - 10 silver)');
                     setOptions(newOptions.length > 0 ? newOptions : ['GOODBYE']);
                     setSelectedIndex(0);
@@ -289,7 +291,7 @@ export const NPCChat: React.FC<NPCChatProps> = ({ npc, engine, onClose, playerIn
                             y: engine.player.y + (Math.random() - 0.5) * 2,
                             z: engine.player.z + Math.random() * 2,
                             text: ['♪', '♫', '♩', '♬'][Math.floor(Math.random() * 4)],
-                            color: `hsl(${Math.random() * 360}, 100%, 70%)`,
+                            color: \`hsl(\${Math.random() * 360}, 100%, 70%)\`,
                             life: 1.5 + Math.random(), maxLife: 2.5, speed: 0, vy: 1 + Math.random(), vx: (Math.random() - 0.5) * 2, vz: (Math.random() - 0.5) * 2, size: 2 + Math.random() * 2
                         });
                     }
@@ -307,7 +309,7 @@ export const NPCChat: React.FC<NPCChatProps> = ({ npc, engine, onClose, playerIn
                 const quest = available.find(q => q.title === questTitle);
                 if (quest) {
                     QuestSystem.acceptQuest(engine, quest.id);
-                    setGreeting(`Excellent! ${quest.description}`);
+                    setGreeting(\`Excellent! \${quest.description}\`);
                     const newOptions = options.filter(o => o !== option);
                     setOptions(newOptions.length > 0 ? newOptions : ['GOODBYE']);
                     setSelectedIndex(0);
@@ -318,7 +320,7 @@ export const NPCChat: React.FC<NPCChatProps> = ({ npc, engine, onClose, playerIn
                 const quest = active.find(q => q.title === questTitle);
                 if (quest) {
                     QuestSystem.turnInQuest(engine, quest.id);
-                    setGreeting(`Thank you so much! I've given you a reward.`);
+                    setGreeting(\`Thank you so much! I've given you a reward.\`);
                     const newOptions = options.filter(o => o !== option);
                     setOptions(newOptions.length > 0 ? newOptions : ['GOODBYE']);
                     setSelectedIndex(0);
@@ -328,7 +330,7 @@ export const NPCChat: React.FC<NPCChatProps> = ({ npc, engine, onClose, playerIn
                 const active = QuestSystem.getActiveQuestsForGiver(engine.player, npc.type);
                 const quest = active.find(q => q.title === questTitle);
                 if (quest) {
-                    setGreeting(`${quest.description} (You have ${quest.currentCount}/${quest.requiredCount})`);
+                    setGreeting(\`\${quest.description} (You have \${quest.currentCount}/\${quest.requiredCount})\`);
                 }
             } else if (option === 'TRAIN') {
                 if (engine.player.removeItem('gold_piece', 15)) {
@@ -341,13 +343,11 @@ export const NPCChat: React.FC<NPCChatProps> = ({ npc, engine, onClose, playerIn
                     setGreeting("Training costs 15 gold pieces. Come back when you have it.");
                 }
             } else if (option === 'CHAT') {
-                const aiEnabled = localStorage.getItem('ai_enabled') === 'true';
-                const apiKey = localStorage.getItem('ai_api_key');
-                if (aiEnabled && apiKey) {
+                if ((window as any).__AI_EXHAUSTED__) {
+                    setMode('ERROR');
+                } else {
                     setMode('LLM');
                     generateResponse([{ role: 'user', text: '*Approaches the NPC*' }]);
-                } else {
-                    setMode('ERROR');
                 }
             } else if (option === 'PICKPOCKET') {
                 setMode('PICK_POCKET');
@@ -389,12 +389,12 @@ export const NPCChat: React.FC<NPCChatProps> = ({ npc, engine, onClose, playerIn
                 // Success
                 (npc as any).hasBeenPickpocketed = true;
                 const goldAmount = Math.floor(Math.random() * 20) + 5;
-                setPickPocketResult(`Success! You stole ${goldAmount} gold.`);
+                setPickPocketResult(\`Success! You stole \${goldAmount} gold.\`);
                 engine.player.inventory.push({ ...ITEMS['gold_piece'], quantity: goldAmount });
                 setOptions(["GOODBYE"]);
             } else {
                 // Failure
-                setPickPocketResult(`Failed! You were caught.`);
+                setPickPocketResult(\`Failed! You were caught.\`);
                 setOptions(["Uh oh... (Leave)"]);
                 if (onHostile) {
                     onHostile();
@@ -408,88 +408,11 @@ export const NPCChat: React.FC<NPCChatProps> = ({ npc, engine, onClose, playerIn
         setOptions([]);
         
         try {
-            const aiEnabled = localStorage.getItem('ai_enabled') === 'true';
-            const apiKey = localStorage.getItem('ai_api_key');
+            // Simulated delay
+            await new Promise(resolve => setTimeout(resolve, 300));
             
             const lastMsg = history[history.length - 1];
             const lowerText = lastMsg?.text.toLowerCase() || '';
-
-            if (aiEnabled && apiKey) {
-                try {
-                    const ai = new GoogleGenAI({ apiKey });
-                    const npcName = npc.type === 'NPC_KING' ? 'The King' : npc.type === 'BOUNTY_HUNTER' ? 'Bounty Hunter' : npc.type === 'VILLAGER' ? 'Villager' : 'Arcanis';
-                    
-                    const sysInstruction = `You are a character in a 2D RPG game.
-Your name/role is ${npcName}.
-Your type is ${npc.type}.
-${npc.type === 'VILLAGER' ? `Your profession is ${(npc as any).profession || 'Commoner'}.` : ''}
-
-Keep your responses short, under 3 sentences. 
-You must respond in JSON format with the following structure:
-{
-  "response": "Your spoken dialogue and actions",
-  "options": ["3 to 4 short player dialogue choices to continue the conversation"],
-  "action": "Optional action. Valid values: '', 'open_trade_menu', 'turn_hostile', 'leave'"
-}
-Do not include markdown blocks, just the JSON object.`;
-
-                    const contents = history.map(msg => ({
-                        role: msg.role === 'user' ? 'user' : 'model',
-                        parts: [{ text: msg.text }]
-                    }));
-
-                    const aiResponse = await ai.models.generateContent({
-                        model: 'gemini-2.5-flash',
-                        contents,
-                        config: {
-                            systemInstruction: sysInstruction,
-                            responseMimeType: 'application/json',
-                            temperature: 0.7
-                        }
-                    });
-
-                    let parsed = {
-                        response: "*The NPC stares blankly.*",
-                        options: ["Goodbye."],
-                        action: ""
-                    };
-                    
-                    if (aiResponse.text) {
-                        try {
-                            parsed = JSON.parse(aiResponse.text);
-                        } catch (e) {
-                            console.error("Failed to parse LLM JSON:", e, aiResponse.text);
-                            parsed.response = aiResponse.text;
-                            parsed.options = ["Goodbye."];
-                        }
-                    }
-
-                    if (parsed.action === 'open_trade_menu' && onTrade) {
-                        onTrade();
-                        return;
-                    } else if (parsed.action === 'turn_hostile' && onHostile) {
-                        onHostile();
-                        return;
-                    } else if (parsed.action === 'leave' || parsed.options.length === 0) {
-                        parsed.options = ["GOODBYE"];
-                    }
-                    
-                    setMessages(prev => [...prev, { role: 'model', text: parsed.response }]);
-                    setOptions(parsed.options.length ? parsed.options.map(o => o.toUpperCase() === 'GOODBYE' ? 'GOODBYE' : o) : ["GOODBYE"]);
-                    setSelectedIndex(0);
-                    setIsLoading(false);
-                    return;
-                } catch (apiError) {
-                    console.error("API Error:", apiError);
-                    setMessages(prev => [...prev, { role: 'model', text: "*The AI seems disconnected...* (Check your API key in Settings)" }]);
-                    setOptions(["GOODBYE"]);
-                    setIsLoading(false);
-                    return;
-                }
-            }
-
-            // Fallback simulated response
-            await new Promise(resolve => setTimeout(resolve, 300));
             
             let parsed = {
                 response: "Hello there, traveler. What do you need?",
@@ -503,7 +426,7 @@ Do not include markdown blocks, just the JSON object.`;
                 parsed.action = 'turn_hostile';
             } else if (lowerText.includes('bye') || lowerText.includes('leave') || lowerText.includes('goodbye')) {
                 parsed.response = "Farewell, traveler.";
-                parsed.options = ["GOODBYE"];
+                parsed.options = [];
             }
             
             if (parsed.action === 'open_trade_menu' && onTrade) {
@@ -564,7 +487,7 @@ Do not include markdown blocks, just the JSON object.`;
                         </div>
                     ) : mode === 'ERROR' ? (
                         <div className="text-red-400 text-sm italic text-center p-4 border border-red-900 bg-[#2a1b14] rounded-sm">
-                            Live AI Chat is disabled or missing an API Key. Please configure it in the Settings menu.
+                            The villagers are too tired to banter today... (AI connection exhausted)
                         </div>
                     ) : mode === 'PICK_POCKET' ? (
                         <div className="text-orange-300 text-sm bg-[#2a1b14] p-3 rounded-sm border border-orange-600 text-center animate-pulse">
@@ -572,15 +495,15 @@ Do not include markdown blocks, just the JSON object.`;
                         </div>
                     ) : (
                         messages.map((msg, i) => (
-                            <div key={i} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
+                            <div key={i} className={\`flex flex-col \${msg.role === 'user' ? 'items-end' : 'items-start'}\`}>
                                 <span className="text-[10px] text-[#d4b499] mb-0.5 opacity-70 px-1">
                                     {msg.role === 'user' ? 'You' : (npc.type === 'NPC_KING' ? 'The King' : npc.type === 'BOUNTY_HUNTER' ? 'Bounty Hunter' : npc.type === 'VILLAGER' ? 'Villager' : 'Arcanis')}
                                 </span>
-                                <div className={`max-w-[90%] px-3 py-1.5 text-sm rounded-sm ${
+                                <div className={\`max-w-[90%] px-3 py-1.5 text-sm rounded-sm \${
                                     msg.role === 'user' 
                                         ? 'bg-[#3e2718] text-orange-100 border border-[#5c3a21]' 
                                         : 'bg-[#2a1b14] text-orange-200 border border-[#4a2e1b]'
-                                }`}>
+                                }\`}>
                                     {msg.text}
                                 </div>
                             </div>
@@ -616,13 +539,13 @@ Do not include markdown blocks, just the JSON object.`;
                             key={i}
                             onClick={() => handleSelectOption(opt)}
                             onMouseEnter={() => setSelectedIndex(i)}
-                            className={`w-full text-left px-3 py-1.5 border rounded-sm transition-all text-sm flex items-center gap-2 ${
+                            className={\`w-full text-left px-3 py-1.5 border rounded-sm transition-all text-sm flex items-center gap-2 \${
                                 i === selectedIndex 
                                     ? 'bg-[#3e2718] border-orange-500 text-orange-100 shadow-[inset_0_0_8px_rgba(234,88,12,0.2)]' 
                                     : 'bg-[#0f0805] border-[#4a2e1b] text-[#d4b499] hover:border-[#5c3a21]'
-                            }`}
+                            }\`}
                         >
-                            <span className={`text-[10px] uppercase font-bold shrink-0 ${i === selectedIndex ? 'text-orange-500' : 'text-transparent'}`}>
+                            <span className={\`text-[10px] uppercase font-bold shrink-0 \${i === selectedIndex ? 'text-orange-500' : 'text-transparent'}\`}>
                                 ❯
                             </span>
                             <span className="leading-tight">{opt}</span>
@@ -630,7 +553,7 @@ Do not include markdown blocks, just the JSON object.`;
                     ))}
                     {!isLoading && mode === 'MENU' && (window as any).__AI_EXHAUSTED__ && options.includes('CHAT') && (
                         <div className="text-[10px] text-red-500/80 text-center mt-1 italic tracking-wide">
-                            AI Chat Disabled (Check Settings)
+                            Chat unavailable (Rate limit hit)
                         </div>
                     )}
                 </div>
@@ -638,3 +561,6 @@ Do not include markdown blocks, just the JSON object.`;
         </div>
     );
 };
+`
+fs.writeFileSync('src/components/NPCChat.tsx', originalTop);
+console.log("Restored properly");

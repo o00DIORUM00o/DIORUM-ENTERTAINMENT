@@ -97,6 +97,7 @@ export class SandTerrorUpdater {
                     for(let r=0; r<8; r++) {
                         const angle = r * (Math.PI / 4);
                         engine.projectiles.push({
+                            isPlayer: false,
                             x: terror.x, y: terror.y, z: terror.z,
                             vx: Math.cos(angle) * 8.0, vy: Math.sin(angle) * 8.0, vz: 5.0,
                             life: 2.0, damage: 15, type: 'rock'

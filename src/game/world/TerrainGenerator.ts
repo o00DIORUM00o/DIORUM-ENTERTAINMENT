@@ -433,17 +433,20 @@ let e = noise2D(wx * 0.003, wy * 0.003); // Elevation
                     let bushChance = 0.005;
                     let rockChance = 0.002;
                     let spawnerChance = 0.001; // 0.1% chance per block in fields
+                    let wildChestChance = 0.00015; // Wild chest chance
                     
                     if (isForest) {
                         treeChance = 0.04; // Dense trees
                         bushChance = 0.02;
                         rockChance = 0.005;
                         spawnerChance = 0.002; // 0.2% chance in forest
+                        wildChestChance = 0.0003;
                     } else if (isHills) {
                         treeChance = 0.005; // Sparse trees
                         bushChance = 0.01;
                         rockChance = 0.03; // Rocky hills
                         spawnerChance = 0.003; // 0.3% chance in hills
+                        wildChestChance = 0.0002;
                     } else {
                         if (chunkHasHive && x === hiveX && y === hiveY) {
                             spawnerChance = 1.0;
@@ -522,7 +525,29 @@ let e = noise2D(wx * 0.003, wy * 0.003); // Elevation
                                 }
                             }
                         }
-                    } else if (rand < treeChance + bushChance) {
+                    } else if (rand < treeChance + wildChestChance) {
+                        // Generate a Wild Chest with 4 bushes around it
+                        if (elevation + 1 < WORLD_HEIGHT) {
+                            chunk.blocks[x + y * CHUNK_SIZE + (elevation + 1) * CHUNK_SIZE * CHUNK_SIZE] = (Math.random() < 0.1) ? BlockType.GOLD_CHEST : BlockType.CHEST;
+                            if (elevation + 1 > chunk.heightMap[x + y * CHUNK_SIZE]) {
+                                chunk.heightMap[x + y * CHUNK_SIZE] = elevation + 1;
+                            }
+                            
+                            // 4 Bushes around the chest
+                            const bushPositions = [[0, 1], [0, -1], [1, 0], [-1, 0]];
+                            for (const [dx, dy] of bushPositions) {
+                                const bx = x + dx;
+                                const by = y + dy;
+                                if (bx >= 0 && bx < CHUNK_SIZE && by >= 0 && by < CHUNK_SIZE) {
+                                    const bElev = chunk.heightMap[bx + by * CHUNK_SIZE];
+                                    if (bElev > PL_WATER_LEVEL && bElev + 1 < WORLD_HEIGHT && chunk.blocks[bx + by * CHUNK_SIZE + bElev * CHUNK_SIZE * CHUNK_SIZE] === ACT_SURFACE) {
+                                        chunk.blocks[bx + by * CHUNK_SIZE + (bElev + 1) * CHUNK_SIZE * CHUNK_SIZE] = BlockType.BUSH;
+                                        chunk.heightMap[bx + by * CHUNK_SIZE] = bElev + 1;
+                                    }
+                                }
+                            }
+                        }
+                    } else if (rand < treeChance + wildChestChance + bushChance) {
                         // Generate a bush
                         if (elevation + 1 < WORLD_HEIGHT) {
                             let bushType = BlockType.BUSH;
@@ -542,7 +567,7 @@ let e = noise2D(wx * 0.003, wy * 0.003); // Elevation
                                 chunk.heightMap[x + y * CHUNK_SIZE] = elevation + 1;
                             }
                         }
-                    } else if (rand < treeChance + bushChance + rockChance) {
+                    } else if (rand < treeChance + wildChestChance + bushChance + rockChance) {
                         // Generate a surface rock
                         if (elevation + 1 < WORLD_HEIGHT) {
                             if (isHills) {
@@ -554,7 +579,7 @@ let e = noise2D(wx * 0.003, wy * 0.003); // Elevation
                                 chunk.heightMap[x + y * CHUNK_SIZE] = elevation + 1;
                             }
                         }
-                    } else if (rand < treeChance + bushChance + rockChance + spawnerChance) {
+                    } else if (rand < treeChance + wildChestChance + bushChance + rockChance + spawnerChance) {
                         // Spawner generation
                         const worldX = cx * CHUNK_SIZE + x;
                         const worldY = cy * CHUNK_SIZE + y;

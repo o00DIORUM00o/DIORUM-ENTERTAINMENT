@@ -113,7 +113,7 @@ export class FrostCasterUpdater {
                         damageType: 'ICE',
                         life: 1.5,
                         maxLife: 1.5,
-                        isPlayer: ent.isLoyal,
+                        isPlayer: !!ent.isLoyal,
                         owner: ent,
                         statusEffect: { type: 'chill', chance: 1.0, duration: 3.0 },
                         color: '#00ffff'

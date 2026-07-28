@@ -1,98 +1,561 @@
-src/game/entities/AntUpdater.ts:116
-src/game/entities/AbyssalKnightUpdater.ts:151
-src/game/entities/ShadowWizardUpdater.ts:118
-src/game/entities/SandTerrorUpdater.ts:133
-src/game/entities/DrakeUpdater.ts:167
-src/game/entities/NPCUpdater.ts:429
-src/game/entities/RatUpdater.ts:129
-src/game/entities/SkeletonUpdater.ts:140
-src/game/entities/ArcherUpdater.ts:63
-src/game/entities/SkeletonRemainsUpdater.ts:81
-src/game/entities/RatheEntitiesUpdater.ts:262
-src/game/entities/behaviors/core_behaviors.ts:354
-src/game/entities/BeeUpdater.ts:113
-src/game/entities/OrcUpdater.ts:233
-src/game/entities/DarkKnightUpdater.ts:149
-src/game/entities/KoboldUpdater.ts:267
-src/game/entities/AnimalUpdater.ts:331
-src/game/entities/SphinxBossUpdater.ts:154
-src/game/entities/GoblinUpdater.ts:282
-src/game/entities/PhantomWizardUpdater.ts:140
-src/game/entities/FireDragonBossUpdater.ts:146
-src/game/entities/LavaGolemUpdater.ts:126
-src/game/entities/ai/ZeldaAI.ts:191
-src/game/Renderer.ts:328
-src/game/types/EntityTypes.ts:454
-src/game/renderers/NPCRenderer.ts:672
-src/game/renderers/ProjectileRenderer.ts:362
-src/game/renderers/BlockRenderer.ts:485
-src/game/renderers/EnemyRenderer.ts:1553
-src/game/renderers/PlayerRenderer.ts:351
-src/game/renderers/AnimalRenderer.ts:568
-src/game/renderers/DroppedItemRenderer.ts:50
-src/game/renderers/LightingRenderer.ts:142
-src/game/renderers/OverlayRenderer.ts:56
-src/game/renderers/ParticleRenderer.ts:30
-src/game/registries/AbilityRegistry.ts:33
-src/game/registries/RenderRegistry.ts:37
-src/game/registries/EntityBehaviorRegistry.ts:33
-src/game/registries/EntityRegistry.ts:37
-src/game/registries/PlanetRegistry.ts:54
-src/game/registries/BlockRenderRegistry.ts:27
-src/game/registries/RecipeRegistry.ts:53
-src/game/registries/StructureRegistry.ts:50
-src/game/registries/BlockRegistry.ts:76
-src/game/registries/ItemRegistry.ts:152
-src/game/world/TerrainGenerator.ts:1485
-src/game/world/StructureGenerator.ts:335
-src/game/world/Chunk.ts:95
-src/game/world/ChunkManager.ts:136
-src/game/Engine.ts:476
-src/game/LocationManager.ts:46
-src/game/content/spells/spells.ts:615
-src/game/content/abilities/core_abilities.ts:552
-src/game/content/items/weapon.ts:688
-src/game/content/items/tool.ts:48
-src/game/content/items/consumable.ts:890
-src/game/content/items/ammo.ts:21
-src/game/content/items/armor.ts:455
-src/game/content/items/misc.ts:823
-src/game/content/items/material.ts:524
-src/game/content/blocks/core_blocks.ts:1708
-src/game/content/structures/core_structures.ts:597
-src/game/content/entities/core_entities.ts:71
-src/game/content/planets/core_planets.ts:308
-src/game/content/loot/LootTables.ts:215
-src/game/content/recipes/core_recipes.ts:1234
-src/game/Inventory.ts:302
-src/game/Constants.ts:7
-src/game/constants/BlockType.ts:386
-src/game/StarSigns.ts:100
-src/game/ItemGenerator.ts:317
-src/game/Player.ts:1040
-src/game/Input.ts:271
-src/game/updaters/VillagerUpdater.ts:198
-src/game/updaters/SpawnerUpdater.ts:535
-src/game/updaters/ProjectileUpdater.ts:372
-src/game/updaters/MechanismUpdater.ts:611
-src/game/updaters/PlayerActionCallbacks.ts:419
-src/game/updaters/EffectUpdater.ts:179
-src/game/World.ts:200
-src/game/ArenaManager.ts:147
-src/game/player/PlayerEnvironment.ts:77
-src/game/player/PlayerInventory.ts:768
-src/game/player/PlayerController.ts:317
-src/game/player/PlayerCombat.ts:833
-src/game/AudioEngine.ts:365
-src/game/Talents.ts:312
-src/game/EventEmitter.ts:28
-src/game/systems/StatusSystem.ts:118
-src/game/systems/StructureSpawnerSystem.ts:299
-src/game/systems/DivineWrathSystem.ts:105
-src/game/systems/EnvironmentalParticleSystem.ts:69
-src/game/systems/EventSpawnerSystem.ts:249
-src/game/systems/DroppedItemSystem.ts:109
-src/game/systems/AutomationSystem.ts:288
-src/game/ThemeManager.ts:286
-src/game/Updater.ts:506
-src/game/DungeonGenerator.ts:782
+import React, { useState, useEffect, useRef } from 'react';
+import { NPC } from '../game/Engine';
+import { ITEMS } from '../game/Inventory';
+import { QuestSystem } from '../game/systems/QuestSystem';
+import { PlayerProgression } from '../game/player/PlayerProgression';
+
+interface NPCChatProps {
+    npc: NPC;
+    engine: any;
+    onClose: () => void;
+    playerInventory: any[];
+    onTrade?: () => void;
+    onGiveItem?: (itemId: string) => void;
+    onHostile?: () => void;
+    locationName?: string;
+}
+
+interface ChatMessage {
+    role: 'user' | 'model';
+    text: string;
+}
+
+const getVillagerBark = (npc: NPC): string => {
+    if (npc.type === 'VILLAGER') {
+        const prof = (npc as any).profession;
+        if (prof === 'VILLAGER_GUARD') {
+            const barks = ["Keep your nose clean, traveler.", "No trouble on my watch.", "I'm watching you.", "Stay alert, goblins are about."];
+            return barks[Math.floor(Math.random() * barks.length)];
+        } else if (prof === 'VILLAGER_FARMER') {
+            const barks = ["Nice day for the crops.", "Need some seeds?", "Hard work, but it pays the bills.", "The dirt here is mighty fine."];
+            return barks[Math.floor(Math.random() * barks.length)];
+        } else if (prof === 'VILLAGER_MERCHANT') {
+            const barks = ["Care to see my wares?", "Coin for goods, friend?", "Best prices in the realm!", "Can't beat these deals."];
+            return barks[Math.floor(Math.random() * barks.length)];
+        } else if (prof === 'VILLAGER_BEGGAR') {
+            const barks = ["Spare a coin?", "I haven't eaten in days...", "Bless you, kind traveler.", "Just a crumb?"];
+            return barks[Math.floor(Math.random() * barks.length)];
+        } else if (prof === 'VILLAGER_THIEF') {
+            const barks = ["Keep your voice down... wanna buy something?", "I found this falling off a cart.", "Quick, before the guards see."];
+            return barks[Math.floor(Math.random() * barks.length)];
+        } else if (prof === 'VILLAGER_SMITH') {
+            const barks = ["Steel wins battles.", "Need your blade sharpened?", "Hot from the forge!", "I work with iron and blood."];
+            return barks[Math.floor(Math.random() * barks.length)];
+        } else if (prof === 'VILLAGER_ALCHEMIST') {
+            const barks = ["Careful with that! It's highly volatile.", "Ah, a new concoction!", "Need a potion of healing?"];
+            return barks[Math.floor(Math.random() * barks.length)];
+        } else if (prof === 'VILLAGER_PRIEST') {
+            const barks = ["May the light guide your path.", "Blessings upon you.", "Seek peace, traveler."];
+            return barks[Math.floor(Math.random() * barks.length)];
+        } else if (prof === 'VILLAGER_BOUNTY_HUNTER') {
+            const barks = ["Got a target? I've got a blade.", "I only work for coin.", "Everyone has a price on their head."];
+            return barks[Math.floor(Math.random() * barks.length)];
+        } else if (prof === 'VILLAGER_GLADIATOR') {
+            const barks = ["The arena calls to me.", "Blood and sand!", "My sword thirsts for battle."];
+            return barks[Math.floor(Math.random() * barks.length)];
+        } else if (prof === 'VILLAGER_ENCHANTER') {
+            const barks = ["Magic bound to metal and stone.", "Would you like an enchantment?", "Power has a price."];
+            return barks[Math.floor(Math.random() * barks.length)];
+        } else if (prof === 'VILLAGER_KNIGHT') {
+            const barks = ["Honor and duty above all.", "Stand firm!", "For the realm!"];
+            return barks[Math.floor(Math.random() * barks.length)];
+        } else if (prof === 'VILLAGER_NOBLE') {
+            const barks = ["Do you have an appointment? No? Pity.", "Stay back, commoner.", "I deal in gems, not copper."];
+            return barks[Math.floor(Math.random() * barks.length)];
+        } else if (prof === 'VILLAGER_COUNCILOR') {
+            const barks = ["The affairs of the state are... complex.", "We must govern wisely.", "Bureaucracy is the true power."];
+            return barks[Math.floor(Math.random() * barks.length)];
+        } else if (prof === 'VILLAGER_NECROMANCER') {
+            const barks = ["Death is only the beginning.", "The dead do not sleep.", "More bones for the pile..."];
+            return barks[Math.floor(Math.random() * barks.length)];
+        } else if (prof === 'VILLAGER_JESTER') {
+            const barks = ["Why did the goblin cross the road? To get away from you!", "Jingle jangle!", "A laugh for a coin?"];
+            return barks[Math.floor(Math.random() * barks.length)];
+        } else if (prof === 'VILLAGER_SHAMAN') {
+            const barks = ["The spirits speak to those who listen.", "The earth remembers.", "I speak for the elements."];
+            return barks[Math.floor(Math.random() * barks.length)];
+        } else if (prof === 'VILLAGER_WIZARD') {
+            const barks = ["The arcane flows through all things.", "Do not disturb my studies.", "Knowledge is power."];
+            return barks[Math.floor(Math.random() * barks.length)];
+        } else {
+            const barks = ["Good morrow.", "Fine weather we're having.", "Just minding my business.", "Hello there."];
+            return barks[Math.floor(Math.random() * barks.length)];
+        }
+    } else if (npc.type === 'DRACONIC_MERCHANT') {
+        const barks = ["Gold warms the scales.", "What brings a soft-skin to my hoard?", "I trade in power and riches.", "Rune Keys, potions... for the right price."];
+        return barks[Math.floor(Math.random() * barks.length)];
+    } else if (npc.type === 'BEAST_TAMER') {
+        const barks = ["The wilds listen to me.", "Care for a rugged companion?", "Only the strong survive Thaer.", "A mount can save your life out here."];
+        return barks[Math.floor(Math.random() * barks.length)];
+    } else if (npc.type === 'SQUIRREL_FOLK') {
+        const barks = ["Quick, jump!", "Got any nuts?", "We built this treehouse high up to avoid the giant boars.", "*Chitters happily*"];
+        return barks[Math.floor(Math.random() * barks.length)];
+    } else if (npc.type === 'SLUG_FOLK_MERCHANT') {
+        const barks = ["*Slurp* ... Need wares?", "The void sands provide...", "Carry much, walk slow...", "Trade for slime?"];
+        return barks[Math.floor(Math.random() * barks.length)];
+    } else if (npc.type === 'WANDERING_BARD') {
+        const barks = ["A tune for a weary soul?", "The road is long, but the melody is sweet.", "I sing of dragons and ancient kings.", "Pull up a stool and listen awhile."];
+        return barks[Math.floor(Math.random() * barks.length)];
+    } else {
+        const barks = ["Greetings, traveler.", "Ah, a visitor.", "Step closer, do not be afraid.", "I have been expecting you."];
+        return barks[Math.floor(Math.random() * barks.length)];
+    }
+};
+
+export const NPCChat: React.FC<NPCChatProps> = ({ npc, engine, onClose, playerInventory, onTrade, onGiveItem, onHostile, locationName }) => {
+    const [mode, setMode] = useState<'MENU' | 'LLM' | 'ERROR' | 'PICK_POCKET'>('MENU');
+    const [messages, setMessages] = useState<ChatMessage[]>([]);
+    const [options, setOptions] = useState<string[]>([]);
+    const [selectedIndex, setSelectedIndex] = useState(0);
+    const [isLoading, setIsLoading] = useState(false);
+    const [greeting, setGreeting] = useState('');
+    const [pickPocketResult, setPickPocketResult] = useState<string | null>(null);
+    const messagesEndRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (npc.type === 'QUEST_GIVER') {
+            setGreeting("I fear this dungeon contains a dark artifact... Take this Dungeon Key, seek the Boss Room at the bottom, and put an end to it!");
+        } else {
+            setGreeting(getVillagerBark(npc));
+        }
+        
+        const initialOptions = [];
+        
+        initialOptions.push("TALK");
+        
+        if (onTrade && (
+            npc.type === 'OLD_WIZARD' || 
+            npc.type === 'DRACONIC_MERCHANT' || 
+            npc.type === 'SLUG_FOLK_MERCHANT' || 
+            npc.type === 'BAG_MERCHANT' || 
+            npc.type === 'BERRY_FARMER' || 
+            npc.type === 'VILLAGER_MERCHANT' || 
+            npc.type.startsWith('STALL_') || 
+            (npc.type === 'VILLAGER' && (npc as any).merchantType)
+        )) {
+            initialOptions.push("TRADE");
+        }
+        
+        if (npc.type === 'BEAST_TAMER') {
+            initialOptions.push("TRADE (Adopt Companion - 10 silver)");
+        }
+        
+        if (npc.type === 'VILLAGER' && ['VILLAGER_PRIEST', 'VILLAGER_ALCHEMIST'].includes((npc as any).profession)) {
+            initialOptions.push("HEAL");
+        }
+        
+        if (npc.type === 'WANDERING_BARD') {
+            initialOptions.push("HEAL (Listen to a song)");
+        }
+        
+        if (npc.type === 'QUEST_GIVER' && !(npc as any).hasGivenKey) {
+            initialOptions.push("QUEST (Accept Key)");
+        }
+        
+        const activeQuests = QuestSystem.getActiveQuestsForGiver(engine.player, npc.type);
+        for (const q of activeQuests) {
+            if (q.state === 'COMPLETED') {
+                initialOptions.push(`QUEST (Turn in): ${q.title}`);
+            } else {
+                initialOptions.push(`QUEST (Active): ${q.title}`);
+            }
+        }
+        
+        const availableQuests = QuestSystem.getAvailableQuests(engine.player, npc.type);
+        for (const q of availableQuests) {
+            initialOptions.push(`QUEST (Accept): ${q.title}`);
+        }
+        
+        if (npc.type === 'VILLAGER' && ['VILLAGER_GUARD', 'VILLAGER_GLADIATOR', 'VILLAGER_KNIGHT', 'VILLAGER_WIZARD', 'VILLAGER_SMITH', 'VILLAGER_FARMER'].includes((npc as any).profession)) {
+            initialOptions.push("TRAIN");
+        }
+        
+        initialOptions.push("CHAT");
+        
+        const ppLevel = engine?.player?.talents['pick_pocket'] || 0;
+        if (ppLevel > 0 && npc.disposition > -50 && !(npc as any).hasBeenPickpocketed) {
+             initialOptions.push("PICKPOCKET");
+        }
+        
+        initialOptions.push("GOODBYE");
+        
+        setOptions(initialOptions);
+        setSelectedIndex(0);
+    }, [npc, engine]);
+
+    useEffect(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, [messages, options]);
+
+    useEffect(() => {
+        let animationFrameId: number;
+        let prevUp = false;
+        let prevDown = false;
+        let prevA = false;
+        let prevB = false;
+
+        const pollGamepad = () => {
+            const gamepads = navigator.getGamepads();
+            const gp = gamepads[0];
+            if (gp) {
+                const upPressed = gp.buttons[12]?.pressed || gp.axes[1] < -0.5;
+                const downPressed = gp.buttons[13]?.pressed || gp.axes[1] > 0.5;
+                const aPressed = gp.buttons[0]?.pressed;
+                const bPressed = gp.buttons[1]?.pressed;
+
+                if (upPressed && !prevUp) {
+                    setSelectedIndex(prev => Math.max(0, prev - 1));
+                }
+                if (downPressed && !prevDown) {
+                    setSelectedIndex(prev => Math.min(options.length - 1, prev + 1));
+                }
+                if (aPressed && !prevA && !isLoading && options.length > 0) {
+                    handleSelectOption(options[selectedIndex]);
+                }
+                if (bPressed && !prevB) {
+                    onClose();
+                }
+
+                prevUp = upPressed;
+                prevDown = downPressed;
+                prevA = aPressed;
+                prevB = bPressed;
+            }
+            animationFrameId = requestAnimationFrame(pollGamepad);
+        };
+
+        animationFrameId = requestAnimationFrame(pollGamepad);
+        return () => cancelAnimationFrame(animationFrameId);
+    }, [options, selectedIndex, isLoading, mode]);
+
+    const handleSelectOption = (option: string) => {
+        if (mode === 'MENU') {
+            if (option === 'TALK') {
+                setGreeting(getVillagerBark(npc));
+            } else if (option === 'TRADE') {
+                if (onTrade) onTrade();
+            } else if (option === 'TRADE (Adopt Companion - 10 silver)') {
+                if (engine.player.removeItem('silver_piece', 10)) {
+                    const companionNameBase = ['Fang', 'Scout', 'Rex', 'Shadow', 'Ghost', 'Brutus', 'Ash'][Math.floor(Math.random()*7)];
+                    const newCompanion = { 
+                        id: `comp_${Date.now()}`,
+                        type: 'WOLF', 
+                        name: `Dire Wolf ${companionNameBase}`,
+                        damage: 15,
+                        health: 300,
+                        maxHealth: 300,
+                        speed: 15.0
+                    };
+                    if (!engine.player.companions) engine.player.companions = [];
+                    engine.player.companions.push(newCompanion);
+                    setGreeting(`Treat ${newCompanion.name} well. They'll fight to the death for you.`);
+                    const newOptions = options.filter(o => o !== 'TRADE (Adopt Companion - 10 silver)');
+                    setOptions(newOptions.length > 0 ? newOptions : ['GOODBYE']);
+                    setSelectedIndex(0);
+                } else {
+                    setGreeting("You don't have 10 silver pieces, traveler.");
+                }
+            } else if (option.startsWith('HEAL')) {
+                engine.player.health = engine.player.effectiveMaxHealth;
+                engine.player.stamina = engine.player.maxStamina;
+                engine.player.mana = engine.player.effectiveMaxMana;
+                setGreeting("You feel your vitality returning.");
+                engine.particles.push({
+                    x: engine.player.x, y: engine.player.y, z: engine.player.z + 1.5,
+                    text: '♫ FULLY RESTORED ♫', color: '#ff69b4', life: 2.5, maxLife: 2.5, speed: 0, vy: 0.5, vx: 0, vz: 0
+                });
+                if (option.includes('song')) {
+                    const AudioCtx = (window as any).AudioContext || (window as any).webkitAudioContext;
+                    if (AudioCtx) {
+                        const ctx = new AudioCtx();
+                        const freqs = [523.25, 659.25, 783.99, 1046.50];
+                        freqs.forEach((f, i) => {
+                            const osc = ctx.createOscillator();
+                            const gain = ctx.createGain();
+                            osc.connect(gain);
+                            gain.connect(ctx.destination);
+                            osc.type = 'triangle';
+                            osc.frequency.value = f;
+                            gain.gain.setValueAtTime(0, ctx.currentTime + i * 0.15);
+                            gain.gain.linearRampToValueAtTime(0.1, ctx.currentTime + i * 0.15 + 0.05);
+                            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + i * 0.15 + 0.5);
+                            osc.start(ctx.currentTime + i * 0.15);
+                            osc.stop(ctx.currentTime + i * 0.15 + 0.5);
+                        });
+                    }
+                    for (let i = 0; i < 15; i++) {
+                        engine.particles.push({
+                            x: engine.player.x + (Math.random() - 0.5) * 2,
+                            y: engine.player.y + (Math.random() - 0.5) * 2,
+                            z: engine.player.z + Math.random() * 2,
+                            text: ['♪', '♫', '♩', '♬'][Math.floor(Math.random() * 4)],
+                            color: `hsl(${Math.random() * 360}, 100%, 70%)`,
+                            life: 1.5 + Math.random(), maxLife: 2.5, speed: 0, vy: 1 + Math.random(), vx: (Math.random() - 0.5) * 2, vz: (Math.random() - 0.5) * 2, size: 2 + Math.random() * 2
+                        });
+                    }
+                }
+            } else if (option === 'QUEST (Accept Key)') {
+                engine.player.inventory.push({ ...ITEMS['dungeon_key'], quantity: 1 });
+                (npc as any).hasGivenKey = true;
+                setGreeting("Good luck... You'll need it.");
+                const newOptions = options.filter(o => o !== 'QUEST (Accept Key)');
+                setOptions(newOptions.length > 0 ? newOptions : ['GOODBYE']);
+                setSelectedIndex(0);
+            } else if (option.startsWith('QUEST (Accept): ')) {
+                const questTitle = option.replace('QUEST (Accept): ', '');
+                const available = QuestSystem.getAvailableQuests(engine.player, npc.type);
+                const quest = available.find(q => q.title === questTitle);
+                if (quest) {
+                    QuestSystem.acceptQuest(engine, quest.id);
+                    setGreeting(`Excellent! ${quest.description}`);
+                    const newOptions = options.filter(o => o !== option);
+                    setOptions(newOptions.length > 0 ? newOptions : ['GOODBYE']);
+                    setSelectedIndex(0);
+                }
+            } else if (option.startsWith('QUEST (Turn in): ')) {
+                const questTitle = option.replace('QUEST (Turn in): ', '');
+                const active = QuestSystem.getActiveQuestsForGiver(engine.player, npc.type);
+                const quest = active.find(q => q.title === questTitle);
+                if (quest) {
+                    QuestSystem.turnInQuest(engine, quest.id);
+                    setGreeting(`Thank you so much! I've given you a reward.`);
+                    const newOptions = options.filter(o => o !== option);
+                    setOptions(newOptions.length > 0 ? newOptions : ['GOODBYE']);
+                    setSelectedIndex(0);
+                }
+            } else if (option.startsWith('QUEST (Active): ')) {
+                const questTitle = option.replace('QUEST (Active): ', '');
+                const active = QuestSystem.getActiveQuestsForGiver(engine.player, npc.type);
+                const quest = active.find(q => q.title === questTitle);
+                if (quest) {
+                    setGreeting(`${quest.description} (You have ${quest.currentCount}/${quest.requiredCount})`);
+                }
+            } else if (option === 'TRAIN') {
+                if (engine.player.removeItem('gold_piece', 15)) {
+                    PlayerProgression.addXp(engine.player, Math.max(1, engine.player.xpToNextLevel - engine.player.xp));
+                    setGreeting("You feel yourself growing stronger...");
+                    const newOptions = options.filter(o => o !== 'TRAIN');
+                    setOptions(newOptions.length > 0 ? newOptions : ['GOODBYE']);
+                    setSelectedIndex(0);
+                } else {
+                    setGreeting("Training costs 15 gold pieces. Come back when you have it.");
+                }
+            } else if (option === 'CHAT') {
+                if ((window as any).__AI_EXHAUSTED__) {
+                    setMode('ERROR');
+                } else {
+                    setMode('LLM');
+                    generateResponse([{ role: 'user', text: '*Approaches the NPC*' }]);
+                }
+            } else if (option === 'PICKPOCKET') {
+                setMode('PICK_POCKET');
+                handlePickPocket();
+            } else if (option === 'GOODBYE') {
+                onClose();
+            }
+            return;
+        }
+
+        if (mode === 'ERROR' || option === 'Goodbye' || option === 'GOODBYE' || option.includes('(Leave)')) {
+            onClose();
+            return;
+        }
+        
+        if (mode === 'PICK_POCKET') {
+           onClose();
+           return;
+        }
+
+        setMessages(prev => [...prev, { role: 'user', text: option }]);
+        generateResponse([
+            ...messages,
+            { role: 'user', text: option }
+        ]);
+    };
+
+    const handlePickPocket = () => {
+        setIsLoading(true);
+        const ppLevel = engine.player.talents['pick_pocket'] || 0;
+        let chance = 0;
+        if (ppLevel === 1) chance = 0.50;
+        else if (ppLevel === 2) chance = 0.75;
+        else if (ppLevel >= 3) chance = 0.95;
+        
+        setTimeout(() => {
+            setIsLoading(false);
+            if (Math.random() < chance) {
+                // Success
+                (npc as any).hasBeenPickpocketed = true;
+                const goldAmount = Math.floor(Math.random() * 20) + 5;
+                setPickPocketResult(`Success! You stole ${goldAmount} gold.`);
+                engine.player.inventory.push({ ...ITEMS['gold_piece'], quantity: goldAmount });
+                setOptions(["GOODBYE"]);
+            } else {
+                // Failure
+                setPickPocketResult(`Failed! You were caught.`);
+                setOptions(["Uh oh... (Leave)"]);
+                if (onHostile) {
+                    onHostile();
+                }
+            }
+        }, 1000);
+    };
+    
+    const generateResponse = async (history: ChatMessage[]) => {
+        setIsLoading(true);
+        setOptions([]);
+        
+        try {
+            // Simulated delay
+            await new Promise(resolve => setTimeout(resolve, 300));
+            
+            const lastMsg = history[history.length - 1];
+            const lowerText = lastMsg?.text.toLowerCase() || '';
+            
+            let parsed = {
+                response: "Hello there, traveler. What do you need?",
+                options: ["Let's trade.", "Who are you?", "Goodbye."],
+                action: ""
+            };
+
+            if (lowerText.includes('trade') || lowerText.includes('buy') || lowerText.includes('sell') || lowerText.includes('shop')) {
+                parsed.action = 'open_trade_menu';
+            } else if (lowerText.includes('attack') || lowerText.includes('die') || lowerText.includes('kill')) {
+                parsed.action = 'turn_hostile';
+            } else if (lowerText.includes('bye') || lowerText.includes('leave') || lowerText.includes('goodbye')) {
+                parsed.response = "Farewell, traveler.";
+                parsed.options = [];
+            }
+            
+            if (parsed.action === 'open_trade_menu' && onTrade) {
+                onTrade();
+                return;
+            } else if (parsed.action === 'turn_hostile' && onHostile) {
+                onHostile();
+                return;
+            }
+            
+            setMessages(prev => [...prev, { role: 'model', text: parsed.response }]);
+            setOptions(parsed.options.length ? parsed.options : ["GOODBYE"]);
+            setSelectedIndex(0);
+        } catch (error) {
+            console.error(error);
+            setMessages(prev => [...prev, { role: 'model', text: "*The NPC mumbles.*" }]);
+            setOptions(["GOODBYE"]);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    return (
+        <div className="absolute inset-0 z-50 flex items-center justify-center p-2 bg-black/60 backdrop-blur-sm pointer-events-auto select-none font-serif">
+            <div className="w-[450px] max-h-[85vh] flex flex-col bg-[#1a0f0a] border-2 border-[#5c3a21] rounded-sm shadow-2xl overflow-hidden">
+                {/* Header */}
+                <div className="bg-gradient-to-b from-[#3e2718] to-[#1a0f0a] border-b-2 border-[#5c3a21] p-2 flex items-center gap-3 shrink-0">
+                    <div className="w-8 h-8 bg-[#0f0805] border border-[#5c3a21] flex items-center justify-center text-lg rounded-sm shrink-0">
+                        {npc.type === 'NPC_KING' ? '👑' : 
+                         npc.type === 'BOUNTY_HUNTER' ? '🗡️' : 
+                         npc.type === 'VILLAGER' ? (
+                            (npc as any).profession === 'VILLAGER_GUARD' ? '🛡️' :
+                            (npc as any).profession === 'VILLAGER_FARMER' ? '🌾' :
+                            '💰'
+                        ) : '🧙'}
+                    </div>
+                    <div className="flex-1 leading-tight">
+                        <h2 className="text-lg font-bold text-orange-400">
+                            {npc.type === 'NPC_KING' ? 'The King' : npc.type === 'BOUNTY_HUNTER' ? 'Bounty Hunter' : npc.type === 'VILLAGER' ? 'Villager' : 'Arcanis'}
+                        </h2>
+                        <div className="text-[#d4b499] text-[10px] uppercase tracking-wider">
+                            {npc.type === 'NPC_KING' ? 'Ruler of Pantheona' : npc.type === 'BOUNTY_HUNTER' ? 'Guild Master' : npc.type === 'VILLAGER' ? ((npc as any).profession || 'Commoner').replace('VILLAGER_', '') : 'Old Wizard'}
+                        </div>
+                    </div>
+                    <button 
+                        onClick={onClose}
+                        className="text-[#d4b499] hover:text-orange-400 text-lg px-2 rounded hover:bg-[#2a1f1a] transition-colors"
+                    >
+                        ✕
+                    </button>
+                </div>
+
+                {/* Content Area */}
+                <div className="flex-1 overflow-y-auto p-3 space-y-3 bg-[#0f0805]" style={{ scrollbarWidth: 'thin', scrollbarColor: '#4a2e1b #0f0805' }}>
+                    {mode === 'MENU' ? (
+                        <div className="text-orange-200 text-sm leading-relaxed p-2 bg-[#2a1b14] border-l-2 border-orange-500 rounded-sm">
+                            "{greeting}"
+                        </div>
+                    ) : mode === 'ERROR' ? (
+                        <div className="text-red-400 text-sm italic text-center p-4 border border-red-900 bg-[#2a1b14] rounded-sm">
+                            The villagers are too tired to banter today... (AI connection exhausted)
+                        </div>
+                    ) : mode === 'PICK_POCKET' ? (
+                        <div className="text-orange-300 text-sm bg-[#2a1b14] p-3 rounded-sm border border-orange-600 text-center animate-pulse">
+                            {pickPocketResult || 'Attempting to pickpocket...'}
+                        </div>
+                    ) : (
+                        messages.map((msg, i) => (
+                            <div key={i} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
+                                <span className="text-[10px] text-[#d4b499] mb-0.5 opacity-70 px-1">
+                                    {msg.role === 'user' ? 'You' : (npc.type === 'NPC_KING' ? 'The King' : npc.type === 'BOUNTY_HUNTER' ? 'Bounty Hunter' : npc.type === 'VILLAGER' ? 'Villager' : 'Arcanis')}
+                                </span>
+                                <div className={`max-w-[90%] px-3 py-1.5 text-sm rounded-sm ${
+                                    msg.role === 'user' 
+                                        ? 'bg-[#3e2718] text-orange-100 border border-[#5c3a21]' 
+                                        : 'bg-[#2a1b14] text-orange-200 border border-[#4a2e1b]'
+                                }`}>
+                                    {msg.text}
+                                </div>
+                            </div>
+                        ))
+                    )}
+                    {isLoading && (
+                        <div className="flex flex-col items-start">
+                            <span className="text-[10px] text-[#d4b499] mb-0.5 opacity-70 px-1">
+                                {npc.type === 'NPC_KING' ? 'The King' : npc.type === 'BOUNTY_HUNTER' ? 'Bounty Hunter' : npc.type === 'VILLAGER' ? 'Villager' : 'Arcanis'}
+                            </span>
+                            <div className="bg-[#2a1b14] p-2 rounded-sm border border-[#4a2e1b] flex items-center gap-1.5">
+                                <div className="w-1.5 h-1.5 bg-orange-500/50 rounded-full animate-pulse"></div>
+                                <div className="w-1.5 h-1.5 bg-orange-500/70 rounded-full animate-pulse" style={{ animationDelay: '150ms' }}></div>
+                                <div className="w-1.5 h-1.5 bg-orange-500 rounded-full animate-pulse" style={{ animationDelay: '300ms' }}></div>
+                            </div>
+                        </div>
+                    )}
+                    <div ref={messagesEndRef} />
+                </div>
+
+                {/* Options */}
+                <div className="bg-[#1a0f0a] border-t-2 border-[#5c3a21] p-2 flex flex-col gap-1 shrink-0 overflow-y-auto max-h-[35vh]">
+                    {mode === 'ERROR' && (
+                        <button 
+                            className="w-full text-left px-3 py-2 text-sm bg-[#2a1b14] border border-orange-700 text-orange-200 rounded-sm hover:bg-[#3e2718] transition-colors"
+                            onClick={() => onClose()}
+                        >
+                            [Leave]
+                        </button>
+                    )}
+                    {!isLoading && options.map((opt, i) => (
+                        <button
+                            key={i}
+                            onClick={() => handleSelectOption(opt)}
+                            onMouseEnter={() => setSelectedIndex(i)}
+                            className={`w-full text-left px-3 py-1.5 border rounded-sm transition-all text-sm flex items-center gap-2 ${
+                                i === selectedIndex 
+                                    ? 'bg-[#3e2718] border-orange-500 text-orange-100 shadow-[inset_0_0_8px_rgba(234,88,12,0.2)]' 
+                                    : 'bg-[#0f0805] border-[#4a2e1b] text-[#d4b499] hover:border-[#5c3a21]'
+                            }`}
+                        >
+                            <span className={`text-[10px] uppercase font-bold shrink-0 ${i === selectedIndex ? 'text-orange-500' : 'text-transparent'}`}>
+                                ❯
+                            </span>
+                            <span className="leading-tight">{opt}</span>
+                        </button>
+                    ))}
+                    {!isLoading && mode === 'MENU' && (window as any).__AI_EXHAUSTED__ && options.includes('CHAT') && (
+                        <div className="text-[10px] text-red-500/80 text-center mt-1 italic tracking-wide">
+                            Chat unavailable (Rate limit hit)
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+};

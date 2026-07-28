@@ -1,5 +1,132 @@
-import { GoogleGenAI } from '@google/genai';
-import React, { useState, useEffect, useRef } from 'react';
+    const handleSelectOption = (option: string) => {
+        if (mode === 'MENU') {
+            if (option === 'TALK') {
+                setGreeting(getVillagerBark(npc));
+            } else if (option === 'TRADE') {
+                if (onTrade) onTrade();
+            } else if (option === 'TRADE (Adopt Companion - 10 silver)') {
+                if (engine.player.removeItem('silver_piece', 10)) {
+                    const companionNameBase = ['Fang', 'Scout', 'Rex', 'Shadow', 'Ghost', 'Brutus', 'Ash'][Math.floor(Math.random()*7)];
+                    const newCompanion = { 
+                        id: `comp_${Date.now()}`,
+                        type: 'WOLF', 
+                        name: `Dire Wolf ${companionNameBase}`,
+                        damage: 15,
+                        health: 300,
+                        maxHealth: 300,
+                        speed: 15.0
+                    };
+                    if (!engine.player.companions) engine.player.companions = [];
+                    engine.player.companions.push(newCompanion);
+                    setGreeting(`Treat ${newCompanion.name} well. They'll fight to the death for you.`);
+                    const newOptions = options.filter(o => o !== 'TRADE (Adopt Companion - 10 silver)');
+                    setOptions(newOptions.length > 0 ? newOptions : ['GOODBYE']);
+                    setSelectedIndex(0);
+                } else {
+                    setGreeting("You don't have 10 silver pieces, traveler.");
+                }
+            } else if (option.startsWith('HEAL')) {
+                engine.player.health = engine.player.effectiveMaxHealth;
+                engine.player.stamina = engine.player.maxStamina;
+                engine.player.mana = engine.player.effectiveMaxMana;
+                setGreeting("You feel your vitality returning.");
+                engine.particles.push({
+                    x: engine.player.x, y: engine.player.y, z: engine.player.z + 1.5,
+                    text: '♫ FULLY RESTORED ♫', color: '#ff69b4', life: 2.5, maxLife: 2.5, speed: 0, vy: 0.5, vx: 0, vz: 0
+                });
+                if (option.includes('song')) {
+                    const AudioCtx = (window as any).AudioContext || (window as any).webkitAudioContext;
+                    if (AudioCtx) {
+                        const ctx = new AudioCtx();
+                        const freqs = [523.25, 659.25, 783.99, 1046.50];
+                        freqs.forEach((f, i) => {
+                            const osc = ctx.createOscillator();
+                            const gain = ctx.createGain();
+                            osc.connect(gain);
+                            gain.connect(ctx.destination);
+                            osc.type = 'triangle';
+                            osc.frequency.value = f;
+                            gain.gain.setValueAtTime(0, ctx.currentTime + i * 0.15);
+                            gain.gain.linearRampToValueAtTime(0.1, ctx.currentTime + i * 0.15 + 0.05);
+                            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + i * 0.15 + 0.5);
+                            osc.start(ctx.currentTime + i * 0.15);
+                            osc.stop(ctx.currentTime + i * 0.15 + 0.5);
+                        });
+                    }
+                    for (let i = 0; i < 15; i++) {
+                        engine.particles.push({
+                            x: engine.player.x + (Math.random() - 0.5) * 2,
+                            y: engine.player.y + (Math.random() - 0.5) * 2,
+                            z: engine.player.z + Math.random() * 2,
+                            text: ['♪', '♫', '♩', '♬'][Math.floor(Math.random() * 4)],
+                            color: `hsl(${Math.random() * 360}, 100%, 70%)`,
+                            life: 1.5 + Math.random(), maxLife: 2.5, speed: 0, vy: 1 + Math.random(), vx: (Math.random() - 0.5) * 2, vz: (Math.random() - 0.5) * 2, size: 2 + Math.random() * 2
+                        });
+                    }
+                }
+            } else if (option === 'QUEST (Accept Key)') {
+                engine.player.inventory.push({ ...ITEMS['dungeon_key'], quantity: 1 });
+                (npc as any).hasGivenKey = true;
+                setGreeting("Good luck... You'll need it.");
+                const newOptions = options.filter(o => o !== 'QUEST (Accept Key)');
+                setOptions(newOptions.length > 0 ? newOptions : ['GOODBYE']);
+                setSelectedIndex(0);
+            } else if (option.startsWith('QUEST (Accept): ')) {
+                const questTitle = option.replace('QUEST (Accept): ', '');
+                const available = QuestSystem.getAvailableQuests(engine.player, npc.type);
+                const quest = available.find(q => q.title === questTitle);
+                if (quest) {
+                    QuestSystem.acceptQuest(engine, quest.id);
+                    setGreeting(`Excellent! ${quest.description}`);
+                    const newOptions = options.filter(o => o !== option);
+                    setOptions(newOptions.length > 0 ? newOptions : ['GOODBYE']);
+                    setSelectedIndex(0);
+                }
+            } else if (option.startsWith('QUEST (Turn in): ')) {
+                const questTitle = option.replace('QUEST (Turn in): ', '');
+                const active = QuestSystem.getActiveQuestsForGiver(engine.player, npc.type);
+                const quest = active.find(q => q.title === questTitle);
+                if (quest) {
+                    QuestSystem.turnInQuest(engine, quest.id);
+                    setGreeting(`Thank you so much! I've given you a reward.`);
+                    const newOptions = options.filter(o => o !== option);
+                    setOptions(newOptions.length > 0 ? newOptions : ['GOODBYE']);
+                    setSelectedIndex(0);
+                }
+            } else if (option.startsWith('QUEST (Active): ')) {
+                const questTitle = option.replace('QUEST (Active): ', '');
+                const active = QuestSystem.getActiveQuestsForGiver(engine.player, npc.type);
+                const quest = active.find(q => q.title === questTitle);
+                if (quest) {
+                    setGreeting(`${quest.description} (You have ${quest.currentCount}/${quest.requiredCount})`);
+                }
+            } else if (option === 'TRAIN') {
+                if (engine.player.removeItem('gold_piece', 15)) {
+                    PlayerProgression.addXp(engine.player, engine.player.xpToNextLevel - engine.player.xp);
+                    setGreeting("You feel yourself growing stronger...");
+                    const newOptions = options.filter(o => o !== 'TRAIN');
+                    setOptions(newOptions.length > 0 ? newOptions : ['GOODBYE']);
+                    setSelectedIndex(0);
+                } else {
+                    setGreeting("Training costs 15 gold pieces. Come back when you have it.");
+                }
+            } else if (option === 'CHAT') {
+                if ((window as any).__AI_EXHAUSTED__) {
+                    setMode('ERROR');
+                } else {
+                    setMode('LLM');
+                    generateResponse([{ role: 'user', text: '*Approaches the NPC*' }]);
+                }
+            } else if (option === 'PICKPOCKET') {
+                setMode('PICK_POCKET');
+                handlePickPocket();
+            } else if (option === 'GOODBYE') {
+                onClose();
+            }
+            return;
+        }
+
+        if (mode === 'ERROR' || option === 'Goodbye' || option === 'GOODBYE' || option.includes('(Leave)')) {import React, { useState, useEffect, useRef } from 'react';
 import { NPC } from '../game/Engine';
 import { ITEMS } from '../game/Inventory';
 import { QuestSystem } from '../game/systems/QuestSystem';
@@ -113,6 +240,7 @@ export const NPCChat: React.FC<NPCChatProps> = ({ npc, engine, onClose, playerIn
     const [pickPocketResult, setPickPocketResult] = useState<string | null>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
+    // Initial deterministic greeting
     useEffect(() => {
         if (npc.type === 'QUEST_GIVER') {
             setGreeting("I fear this dungeon contains a dark artifact... Take this Dungeon Key, seek the Boss Room at the bottom, and put an end to it!");
@@ -121,6 +249,7 @@ export const NPCChat: React.FC<NPCChatProps> = ({ npc, engine, onClose, playerIn
         }
         
         const initialOptions = [];
+        
         initialOptions.push("TALK");
         
         if (onTrade && (
@@ -183,10 +312,12 @@ export const NPCChat: React.FC<NPCChatProps> = ({ npc, engine, onClose, playerIn
         setSelectedIndex(0);
     }, [npc, engine]);
 
+    // Auto-scroll to bottom
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages, options]);
 
+    // Gamepad support
     useEffect(() => {
         let animationFrameId: number;
         let prevUp = false;
@@ -230,11 +361,9 @@ export const NPCChat: React.FC<NPCChatProps> = ({ npc, engine, onClose, playerIn
 
     const handleSelectOption = (option: string) => {
         if (mode === 'MENU') {
-            if (option === 'TALK') {
-                setGreeting(getVillagerBark(npc));
-            } else if (option === 'TRADE') {
+            if (option === 'Trade') {
                 if (onTrade) onTrade();
-            } else if (option === 'TRADE (Adopt Companion - 10 silver)') {
+            } else if (option === 'Adopt Companion (10 silver)') {
                 if (engine.player.removeItem('silver_piece', 10)) {
                     const companionNameBase = ['Fang', 'Scout', 'Rex', 'Shadow', 'Ghost', 'Brutus', 'Ash'][Math.floor(Math.random()*7)];
                     const newCompanion = { 
@@ -249,116 +378,111 @@ export const NPCChat: React.FC<NPCChatProps> = ({ npc, engine, onClose, playerIn
                     if (!engine.player.companions) engine.player.companions = [];
                     engine.player.companions.push(newCompanion);
                     setGreeting(`Treat ${newCompanion.name} well. They'll fight to the death for you.`);
-                    const newOptions = options.filter(o => o !== 'TRADE (Adopt Companion - 10 silver)');
-                    setOptions(newOptions.length > 0 ? newOptions : ['GOODBYE']);
+                    // Update main options (strip Adopt option)
+                    const newOptions = options.filter(o => o !== 'Adopt Companion (10 silver)');
+                    setOptions(newOptions.length > 0 ? newOptions : ['Leave']);
                     setSelectedIndex(0);
                 } else {
                     setGreeting("You don't have 10 silver pieces, traveler.");
+                    setOptions(["Leave"]);
+                    setSelectedIndex(0);
                 }
-            } else if (option.startsWith('HEAL')) {
+            } else if (option === 'Listen to a song') {
                 engine.player.health = engine.player.effectiveMaxHealth;
                 engine.player.stamina = engine.player.maxStamina;
                 engine.player.mana = engine.player.effectiveMaxMana;
-                setGreeting("You feel your vitality returning.");
+                setGreeting("Ah, a weary traveler! Let this melody restore your spirit.");
                 engine.particles.push({
                     x: engine.player.x, y: engine.player.y, z: engine.player.z + 1.5,
                     text: '♫ FULLY RESTORED ♫', color: '#ff69b4', life: 2.5, maxLife: 2.5, speed: 0, vy: 0.5, vx: 0, vz: 0
                 });
-                if (option.includes('song')) {
-                    const AudioCtx = (window as any).AudioContext || (window as any).webkitAudioContext;
-                    if (AudioCtx) {
-                        const ctx = new AudioCtx();
-                        const freqs = [523.25, 659.25, 783.99, 1046.50];
-                        freqs.forEach((f, i) => {
-                            const osc = ctx.createOscillator();
-                            const gain = ctx.createGain();
-                            osc.connect(gain);
-                            gain.connect(ctx.destination);
-                            osc.type = 'triangle';
-                            osc.frequency.value = f;
-                            gain.gain.setValueAtTime(0, ctx.currentTime + i * 0.15);
-                            gain.gain.linearRampToValueAtTime(0.1, ctx.currentTime + i * 0.15 + 0.05);
-                            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + i * 0.15 + 0.5);
-                            osc.start(ctx.currentTime + i * 0.15);
-                            osc.stop(ctx.currentTime + i * 0.15 + 0.5);
-                        });
-                    }
-                    for (let i = 0; i < 15; i++) {
-                        engine.particles.push({
-                            x: engine.player.x + (Math.random() - 0.5) * 2,
-                            y: engine.player.y + (Math.random() - 0.5) * 2,
-                            z: engine.player.z + Math.random() * 2,
-                            text: ['♪', '♫', '♩', '♬'][Math.floor(Math.random() * 4)],
-                            color: `hsl(${Math.random() * 360}, 100%, 70%)`,
-                            life: 1.5 + Math.random(), maxLife: 2.5, speed: 0, vy: 1 + Math.random(), vx: (Math.random() - 0.5) * 2, vz: (Math.random() - 0.5) * 2, size: 2 + Math.random() * 2
-                        });
-                    }
+                
+                // Play a little arpeggio
+                const AudioCtx = (window as any).AudioContext || (window as any).webkitAudioContext;
+                if (AudioCtx) {
+                    const ctx = new AudioCtx();
+                    const freqs = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+                    freqs.forEach((f, i) => {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.type = 'triangle';
+                        osc.frequency.value = f;
+                        gain.gain.setValueAtTime(0, ctx.currentTime + i * 0.15);
+                        gain.gain.linearRampToValueAtTime(0.1, ctx.currentTime + i * 0.15 + 0.05);
+                        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + i * 0.15 + 0.5);
+                        osc.start(ctx.currentTime + i * 0.15);
+                        osc.stop(ctx.currentTime + i * 0.15 + 0.5);
+                    });
                 }
-            } else if (option === 'QUEST (Accept Key)') {
+
+                for (let i = 0; i < 15; i++) {
+                    engine.particles.push({
+                        x: engine.player.x + (Math.random() - 0.5) * 2,
+                        y: engine.player.y + (Math.random() - 0.5) * 2,
+                        z: engine.player.z + Math.random() * 2,
+                        text: ['♪', '♫', '♩', '♬'][Math.floor(Math.random() * 4)],
+                        color: `hsl(${Math.random() * 360}, 100%, 70%)`,
+                        life: 1.5 + Math.random(), maxLife: 2.5, speed: 0, vy: 1 + Math.random(), vx: (Math.random() - 0.5) * 2, vz: (Math.random() - 0.5) * 2, size: 2 + Math.random() * 2
+                    });
+                }
+                const newOptions = options.filter(o => o !== 'Listen to a song');
+                setOptions(newOptions.length > 0 ? newOptions : ['Leave']);
+                setSelectedIndex(0);
+            } else if (option === 'Accept Key') {
                 engine.player.inventory.push({ ...ITEMS['dungeon_key'], quantity: 1 });
                 (npc as any).hasGivenKey = true;
                 setGreeting("Good luck... You'll need it.");
-                const newOptions = options.filter(o => o !== 'QUEST (Accept Key)');
-                setOptions(newOptions.length > 0 ? newOptions : ['GOODBYE']);
+                setOptions(["Leave"]);
                 setSelectedIndex(0);
-            } else if (option.startsWith('QUEST (Accept): ')) {
-                const questTitle = option.replace('QUEST (Accept): ', '');
+            } else if (option.startsWith('Accept: ')) {
+                const questTitle = option.replace('Accept: ', '');
                 const available = QuestSystem.getAvailableQuests(engine.player, npc.type);
                 const quest = available.find(q => q.title === questTitle);
                 if (quest) {
                     QuestSystem.acceptQuest(engine, quest.id);
                     setGreeting(`Excellent! ${quest.description}`);
-                    const newOptions = options.filter(o => o !== option);
-                    setOptions(newOptions.length > 0 ? newOptions : ['GOODBYE']);
+                    setOptions(["Leave"]);
                     setSelectedIndex(0);
                 }
-            } else if (option.startsWith('QUEST (Turn in): ')) {
-                const questTitle = option.replace('QUEST (Turn in): ', '');
+            } else if (option.startsWith('Turn in: ')) {
+                const questTitle = option.replace('Turn in: ', '');
                 const active = QuestSystem.getActiveQuestsForGiver(engine.player, npc.type);
                 const quest = active.find(q => q.title === questTitle);
                 if (quest) {
                     QuestSystem.turnInQuest(engine, quest.id);
                     setGreeting(`Thank you so much! I've given you a reward.`);
-                    const newOptions = options.filter(o => o !== option);
-                    setOptions(newOptions.length > 0 ? newOptions : ['GOODBYE']);
+                    setOptions(["Leave"]);
                     setSelectedIndex(0);
                 }
-            } else if (option.startsWith('QUEST (Active): ')) {
-                const questTitle = option.replace('QUEST (Active): ', '');
+            } else if (option.startsWith('(Quest Active)')) {
+                const questTitle = option.replace('(Quest Active) ', '');
                 const active = QuestSystem.getActiveQuestsForGiver(engine.player, npc.type);
                 const quest = active.find(q => q.title === questTitle);
                 if (quest) {
                     setGreeting(`${quest.description} (You have ${quest.currentCount}/${quest.requiredCount})`);
-                }
-            } else if (option === 'TRAIN') {
-                if (engine.player.removeItem('gold_piece', 15)) {
-                    PlayerProgression.addXp(engine.player, Math.max(1, engine.player.xpToNextLevel - engine.player.xp));
-                    setGreeting("You feel yourself growing stronger...");
-                    const newOptions = options.filter(o => o !== 'TRAIN');
-                    setOptions(newOptions.length > 0 ? newOptions : ['GOODBYE']);
+                    setOptions(["Leave"]);
                     setSelectedIndex(0);
-                } else {
-                    setGreeting("Training costs 15 gold pieces. Come back when you have it.");
                 }
-            } else if (option === 'CHAT') {
-                const aiEnabled = localStorage.getItem('ai_enabled') === 'true';
-                const apiKey = localStorage.getItem('ai_api_key');
-                if (aiEnabled && apiKey) {
+            } else if (option === 'Leave') {
+                onClose();
+            } else if (option === 'Chat') {
+                // If API is already exhausted in this session, fallback immediately
+                if ((window as any).__AI_EXHAUSTED__) {
+                    setMode('ERROR');
+                } else {
                     setMode('LLM');
                     generateResponse([{ role: 'user', text: '*Approaches the NPC*' }]);
-                } else {
-                    setMode('ERROR');
                 }
-            } else if (option === 'PICKPOCKET') {
+            } else if (option === 'Pick Pocket') {
                 setMode('PICK_POCKET');
                 handlePickPocket();
-            } else if (option === 'GOODBYE') {
-                onClose();
             }
             return;
         }
 
-        if (mode === 'ERROR' || option === 'Goodbye' || option === 'GOODBYE' || option.includes('(Leave)')) {
+        if (mode === 'ERROR' || option === 'Goodbye' || option.includes('(Leave)')) {
             onClose();
             return;
         }
@@ -391,7 +515,7 @@ export const NPCChat: React.FC<NPCChatProps> = ({ npc, engine, onClose, playerIn
                 const goldAmount = Math.floor(Math.random() * 20) + 5;
                 setPickPocketResult(`Success! You stole ${goldAmount} gold.`);
                 engine.player.inventory.push({ ...ITEMS['gold_piece'], quantity: goldAmount });
-                setOptions(["GOODBYE"]);
+                setOptions(["Leave"]);
             } else {
                 // Failure
                 setPickPocketResult(`Failed! You were caught.`);
@@ -402,108 +526,42 @@ export const NPCChat: React.FC<NPCChatProps> = ({ npc, engine, onClose, playerIn
             }
         }, 1000);
     };
-    
-    const generateResponse = async (history: ChatMessage[]) => {
+
+        const generateResponse = async (history: ChatMessage[]) => {
         setIsLoading(true);
         setOptions([]);
         
         try {
-            const aiEnabled = localStorage.getItem('ai_enabled') === 'true';
-            const apiKey = localStorage.getItem('ai_api_key');
+            // Simulated delay
+            await new Promise(resolve => setTimeout(resolve, 300));
             
             const lastMsg = history[history.length - 1];
             const lowerText = lastMsg?.text.toLowerCase() || '';
-
-            if (aiEnabled && apiKey) {
-                try {
-                    const ai = new GoogleGenAI({ apiKey });
-                    const npcName = npc.type === 'NPC_KING' ? 'The King' : npc.type === 'BOUNTY_HUNTER' ? 'Bounty Hunter' : npc.type === 'VILLAGER' ? 'Villager' : 'Arcanis';
-                    
-                    const sysInstruction = `You are a character in a 2D RPG game.
-Your name/role is ${npcName}.
-Your type is ${npc.type}.
-${npc.type === 'VILLAGER' ? `Your profession is ${(npc as any).profession || 'Commoner'}.` : ''}
-
-Keep your responses short, under 3 sentences. 
-You must respond in JSON format with the following structure:
-{
-  "response": "Your spoken dialogue and actions",
-  "options": ["3 to 4 short player dialogue choices to continue the conversation"],
-  "action": "Optional action. Valid values: '', 'open_trade_menu', 'turn_hostile', 'leave'"
-}
-Do not include markdown blocks, just the JSON object.`;
-
-                    const contents = history.map(msg => ({
-                        role: msg.role === 'user' ? 'user' : 'model',
-                        parts: [{ text: msg.text }]
-                    }));
-
-                    const aiResponse = await ai.models.generateContent({
-                        model: 'gemini-2.5-flash',
-                        contents,
-                        config: {
-                            systemInstruction: sysInstruction,
-                            responseMimeType: 'application/json',
-                            temperature: 0.7
-                        }
-                    });
-
-                    let parsed = {
-                        response: "*The NPC stares blankly.*",
-                        options: ["Goodbye."],
-                        action: ""
-                    };
-                    
-                    if (aiResponse.text) {
-                        try {
-                            parsed = JSON.parse(aiResponse.text);
-                        } catch (e) {
-                            console.error("Failed to parse LLM JSON:", e, aiResponse.text);
-                            parsed.response = aiResponse.text;
-                            parsed.options = ["Goodbye."];
-                        }
-                    }
-
-                    if (parsed.action === 'open_trade_menu' && onTrade) {
-                        onTrade();
-                        return;
-                    } else if (parsed.action === 'turn_hostile' && onHostile) {
-                        onHostile();
-                        return;
-                    } else if (parsed.action === 'leave' || parsed.options.length === 0) {
-                        parsed.options = ["GOODBYE"];
-                    }
-                    
-                    setMessages(prev => [...prev, { role: 'model', text: parsed.response }]);
-                    setOptions(parsed.options.length ? parsed.options.map(o => o.toUpperCase() === 'GOODBYE' ? 'GOODBYE' : o) : ["GOODBYE"]);
-                    setSelectedIndex(0);
-                    setIsLoading(false);
-                    return;
-                } catch (apiError) {
-                    console.error("API Error:", apiError);
-                    setMessages(prev => [...prev, { role: 'model', text: "*The AI seems disconnected...* (Check your API key in Settings)" }]);
-                    setOptions(["GOODBYE"]);
-                    setIsLoading(false);
-                    return;
-                }
-            }
-
-            // Fallback simulated response
-            await new Promise(resolve => setTimeout(resolve, 300));
             
             let parsed = {
                 response: "Hello there, traveler. What do you need?",
                 options: ["Let's trade.", "Who are you?", "Goodbye."],
                 action: ""
             };
-
-            if (lowerText.includes('trade') || lowerText.includes('buy') || lowerText.includes('sell') || lowerText.includes('shop')) {
-                parsed.action = 'open_trade_menu';
-            } else if (lowerText.includes('attack') || lowerText.includes('die') || lowerText.includes('kill')) {
-                parsed.action = 'turn_hostile';
-            } else if (lowerText.includes('bye') || lowerText.includes('leave') || lowerText.includes('goodbye')) {
+            
+            if (lowerText.includes('trade') || lowerText.includes('wares') || lowerText.includes('buy')) {
+                parsed.action = "open_trade_menu";
+            } else if (lowerText.includes('who are you') || lowerText.includes('what do you do')) {
+                if (npc.type === 'NPC_KING') {
+                    parsed.response = "I am King Alaric, ruler of Pantheona. We face dark times.";
+                } else if (npc.type === 'BOUNTY_HUNTER') {
+                    parsed.response = "I lead the bounty hunters. Only the strong survive.";
+                } else if (npc.type === 'OLD_WIZARD') {
+                    parsed.response = "I am Arcanis, a humble wizard seeking knowledge.";
+                } else {
+                    parsed.response = "I am just a simple villager, trying to make a living.";
+                }
+                parsed.options = ["Let's trade.", "Goodbye."];
+            } else if (lowerText.includes('die') || lowerText.includes('attack') || lowerText.includes('kill')) {
+                parsed.action = "turn_hostile";
+            } else if (lowerText.includes('goodbye') || lowerText.includes('leave')) {
                 parsed.response = "Farewell, traveler.";
-                parsed.options = ["GOODBYE"];
+                parsed.options = [];
             }
             
             if (parsed.action === 'open_trade_menu' && onTrade) {
@@ -515,12 +573,12 @@ Do not include markdown blocks, just the JSON object.`;
             }
             
             setMessages(prev => [...prev, { role: 'model', text: parsed.response }]);
-            setOptions(parsed.options.length ? parsed.options : ["GOODBYE"]);
+            setOptions(parsed.options.length ? parsed.options : ["Goodbye"]);
             setSelectedIndex(0);
         } catch (error) {
             console.error(error);
             setMessages(prev => [...prev, { role: 'model', text: "*The NPC mumbles.*" }]);
-            setOptions(["GOODBYE"]);
+            setOptions(["Goodbye"]);
         } finally {
             setIsLoading(false);
         }
@@ -532,8 +590,8 @@ Do not include markdown blocks, just the JSON object.`;
                 {/* Header */}
                 <div className="bg-gradient-to-b from-[#3e2718] to-[#1a0f0a] border-b-2 border-[#5c3a21] p-2 flex items-center gap-3 shrink-0">
                     <div className="w-8 h-8 bg-[#0f0805] border border-[#5c3a21] flex items-center justify-center text-lg rounded-sm shrink-0">
-                        {npc.type === 'NPC_KING' ? '👑' : 
-                         npc.type === 'BOUNTY_HUNTER' ? '🗡️' : 
+                        {npc.type === 'NPC_KING' ? '👑' :
+                         npc.type === 'BOUNTY_HUNTER' ? '🗡️' :
                          npc.type === 'VILLAGER' ? (
                             (npc as any).profession === 'VILLAGER_GUARD' ? '🛡️' :
                             (npc as any).profession === 'VILLAGER_FARMER' ? '🌾' :
@@ -564,7 +622,7 @@ Do not include markdown blocks, just the JSON object.`;
                         </div>
                     ) : mode === 'ERROR' ? (
                         <div className="text-red-400 text-sm italic text-center p-4 border border-red-900 bg-[#2a1b14] rounded-sm">
-                            Live AI Chat is disabled or missing an API Key. Please configure it in the Settings menu.
+                            The villagers are too tired to banter today... (AI connection exhausted)
                         </div>
                     ) : mode === 'PICK_POCKET' ? (
                         <div className="text-orange-300 text-sm bg-[#2a1b14] p-3 rounded-sm border border-orange-600 text-center animate-pulse">
@@ -628,9 +686,9 @@ Do not include markdown blocks, just the JSON object.`;
                             <span className="leading-tight">{opt}</span>
                         </button>
                     ))}
-                    {!isLoading && mode === 'MENU' && (window as any).__AI_EXHAUSTED__ && options.includes('CHAT') && (
+                    {!isLoading && mode === 'MENU' && (window as any).__AI_EXHAUSTED__ && options.includes('Chat') && (
                         <div className="text-[10px] text-red-500/80 text-center mt-1 italic tracking-wide">
-                            AI Chat Disabled (Check Settings)
+                            Chat unavailable (Rate limit hit)
                         </div>
                     )}
                 </div>
