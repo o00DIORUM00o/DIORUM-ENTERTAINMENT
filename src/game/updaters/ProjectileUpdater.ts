@@ -311,7 +311,7 @@ p.life -= dt;
                 const pdy = engine.player.y - p.y;
                 const pdist = Math.sqrt(pdx*pdx + pdy*pdy);
                 if (pdist <= 0.15 + 0.4 && Math.abs(engine.player.z - p.z) < 1) {
-                    engine.player.takeDamage(p.damage);
+                    engine.player.takeDamage(p.damage, p.damageType || (p.isFireball ? 'FIRE' : 'PHYSICAL'));
                     hit = true;
                     engine.particles.push({
                         x: engine.player.x, y: engine.player.y, z: engine.player.z + 0.5,

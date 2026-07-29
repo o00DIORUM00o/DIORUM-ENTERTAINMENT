@@ -108,11 +108,16 @@ export class PlayerStatsManager {
         }
     }
 
-    static takeDamage(player: Player, amount: number) {
+    static takeDamage(player: Player, amount: number, type?: string) {
         if (player.buffs.mistForm > 0 || player.isEyeMode) return;
         if (amount <= 0) return;
         const defense = player.getDefense();
-        const actualDamage = Math.max(1, amount - defense);
+                let mult = 1.0;
+        if (type === 'FIRE' || type === 'EXPLOSION') {
+            const fireResistantRaces = ['MOUNTAIN DWARF', 'RED ELF', 'COPPER KOBOLD', 'COPPER DRAGON FOLK', 'COPPER DRAKKEN', 'IMP'];
+            if (fireResistantRaces.includes(player.race)) mult = 0.5;
+        }
+        const actualDamage = Math.max(1, Math.floor((amount * mult) - defense));
         player.health -= actualDamage;
         audioEngine.playHit();
         if (player.carryingPot) {

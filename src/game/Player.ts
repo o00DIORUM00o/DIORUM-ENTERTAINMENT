@@ -287,8 +287,8 @@ export class Player {
         return def;
     }
 
-    takeDamage(amount: number) {
-        PlayerStatsManager.takeDamage(this, amount);
+    takeDamage(amount: number, type?: string) {
+        PlayerStatsManager.takeDamage(this, amount, type);
     }
 
     castBlink(ctx: UpdateContext) {

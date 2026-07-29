@@ -246,8 +246,11 @@ export class PlayerController {
         
         let inLava = false;
         if (blockStandingIn === BlockType.LAVA) {
+            let fireMult = 1.0;
+            const fireResistantRaces = ['MOUNTAIN DWARF', 'RED ELF', 'COPPER KOBOLD', 'COPPER DRAGON FOLK', 'COPPER DRAKKEN', 'IMP'];
+            if (fireResistantRaces.includes(player.race)) fireMult = 0.5;
             inLava = true;
-            player.health -= 20 * dt; // 20 damage per second
+            player.health -= (20 * fireMult) * dt; // 20 damage per second
         } else if (blockStandingIn === BlockType.POISON_WATER) {
             player.health -= 10 * dt; // Poison hurts
         }
@@ -256,6 +259,8 @@ export class PlayerController {
         if (world.activePlanet === 'ARETH') {
             // Check for heat resistance (e.g., ring of ice, or nearby ice)
             let hasHeatResistance = false;
+            const fireResistantRaces = ['MOUNTAIN DWARF', 'RED ELF', 'COPPER KOBOLD', 'COPPER DRAGON FOLK', 'COPPER DRAKKEN', 'IMP'];
+            if (fireResistantRaces.includes(player.race)) hasHeatResistance = true;
             for (const slotKey in player.equipment) {
                 const item = player.equipment[slotKey as keyof typeof player.equipment];
                 if (item && item.id.toLowerCase().includes('ice')) {

@@ -1,4 +1,7 @@
-import { RaceDef } from '../../registries/RaceRegistry';
+const fs = require('fs');
+let p = 'src/game/content/races/core_races.ts';
+
+let c = `import { RaceDef } from '../../registries/RaceRegistry';
 
 export const CORE_RACES: RaceDef[] = [];
 
@@ -63,5 +66,9 @@ RACES.forEach(raceName => {
             break;
         }
     }
-    CORE_RACES.push(createRace(raceName, raceName, `The ${raceName} race.`, talents));
+    CORE_RACES.push(createRace(raceName, raceName, \`The \${raceName} race.\`, talents));
 });
+`;
+
+fs.writeFileSync(p, c);
+console.log('Fixed races file properly');
