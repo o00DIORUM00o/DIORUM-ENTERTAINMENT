@@ -3,7 +3,7 @@ name: Deploy DEORUM playable demo
 on:
   push:
     branches:
-      - phase-1-playable-demo
+      - main
   workflow_dispatch:
 
 permissions:
